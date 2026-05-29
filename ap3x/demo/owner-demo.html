@@ -354,7 +354,7 @@ canvas{width:100%!important;display:block}
     <canvas id="miniChart" height="80"></canvas>
   </div>
 
-  <button class="btn-emergency" onclick="showToast('Connecting to your trainer…')">🐾 Contact My Trainer</button>
+  <button class="btn-emergency" onclick="openEmergency()">🐾 Contact My Trainer</button>
 </div>
 
 <!-- CHECK-IN TAB -->
@@ -646,7 +646,7 @@ canvas{width:100%!important;display:block}
 // ── State ──────────────────────────────────────────────
 const S = {
   checkinStep: 0,
-  anxiety: null, sleep: null,
+  score: null, sleep: null,
   currentMood: null,
   xp: 420, streak: 5,
   currentExFilter: 'all',
@@ -667,13 +667,13 @@ function defaultGoals(){
 function defaultCheckins(){
   const now=Date.now(); const day=86400000;
   return [
-    {date:now,anxiety:3,sleep:7,note:'Great recall practice in the garden',triggers:['Familiar Routine'],coping:['Food reward'],risk:'LOW'},
-    {date:now-day,anxiety:6,sleep:5,note:'Loose-lead work near other dogs',triggers:['Other Dogs'],coping:['Play reward'],risk:'MEDIUM'},
-    {date:now-day*2,anxiety:4,sleep:6,note:'Mix of sit, stay and target training',triggers:['New Skill'],coping:['Shaping'],risk:'MEDIUM'},
-    {date:now-day*3,anxiety:8,sleep:4,note:'Reactive incident near traffic, ended early',triggers:['High Distraction'],coping:['Luring'],risk:'HIGH'},
-    {date:now-day*4,anxiety:2,sleep:8,note:'Best session yet! Mastered down-stay',triggers:[],coping:['Play reward','Food reward'],risk:'LOW'},
-    {date:now-day*5,anxiety:5,sleep:6,note:'New environment - park session',triggers:['New Environment'],coping:['Food reward'],risk:'MEDIUM'},
-    {date:now-day*6,anxiety:3,sleep:7,note:'Morning enrichment + recall practice',triggers:[],coping:['Shaping'],risk:'LOW'},
+    {date:now,score:3,sleep:7,note:'Great recall practice in the garden',triggers:['Familiar Routine'],coping:['Food reward'],risk:'LOW'},
+    {date:now-day,score:6,sleep:5,note:'Loose-lead work near other dogs',triggers:['Other Dogs'],coping:['Play reward'],risk:'MEDIUM'},
+    {date:now-day*2,score:4,sleep:6,note:'Mix of sit, stay and target training',triggers:['New Skill'],coping:['Shaping'],risk:'MEDIUM'},
+    {date:now-day*3,score:8,sleep:4,note:'Reactive incident near traffic, ended early',triggers:['High Distraction'],coping:['Luring'],risk:'HIGH'},
+    {date:now-day*4,score:2,sleep:8,note:'Best session yet! Mastered down-stay',triggers:[],coping:['Play reward','Food reward'],risk:'LOW'},
+    {date:now-day*5,score:5,sleep:6,note:'New environment - park session',triggers:['New Environment'],coping:['Food reward'],risk:'MEDIUM'},
+    {date:now-day*6,score:3,sleep:7,note:'Morning enrichment + recall practice',triggers:[],coping:['Shaping'],risk:'LOW'},
   ];
 }
 
@@ -706,11 +706,11 @@ function goTab(t){
   if(page) page.classList.remove('hidden');
   var nb = document.getElementById('nav-'+t);
   if(nb) nb.classList.add('active');
-  if(t === 'history'){ renderHistory(); setTimeout(function(){ renderHistChart('anxiety'); }, 80); }
+  if(t === 'history'){ renderHistory(); setTimeout(function(){ renderHistChart('score'); }, 80); }
   if(t === 'goals') renderGoals();
   if(t === 'journal') renderJournal();
   if(t === 'exercises') renderExercises();
-  if(t === 'home') setTimeout(function(){ renderMiniChart('anxiety'); }, 80);
+  if(t === 'home') setTimeout(function(){ renderMiniChart('score'); }, 80);
   window.scrollTo(0,0);
 }
 
@@ -777,7 +777,7 @@ function nextStep(n){
 }
 
 function startNewCheckin(){
-  S.checkinStep = 0; S.anxiety = null; S.sleep = null;
+  S.checkinStep = 0; S.score = null; S.sleep = null;
   document.querySelectorAll('.checkin-step').forEach(function(s){ s.classList.add('hidden'); });
   document.getElementById('step-0').classList.remove('hidden');
   document.getElementById('checkinBar').style.width = '10%';
@@ -799,8 +799,8 @@ function startNewCheckin(){
 }
 
 function submitCheckin(){
-  var anxiety = S.score !== null ? S.score : 5;
-  var risk = anxiety<=3 ? 'LOW' : anxiety<=6 ? 'MEDIUM' : anxiety<=8 ? 'HIGH' : 'CRITICAL';
+  var score = S.score !== null ? S.score : 5;
+  var risk = score<=3 ? 'LOW' : score<=6 ? 'MEDIUM' : score<=8 ? 'HIGH' : 'CRITICAL';
   var msgs = {
     LOW: 'Brilliant session! Your dog performed superbly. Short, consistent sessions build the best foundation.',
     MEDIUM: 'Good effort! Some challenges but your dog stayed engaged. Finish with an enrichment activity to wind down.',
@@ -830,7 +830,7 @@ function submitCheckin(){
   var noteVal = document.getElementById('checkinNote') ? document.getElementById('checkinNote').value : '';
   S.checkins.unshift({
     date: Date.now(),
-    anxiety: anxiety,
+    score: score,
     sleep: S.sleep !== null ? S.sleep : 6,
     note: noteVal,
     triggers: triggers,
@@ -845,19 +845,19 @@ function submitCheckin(){
   var dot = document.getElementById('checkinDot');
   if(dot) dot.style.display = 'none';
   showToast('✅ Check-in saved! +50 XP');
-  setTimeout(function(){ renderMiniChart('anxiety'); }, 100);
+  setTimeout(function(){ renderMiniChart('score'); }, 100);
 }
 
 // ── Mini chart (home) ─────────────────────────────────
-var currentMiniChartType = 'anxiety';
+var currentMiniChartType = 'score';
 function renderMiniChart(type){
   currentMiniChartType = type;
   var c = document.getElementById('miniChart');
   if(!c) return;
   var slice = S.checkins.slice(0,7).reverse();
-  var data = slice.map(function(ci){ return type==='sleep' ? ci.sleep : (ci.score||ci.anxiety||0); });
+  var data = slice.map(function(ci){ return type==='sleep' ? (ci.sleep||6) : (ci.score||0); });
   var labels = slice.map(function(ci){ var d=new Date(ci.date); return ['Su','Mo','Tu','We','Th','Fr','Sa'][d.getDay()]; });
-  drawLineChart(c, labels, data, type==='sleep'?'#10b981':'#2563eb', type==='sleep'?'rgba(16,185,129,.15)':'rgba(37,99,235,.15)');
+  drawLineChart(c, labels, data, type==='sleep'?'#10b981':'#3a7d44', type==='sleep'?'rgba(16,185,129,.15)':'rgba(58,125,68,.15)');
 }
 
 function switchMiniChart(type, btn){
@@ -867,15 +867,15 @@ function switchMiniChart(type, btn){
 }
 
 // ── History chart ─────────────────────────────────────
-var currentHistChartType = 'anxiety';
+var currentHistChartType = 'score';
 function renderHistChart(type){
   currentHistChartType = type;
   var c = document.getElementById('histChart');
   if(!c) return;
   var slice = S.checkins.slice(0,14).reverse();
-  var data = slice.map(function(ci){ return type==='sleep' ? ci.sleep : (ci.score||ci.anxiety||0); });
+  var data = slice.map(function(ci){ return type==='sleep' ? (ci.sleep||6) : (ci.score||0); });
   var labels = slice.map(function(ci){ var d=new Date(ci.date); return (d.getDate())+'/'+(d.getMonth()+1); });
-  drawLineChart(c, labels, data, type==='sleep'?'#10b981':'#2563eb', type==='sleep'?'rgba(16,185,129,.15)':'rgba(37,99,235,.15)');
+  drawLineChart(c, labels, data, type==='sleep'?'#10b981':'#3a7d44', type==='sleep'?'rgba(16,185,129,.15)':'rgba(58,125,68,.15)');
 }
 
 function switchHistChart(type, btn){
@@ -920,18 +920,18 @@ function drawLineChart(canvas, labels, data, color, fill){
 // ── History tab ───────────────────────────────────────
 function renderHistory(){
   var total = S.checkins.length;
-  var avg = total ? (S.checkins.reduce(function(a,c){ return a+(c.score||c.anxiety||0); },0)/total).toFixed(1) : '0';
+  var avg = total ? (S.checkins.reduce(function(a,c){ return a+(c.score||0); },0)/total).toFixed(1) : '0';
   document.getElementById('avgScore').textContent = avg;
   document.getElementById('totalCheckins').textContent = total;
-  var recent = S.checkins.slice(0,7).reduce(function(a,c){ return a+c.anxiety; },0) / Math.min(7,total||1);
+  var recent = S.checkins.slice(0,7).reduce(function(a,c){ return a+(c.score||0); },0) / Math.min(7,total||1);
   var older = S.checkins.slice(7,14);
-  var olderAvg = older.length ? older.reduce(function(a,c){ return a+c.anxiety; },0)/older.length : recent;
+  var olderAvg = older.length ? older.reduce(function(a,c){ return a+(c.score||0); },0)/older.length : recent;
   var chg = Math.round((recent-olderAvg)/olderAvg*100);
   document.getElementById('improvePct').textContent = (chg<=0 ? '↓'+Math.abs(chg) : '↑'+chg)+'%';
 
   document.getElementById('historyList').innerHTML = S.checkins.map(function(ci){
     var d = new Date(ci.date);
-    var sc = ci.anxiety;
+    var sc = ci.score || 0;
     var bg = sc<=3?'#d1fae5':sc<=6?'#fef3c7':'#fee2e2';
     var col = sc<=3?'#065f46':sc<=6?'#92400e':'#991b1b';
     var riskColors = {LOW:'#d1fae5',MEDIUM:'#fef3c7',HIGH:'#fee2e2',CRITICAL:'#ede9fe'};
@@ -1279,7 +1279,7 @@ function saveNewGoal(){
 }
 
 // ── Emergency ─────────────────────────────────────────
-function showToast('Connecting to your trainer…'){ document.getElementById('emergencyModal').classList.remove('hidden'); }
+function openEmergency(){ document.getElementById('emergencyModal').classList.remove('hidden'); }
 function closeEmergency(){ document.getElementById('emergencyModal').classList.add('hidden'); }
 
 // ── Toast ─────────────────────────────────────────────
@@ -1293,9 +1293,9 @@ function showToast(msg){
 }
 
 // ── Init ──────────────────────────────────────────────
-renderMiniChart('anxiety');
+renderMiniChart('score');
 window.addEventListener('resize', function(){
-  renderMiniChart(currentMiniChartType);
+  renderMiniChart(currentMiniChartType || 'score');
   if(document.getElementById('tab-history') && !document.getElementById('tab-history').classList.contains('hidden')){
     renderHistChart(currentHistChartType);
   }
