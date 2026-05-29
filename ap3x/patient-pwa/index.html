@@ -2,292 +2,300 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <meta name="theme-color" content="#3a7d44"/>
-<meta name="description" content="Four Paws Training & Enrichment Academy — Training Companion"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <title>🐾 Four Paws Academy</title>
 <link rel="manifest" href="./manifest.json"/>
-<link rel="apple-touch-icon" href="/icons/fp-icon-192.png"/>
 <link rel="stylesheet" href="./patient.css"/>
 </head>
 <body class="theme-light">
 
-<!-- HEADER -->
-<header class="fp-header">
-  <div class="header-brand">
-    <span class="brand-dot"></span>
-    <span class="brand-name">🐾 Four Paws</span>
-    <span class="brand-sub">Academy</span>
+<!-- ══════════════════════════════════════════
+     PORTAL HOME — always visible behind screens
+══════════════════════════════════════════════ -->
+<div id="portal-root">
+
+  <header class="portal-header">
+    <div class="ph-brand">
+      <span class="brand-dot"></span>
+      <div>
+        <div class="brand-name">🐾 Four Paws</div>
+        <div class="brand-sub">Training Companion</div>
+      </div>
+    </div>
+    <div class="ph-right">
+      <span class="xp-chip" id="xp-chip">⚡ 0 XP</span>
+      <button class="btn-icon" id="theme-toggle">🌙</button>
+    </div>
+  </header>
+
+  <div id="streak-banner" class="streak-banner" style="display:none">
+    <span>🔥</span><span id="streak-text">0-day streak</span>
   </div>
-  <div class="header-actions">
-    <span class="xp-chip" id="xp-chip">⚡ 0 XP</span>
-    <button class="btn-icon" id="theme-toggle" title="Toggle theme">🌙</button>
-  </div>
-</header>
 
-<!-- STREAK BANNER -->
-<div id="streak-banner" class="streak-banner" style="display:none">
-  <span>🔥</span>
-  <span id="streak-text">0-day training streak</span>
-</div>
+  <div class="portal-scroll">
 
-<!-- TAB PAGES -->
-<div class="tab-pages">
-
-  <!-- ══ HOME ══ -->
-  <div id="tab-home" class="tab-page active">
-    <div class="home-hero">
+    <!-- Hero -->
+    <div class="portal-hero">
       <div class="hero-greeting" id="hero-greeting">Good morning 👋</div>
       <div class="hero-dog" id="hero-dog-name">Your Training Companion</div>
-      <div class="hero-sub" id="hero-sub">Consistency builds champions 🐕</div>
+      <div class="hero-sub">Consistency builds champions 🐕</div>
     </div>
 
-    <div class="home-quick-row">
-      <button class="quick-card" onclick="FP.switchTab('checkin')">
-        <span class="qc-icon">📋</span>
-        <span class="qc-label">Log Session</span>
+    <!-- Grid of portal tiles -->
+    <div class="portal-grid">
+      <button class="portal-tile tile-log"      onclick="openScreen('log')">
+        <span class="tile-icon">📋</span>
+        <span class="tile-label">Log Session</span>
+        <span class="tile-arrow">›</span>
       </button>
-      <button class="quick-card" onclick="FP.switchTab('courses')">
-        <span class="qc-icon">🎓</span>
-        <span class="qc-label">My Course</span>
+      <button class="portal-tile tile-courses"  onclick="openScreen('courses')">
+        <span class="tile-icon">🎓</span>
+        <span class="tile-label">My Course</span>
+        <span class="tile-arrow">›</span>
       </button>
-      <button class="quick-card" onclick="FP.switchTab('enrichment')">
-        <span class="qc-icon">🧩</span>
-        <span class="qc-label">Enrichment</span>
+      <button class="portal-tile tile-progress" onclick="openScreen('progress')">
+        <span class="tile-icon">📈</span>
+        <span class="tile-label">Progress</span>
+        <span class="tile-arrow">›</span>
       </button>
-      <button class="quick-card" onclick="FP.switchTab('coach')">
-        <span class="qc-icon">🤖</span>
-        <span class="qc-label">AI Coach</span>
+      <button class="portal-tile tile-enrich"   onclick="openScreen('enrichment')">
+        <span class="tile-icon">🧩</span>
+        <span class="tile-label">Enrichment</span>
+        <span class="tile-arrow">›</span>
+      </button>
+      <button class="portal-tile tile-coach"    onclick="openScreen('coach')">
+        <span class="tile-icon">🤖</span>
+        <span class="tile-label">AI Coach</span>
+        <span class="tile-arrow">›</span>
+      </button>
+      <button class="portal-tile tile-today"    onclick="openScreen('today')">
+        <span class="tile-icon">☀️</span>
+        <span class="tile-label">Today's Plan</span>
+        <span class="tile-arrow">›</span>
       </button>
     </div>
 
-    <div class="card" id="todays-plan-card">
-      <div class="card-label">📋 Today's Training Plan</div>
-      <div id="today-tasks"></div>
+    <!-- Tip strip -->
+    <div class="portal-tip">
+      <span class="tip-icon">💡</span>
+      <span id="portal-tip-text">Loading tip…</span>
     </div>
 
-    <div class="insight-card">
-      <div class="insight-icon">💡</div>
-      <div>
-        <div class="insight-title">Today's Tip</div>
-        <div class="insight-text" id="tip-text">Loading…</div>
+    <!-- Mini chart -->
+    <div class="portal-card">
+      <div class="pc-label">📈 This Week</div>
+      <canvas id="portal-chart" height="72" style="width:100%"></canvas>
+    </div>
+
+  </div><!-- /portal-scroll -->
+</div><!-- /portal-root -->
+
+
+<!-- ══════════════════════════════════════════
+     SCREENS — slide up over the portal
+══════════════════════════════════════════════ -->
+
+<!-- ── LOG SESSION ── -->
+<div id="screen-log" class="screen" aria-hidden="true">
+  <div class="screen-header">
+    <button class="screen-back" onclick="closeScreen('log')">‹ Back</button>
+    <span class="screen-title">📋 Log Session</span>
+    <span></span>
+  </div>
+  <div class="screen-body">
+    <div id="log-form-wrap">
+      <p class="screen-sub">Record what happened — your trainer sees this</p>
+
+      <div class="s-card">
+        <div class="s-label">How did the session go?
+          <span class="hint">0 = easy win · 10 = very tough</span>
+        </div>
+        <div class="scale-row-labels"><span>Easy win</span><span>Very tough</span></div>
+        <div class="scale-track" id="score-scale"></div>
+        <div class="score-big" id="score-display">–</div>
+        <div class="score-ctx" id="score-ctx"></div>
       </div>
-    </div>
 
-    <div class="card">
-      <div class="card-label-row">
-        <span class="card-label">📈 This Week</span>
-        <div class="mini-tabs">
-          <button class="mini-tab active" onclick="FP.switchHomeChart('progress',this)">Progress</button>
-          <button class="mini-tab" onclick="FP.switchHomeChart('streak',this)">Streak</button>
+      <div class="s-card">
+        <div class="s-label">Skills practised <span class="hint">(select all)</span></div>
+        <div class="tag-group" id="skills-tags">
+          <button class="tag" data-v="Recall">Recall 📣</button>
+          <button class="tag" data-v="Loose lead">Loose lead 🦮</button>
+          <button class="tag" data-v="Sit / Down">Sit / Down 🪑</button>
+          <button class="tag" data-v="Stay">Stay ⏸</button>
+          <button class="tag" data-v="Polite greeting">Polite greeting 🤝</button>
+          <button class="tag" data-v="Focus">Focus 👀</button>
+          <button class="tag" data-v="Socialisation">Socialisation 🐕</button>
+          <button class="tag" data-v="Crate training">Crate 🏠</button>
+          <button class="tag" data-v="Enrichment">Enrichment 🧩</button>
+          <button class="tag" data-v="Confidence games">Confidence 💪</button>
+          <button class="tag" data-v="Scent work">Scent work 👃</button>
+          <button class="tag" data-v="Off-lead recall">Off-lead recall 🌳</button>
         </div>
       </div>
-      <canvas id="home-chart" height="80" style="width:100%"></canvas>
-    </div>
 
-    <div class="card">
-      <div class="card-label">🏅 Recent Milestones</div>
-      <div id="milestone-strip" class="milestone-strip"></div>
-    </div>
-  </div>
-
-  <!-- ══ LOG SESSION ══ -->
-  <div id="tab-checkin" class="tab-page">
-    <h2 class="page-title">🐾 Log Training Session</h2>
-    <p class="page-sub">Record what happened — your trainer sees this in real time</p>
-
-    <div class="card">
-      <div class="card-label">How did the session go? <span class="hint-text">0 = easy win · 10 = very tough</span></div>
-      <div class="scale-labels-row"><span>Easy win</span><span>Moderate</span><span>Very tough</span></div>
-      <div class="scale-track" id="score-scale"></div>
-      <div class="score-big-display" id="score-display">–</div>
-      <div class="score-context" id="score-context"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-label">Skills practised today <span class="hint-text">(select all that apply)</span></div>
-      <div class="tag-group" id="skills-tags">
-        <button class="tag" data-v="Recall">Recall 📣</button>
-        <button class="tag" data-v="Loose lead">Loose lead 🦮</button>
-        <button class="tag" data-v="Sit / Down">Sit / Down 🪑</button>
-        <button class="tag" data-v="Stay">Stay ⏸</button>
-        <button class="tag" data-v="Polite greeting">Polite greeting 🤝</button>
-        <button class="tag" data-v="Focus">Focus 👀</button>
-        <button class="tag" data-v="Socialisation">Socialisation 🐕</button>
-        <button class="tag" data-v="Crate training">Crate training 🏠</button>
-        <button class="tag" data-v="Enrichment">Enrichment 🧩</button>
-        <button class="tag" data-v="Confidence games">Confidence games 💪</button>
-        <button class="tag" data-v="Scent work">Scent work 👃</button>
-        <button class="tag" data-v="Off-lead recall">Off-lead recall 🌳</button>
+      <div class="s-card">
+        <div class="s-label">Dog's mood today <span class="hint">(select all)</span></div>
+        <div class="tag-group" id="mood-tags">
+          <button class="tag" data-v="Happy & playful">Happy &amp; playful 😄</button>
+          <button class="tag" data-v="Calm & relaxed">Calm &amp; relaxed 😌</button>
+          <button class="tag" data-v="Focused & engaged">Focused &amp; engaged 🎯</button>
+          <button class="tag" data-v="Excitable / bouncy">Excitable / bouncy</button>
+          <button class="tag" data-v="Anxious / unsettled">Anxious / unsettled 😟</button>
+          <button class="tag" data-v="Reactive to triggers">Reactive to triggers</button>
+          <button class="tag" data-v="Frustrated">Frustrated</button>
+          <button class="tag" data-v="Tired / flat">Tired / flat</button>
+          <button class="tag" data-v="Zoomies / over-aroused">Zoomies 🌀</button>
+          <button class="tag" data-v="Confident & brave">Confident &amp; brave 💪</button>
+        </div>
       </div>
-    </div>
 
-    <div class="card">
-      <div class="card-label">Dog's focus level</div>
-      <div class="tag-group" id="focus-tags">
-        <button class="tag" data-v="Super focused">Super focused 🎯</button>
-        <button class="tag" data-v="Easily distracted">Easily distracted</button>
-        <button class="tag" data-v="Over-excited">Over-excited</button>
-        <button class="tag" data-v="Reactive">Reactive to triggers</button>
-        <button class="tag" data-v="Calm and engaged">Calm &amp; engaged 😌</button>
-        <button class="tag" data-v="Tired">Tired / low drive</button>
+      <div class="s-card">
+        <div class="s-label">Session length (mins)</div>
+        <input type="number" id="duration-input" class="form-input" min="1" max="120" placeholder="e.g. 10"/>
       </div>
+
+      <div class="s-card">
+        <div class="s-label">Notes <span class="hint">(optional — visible to trainer)</span></div>
+        <textarea id="session-note" class="form-textarea" placeholder="Breakthroughs, challenges, what you noticed…" rows="3"></textarea>
+      </div>
+
+      <button class="btn-primary" id="submit-session">Save Session ✓</button>
     </div>
 
-    <div class="card">
-      <div class="card-label">Session length (minutes)</div>
-      <input type="number" id="duration-input" class="form-input" min="1" max="60" placeholder="e.g. 10"/>
-    </div>
-
-    <div class="card">
-      <div class="card-label">Notes <span class="hint-text">(optional — visible to your trainer)</span></div>
-      <textarea id="session-note" class="form-textarea" placeholder="What happened? Any breakthroughs or challenges…" rows="3"></textarea>
-    </div>
-
-    <button class="btn-primary" id="submit-session">Save Training Session ✓</button>
-
-    <div id="feedback-card" class="feedback-card" style="display:none">
-      <div id="feedback-badge" class="feedback-badge"></div>
-      <p id="feedback-msg" class="feedback-msg"></p>
-      <p id="feedback-tip" class="feedback-tip-txt"></p>
-      <div class="feedback-actions">
-        <button class="btn-sm-outline" onclick="FP.switchTab('enrichment')">🧩 Enrichment</button>
-        <button class="btn-sm-outline" onclick="FP.switchTab('courses')">🎓 Courses</button>
-        <button class="btn-sm-accent" onclick="FP.resetCheckin()">↩ New Log</button>
+    <div id="log-feedback" class="feedback-card" style="display:none">
+      <div id="fb-badge" class="fb-badge"></div>
+      <p id="fb-msg" class="fb-msg"></p>
+      <p id="fb-tip" class="fb-tip"></p>
+      <div class="fb-actions">
+        <button class="btn-sm-outline" onclick="openScreen('enrichment');closeScreen('log')">🧩 Enrichment</button>
+        <button class="btn-sm-outline" onclick="openScreen('courses');closeScreen('log')">🎓 Courses</button>
+        <button class="btn-sm-accent"  onclick="resetLog()">↩ New Log</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ══ COURSES & LESSONS ══ -->
-  <div id="tab-courses" class="tab-page">
-    <h2 class="page-title">🎓 Puppy Masterclass</h2>
-    <p class="page-sub">Your 5-module training curriculum — track every lesson</p>
-
-    <div class="course-progress-header" id="course-progress-header"></div>
-
+<!-- ── COURSES ── -->
+<div id="screen-courses" class="screen" aria-hidden="true">
+  <div class="screen-header">
+    <button class="screen-back" onclick="closeScreen('courses')">‹ Back</button>
+    <span class="screen-title">🎓 Puppy Masterclass</span>
+    <span></span>
+  </div>
+  <div class="screen-body">
+    <div id="course-hero-wrap"></div>
     <div id="modules-list"></div>
   </div>
+</div>
 
-  <!-- ══ PROGRESS ══ -->
-  <div id="tab-progress" class="tab-page">
-    <h2 class="page-title">📈 Training Progress</h2>
-    <p class="page-sub">Your behaviour improvement journey</p>
-
-    <div class="stats-row" id="progress-stats"></div>
-
-    <div class="card">
-      <div class="card-label-row">
-        <span class="card-label">Score Trend</span>
+<!-- ── PROGRESS ── -->
+<div id="screen-progress" class="screen" aria-hidden="true">
+  <div class="screen-header">
+    <button class="screen-back" onclick="closeScreen('progress')">‹ Back</button>
+    <span class="screen-title">📈 Progress</span>
+    <span></span>
+  </div>
+  <div class="screen-body">
+    <div class="stats-grid" id="progress-stats"></div>
+    <div class="portal-card" style="margin-bottom:12px">
+      <div class="pc-label-row">
+        <span class="pc-label">Score Trend</span>
         <div class="mini-tabs">
-          <button class="mini-tab active" onclick="FP.switchProgressChart('score',this)">Sessions</button>
-          <button class="mini-tab" onclick="FP.switchProgressChart('skills',this)">Skills</button>
+          <button class="mini-tab active" onclick="switchProgressChart('score',this)">Sessions</button>
+          <button class="mini-tab" onclick="switchProgressChart('skills',this)">Skills</button>
         </div>
       </div>
-      <canvas id="progress-chart" height="140" style="width:100%"></canvas>
+      <canvas id="progress-chart" height="120" style="width:100%"></canvas>
     </div>
-
-    <div class="card">
-      <div class="card-label">🏅 Milestones</div>
-      <div id="milestones-full"></div>
+    <div class="portal-card" style="margin-bottom:12px">
+      <div class="pc-label">🏅 Milestones</div>
+      <div id="milestones-list"></div>
     </div>
-
-    <div class="card">
-      <div class="card-label">📋 Session History</div>
+    <div class="portal-card">
+      <div class="pc-label">📋 Session History</div>
       <div id="history-list"></div>
     </div>
   </div>
+</div>
 
-  <!-- ══ ENRICHMENT ══ -->
-  <div id="tab-enrichment" class="tab-page">
-    <h2 class="page-title">🧩 Enrichment Activities</h2>
-    <p class="page-sub">Mental stimulation, confidence &amp; structured play</p>
-
-    <div class="filter-row">
-      <button class="filter-btn active" data-cat="all" onclick="FP.filterEnrichment('all',this)">All</button>
-      <button class="filter-btn" data-cat="scent" onclick="FP.filterEnrichment('scent',this)">👃 Scent</button>
-      <button class="filter-btn" data-cat="puzzle" onclick="FP.filterEnrichment('puzzle',this)">🧩 Puzzle</button>
-      <button class="filter-btn" data-cat="confidence" onclick="FP.filterEnrichment('confidence',this)">💪 Confidence</button>
-      <button class="filter-btn" data-cat="calm" onclick="FP.filterEnrichment('calm',this)">😌 Calm</button>
-      <button class="filter-btn" data-cat="play" onclick="FP.filterEnrichment('play',this)">🎾 Play</button>
+<!-- ── ENRICHMENT ── -->
+<div id="screen-enrichment" class="screen" aria-hidden="true">
+  <div class="screen-header">
+    <button class="screen-back" onclick="closeScreen('enrichment')">‹ Back</button>
+    <span class="screen-title">🧩 Enrichment</span>
+    <span></span>
+  </div>
+  <div class="screen-body">
+    <p class="screen-sub">Mental stimulation, confidence &amp; structured play</p>
+    <div class="filter-row" id="enrich-filters">
+      <button class="filter-btn active" onclick="filterEnrich('all',this)">All</button>
+      <button class="filter-btn" onclick="filterEnrich('scent',this)">👃 Scent</button>
+      <button class="filter-btn" onclick="filterEnrich('puzzle',this)">🧩 Puzzle</button>
+      <button class="filter-btn" onclick="filterEnrich('confidence',this)">💪 Confidence</button>
+      <button class="filter-btn" onclick="filterEnrich('calm',this)">😌 Calm</button>
+      <button class="filter-btn" onclick="filterEnrich('play',this)">🎾 Play</button>
     </div>
+    <div id="enrich-list"></div>
+  </div>
+</div>
 
-    <div id="enrichment-cards"></div>
-
-    <!-- Activity Runner Overlay -->
-    <div id="activity-runner" class="runner-overlay" style="display:none">
-      <div class="runner-box">
-        <div class="runner-title" id="runner-title">Activity</div>
-        <div class="runner-visual">
-          <div class="runner-circle" id="runner-circle"></div>
-          <div class="runner-timer" id="runner-timer">–</div>
-        </div>
-        <div class="runner-instruction" id="runner-instruction">Get ready…</div>
-        <div class="runner-progress-txt" id="runner-progress-txt"></div>
-        <button class="btn-secondary" id="runner-stop-btn">✓ End Activity</button>
-      </div>
+<!-- ── AI COACH ── -->
+<div id="screen-coach" class="screen" aria-hidden="true">
+  <div class="screen-header">
+    <button class="screen-back" onclick="closeScreen('coach')">‹ Back</button>
+    <span class="screen-title">🤖 AI Coach</span>
+    <span></span>
+  </div>
+  <div class="screen-body coach-body">
+    <div class="coach-chat" id="coach-chat"></div>
+    <div class="coach-quick-row" id="coach-quick"></div>
+    <div class="coach-input-bar">
+      <input type="text" id="coach-input" class="coach-input" placeholder="Ask about training, behaviour…"/>
+      <button class="coach-send" id="coach-send">➤</button>
     </div>
   </div>
+</div>
 
-  <!-- ══ AI COACH ══ -->
-  <div id="tab-coach" class="tab-page">
-    <h2 class="page-title">🤖 AI Training Coach</h2>
-    <p class="page-sub">Personalised guidance powered by behavioural intelligence</p>
-
-    <div class="coach-panel">
-      <div class="coach-panel-header">
-        <span class="coach-badge">🧠 AI Coach — Active</span>
-        <span class="coach-live-dot"></span>
-      </div>
-      <div id="coach-chat" class="coach-chat"></div>
-      <div id="coach-quick-btns" class="coach-quick-row"></div>
-      <div class="coach-input-row">
-        <input type="text" id="coach-input" class="coach-input" placeholder="Ask about training, behaviour, enrichment…"/>
-        <button class="coach-send" id="coach-send-btn">➤</button>
-      </div>
+<!-- ── TODAY'S PLAN ── -->
+<div id="screen-today" class="screen" aria-hidden="true">
+  <div class="screen-header">
+    <button class="screen-back" onclick="closeScreen('today')">‹ Back</button>
+    <span class="screen-title">☀️ Today's Plan</span>
+    <span></span>
+  </div>
+  <div class="screen-body">
+    <p class="screen-sub">Your personalised training plan for today</p>
+    <div id="today-tasks-list"></div>
+    <div class="portal-tip" style="margin-top:12px">
+      <span class="tip-icon">💡</span>
+      <span id="today-tip"></span>
     </div>
-
-    <div class="card" style="margin-top:14px">
-      <div class="card-label">💬 Quick Topics</div>
-      <div id="quick-topics"></div>
-    </div>
-
-    <div class="disclaimer-box">
-      🐾 <strong>Four Paws AI Coach</strong> provides general positive-reinforcement training guidance. Always work alongside a qualified trainer for complex behaviour challenges. Not veterinary advice.
+    <div class="portal-card" style="margin-top:12px">
+      <div class="pc-label">🏅 Milestones in Reach</div>
+      <div id="today-milestones"></div>
     </div>
   </div>
+</div>
 
-</div><!-- end tab-pages -->
+<!-- ══ ACTIVITY RUNNER OVERLAY ══ -->
+<div id="activity-runner" class="runner-overlay" style="display:none">
+  <div class="runner-box">
+    <div class="runner-title" id="runner-title"></div>
+    <div class="runner-visual">
+      <div class="runner-circle" id="runner-circle"></div>
+      <div class="runner-timer"  id="runner-timer">–</div>
+    </div>
+    <div class="runner-instruction" id="runner-instruction">Get ready…</div>
+    <div class="runner-progress-txt" id="runner-progress-txt"></div>
+    <button class="btn-secondary" id="runner-stop-btn">✓ End Activity</button>
+  </div>
+</div>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <button class="nav-btn active" data-tab="home" onclick="FP.switchTab('home')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-    <span>Home</span>
-  </button>
-  <button class="nav-btn" data-tab="checkin" onclick="FP.switchTab('checkin')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-    <span>Log</span>
-  </button>
-  <button class="nav-btn" data-tab="courses" onclick="FP.switchTab('courses')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-    <span>Courses</span>
-  </button>
-  <button class="nav-btn" data-tab="progress" onclick="FP.switchTab('progress')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    <span>Progress</span>
-  </button>
-  <button class="nav-btn" data-tab="enrichment" onclick="FP.switchTab('enrichment')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-    <span>Enrich</span>
-  </button>
-  <button class="nav-btn" data-tab="coach" onclick="FP.switchTab('coach')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    <span>Coach</span>
-  </button>
-</nav>
-
-<!-- TOAST -->
-<div id="fp-toast" class="toast" style="display:none"></div>
+<!-- ══ TOAST ══ -->
 
 <script src="./patient-app.js"></script>
 </body>
