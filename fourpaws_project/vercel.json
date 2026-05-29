@@ -1,8 +1,17 @@
 {
   "rewrites": [
-    { "source": "/",          "destination": "/ap3x/demo/index.html" },
-    { "source": "/owner",     "destination": "/ap3x/demo/owner-demo.html" },
-    { "source": "/trainer",   "destination": "/ap3x/demo/trainer-demo.html" },
-    { "source": "/pwa",       "destination": "/ap3x/patient-pwa/index.html" }
+    { "source": "/",                    "destination": "/ap3x/demo/index.html" },
+    { "source": "/owner",               "destination": "/ap3x/demo/owner-demo.html" },
+    { "source": "/trainer",             "destination": "/ap3x/demo/trainer-demo.html" },
+
+    { "source": "/companion",           "destination": "/ap3x/companion/index.html" },
+    { "source": "/companion/",          "destination": "/ap3x/companion/index.html" },
+    { "source": "/companion/log",       "destination": "/ap3x/companion/log.html" },
+    { "source": "/companion/courses",   "destination": "/ap3x/companion/courses.html" },
+    { "source": "/companion/progress",  "destination": "/ap3x/companion/progress.html" },
+    { "source": "/companion/enrichment","destination": "/ap3x/companion/enrichment.html" },
+    { "source": "/companion/coach",     "destination": "/ap3x/companion/coach.html" },
+
+    { "source": "/pwa",                 "destination": "/ap3x/patient-pwa/index.html" }
   ]
 }
