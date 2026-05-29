@@ -7,11 +7,21 @@
   status = 200
 
 [[redirects]]
-  from = "/patient"
-  to = "/ap3x/demo/patient-demo.html"
+  from = "/owner"
+  to = "/ap3x/demo/owner-demo.html"
   status = 200
 
 [[redirects]]
-  from = "/clinician"
-  to = "/ap3x/demo/clinician-demo.html"
+  from = "/trainer"
+  to = "/ap3x/demo/trainer-demo.html"
+  status = 200
+
+[[redirects]]
+  from = "/pwa"
+  to = "/ap3x/patient-pwa/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/ap3x/demo/index.html"
   status = 200

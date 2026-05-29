@@ -1,26 +1,26 @@
-// AP3X AnxietyCore — Service Worker
+// FourPaws AnxietyCore — Service Worker
 // ─────────────────────────────────────────────────────────────────
-// Extends bco-sw.js pattern for AP3X patient assets.
+// Extends bco-sw.js pattern for FourPaws patient assets.
 // Uses cache-first for static assets, network-first for API calls.
 // Registered from patient-app.js via pwa.js.
 
-const CACHE_NAME = "ap3x-cache-v1";
+const CACHE_NAME = "fourpaws-cache-v1";
 
 const CORE_ASSETS = [
-  "/ap3x/patient-pwa/index.html",
-  "/ap3x/patient-pwa/patient.css",
-  "/ap3x/patient-pwa/patient-app.js",
-  "/ap3x/patient-pwa/chart.js",
-  "/ap3x/patient-pwa/manifest.json",
-  "/icons/ap3x-icon-192.png",
-  "/icons/ap3x-icon-512.png"
+  "/fourpaws/patient-pwa/index.html",
+  "/fourpaws/patient-pwa/patient.css",
+  "/fourpaws/patient-pwa/patient-app.js",
+  "/fourpaws/patient-pwa/chart.js",
+  "/fourpaws/patient-pwa/manifest.json",
+  "/icons/fourpaws-icon-192.png",
+  "/icons/fourpaws-icon-512.png"
 ];
 
 // ── Install ───────────────────────────────────────────────────────
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log("[AP3X SW] Caching core assets.");
+      console.log("[FourPaws SW] Caching core assets.");
       // addAll with individual catch to avoid failing on missing icons
       return Promise.allSettled(
         CORE_ASSETS.map((url) =>
@@ -40,7 +40,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((k) => k !== CACHE_NAME && k.startsWith("ap3x-"))
+          .filter((k) => k !== CACHE_NAME && k.startsWith("fourpaws-"))
           .map((k) => caches.delete(k))
       )
     )
@@ -62,8 +62,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first for AP3X assets
-  if (url.pathname.startsWith("/ap3x/") || url.pathname.startsWith("/icons/")) {
+  // Cache-first for FourPaws assets
+  if (url.pathname.startsWith("/fourpaws/") || url.pathname.startsWith("/icons/")) {
     event.respondWith(_cacheFirst(request));
     return;
   }
@@ -82,7 +82,7 @@ async function _cacheFirst(request) {
     }
     return res;
   } catch {
-    return new Response("Offline — AP3X AnxietyCore", { status: 503 });
+    return new Response("Offline — FourPaws AnxietyCore", { status: 503 });
   }
 }
 
@@ -105,9 +105,9 @@ async function _networkFirst(request) {
 
 // ── Background sync (future extension point) ─────────────────────
 self.addEventListener("sync", (event) => {
-  if (event.tag === "ap3x-sync-queue") {
+  if (event.tag === "fourpaws-sync-queue") {
     // Trigger sync flush via a BroadcastChannel message to the app
-    const bc = new BroadcastChannel("ap3x-sync");
+    const bc = new BroadcastChannel("fourpaws-sync");
     bc.postMessage({ type: "FLUSH_QUEUE" });
     bc.close();
   }

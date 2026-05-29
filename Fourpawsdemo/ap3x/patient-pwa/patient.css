@@ -5,27 +5,27 @@
 
 /* ── Design tokens ─────────────────────────────────────────────── */
 :root {
-  --ap3x-bg:          #f0f6ff;
+  --ap3x-bg:          #f5f7f0;
   --ap3x-surface:     #ffffff;
   --ap3x-surface-2:   #e8f0fe;
   --ap3x-border:      #c8d8f0;
-  --ap3x-primary:     #2563eb;
-  --ap3x-primary-d:   #1d4ed8;
-  --ap3x-accent:      #10b981;
+  --ap3x-primary:     #3a7d44;
+  --ap3x-primary-d:   #2d6235;
+  --ap3x-accent:      #f4a435;
   --ap3x-text:        #1e293b;
   --ap3x-text-muted:  #64748b;
   --ap3x-text-light:  #94a3b8;
   --ap3x-warning:     #f59e0b;
   --ap3x-danger:      #ef4444;
-  --ap3x-low:         #10b981;
+  --ap3x-low:         #f4a435;
   --ap3x-medium:      #f59e0b;
   --ap3x-high:        #ef4444;
   --ap3x-critical:    #7c3aed;
   --ap3x-missing:     #64748b;
   --radius:           12px;
   --radius-sm:        8px;
-  --shadow:           0 2px 8px rgba(37,99,235,0.08);
-  --shadow-md:        0 4px 16px rgba(37,99,235,0.12);
+  --shadow:           0 2px 8px rgba(58,125,68,0.08);
+  --shadow-md:        0 4px 16px rgba(58,125,68,0.12);
   --transition:       0.2s ease;
 }
 
@@ -117,7 +117,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #f4a435 0%, #d4891a 100%);
   color: white;
   font-weight: 600;
   font-size: 14px;
@@ -231,7 +231,7 @@ body {
 
 .scale-btn.selected {
   border-color: var(--ap3x-primary);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.25);
+  box-shadow: 0 0 0 3px rgba(58,125,68,0.25);
   transform: scale(1.12);
 }
 
@@ -274,7 +274,7 @@ body {
 .form-textarea:focus, .form-input:focus {
   outline: none;
   border-color: var(--ap3x-primary);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  box-shadow: 0 0 0 3px rgba(58,125,68,0.12);
 }
 
 .form-textarea { resize: vertical; }
@@ -510,7 +510,7 @@ body {
 .breath-circle {
   width: 80px; height: 80px;
   border-radius: 50%;
-  background: radial-gradient(circle, #60a5fa 0%, #2563eb 60%, #1d4ed8 100%);
+  background: radial-gradient(circle, #60a5fa 0%, #3a7d44 60%, #2d6235 100%);
   box-shadow: 0 0 32px rgba(96,165,250,0.5);
   transition: transform 1s ease-in-out, box-shadow 1s ease-in-out;
 }
