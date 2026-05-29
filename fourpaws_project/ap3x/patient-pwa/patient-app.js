@@ -1,33 +1,33 @@
-// AP3X AnxietyCore — Patient PWA App Entry
+// AP3X Session ScoreCore — Patient PWA App Entry
 // ─────────────────────────────────────────────────────────────────
-// Bootstraps the PWA, wires UI to the AnxietyCore service layer.
+// Bootstraps the PWA, wires UI to the Session ScoreCore service layer.
 // Architecture: UI dispatches events only — never writes storage directly.
 
 import { initPWA }           from "../../bco/pwa/pwa.js";
 import { initSystem }        from "../../bco/core/init.js";
 import { moduleRegistry }    from "../../bco/core/modules.js";
-import { anxietyCoreModule } from "../anxietycore/module/anxietycore.module.js";
+import { scoreCoreModule } from "../scorecore/module/scorecore.module.js";
 import {
-  submitAnxietyCheckin,
+  submitSession ScoreCheckin,
   submitMoodLog,
   submitSleepLog,
   submitTriggerLog,
-  getAnxietyHistory,
+  getSession ScoreHistory,
   getMoodHistory
-} from "../anxietycore/module/checkin-service.js";
-import { getStreak }       from "../anxietycore/module/streak-tracker.js";
+} from "../scorecore/module/checkin-service.js";
+import { getStreak }       from "../scorecore/module/streak-tracker.js";
 import { attachNetworkListener, getPendingCount }
   from "../shared/sync-service.js";
 import { DISCLAIMER }      from "../shared/constants.js";
-import { createAnxietyChart } from "./chart.js";
+import { createSession ScoreChart } from "./chart.js";
 
 // ── Boot ──────────────────────────────────────────────────────────
 (async function boot() {
   // 1. Init BCO SSOT (localStorage mode for PWA)
   initSystem({ mode: "LOCAL", tenantId: "ap3x-patient" });
 
-  // 2. Register AnxietyCore module with BCO module registry
-  moduleRegistry.register(anxietyCoreModule);
+  // 2. Register Session ScoreCore module with BCO module registry
+  moduleRegistry.register(scoreCoreModule);
 
   // 3. Init BCO PWA shell (service worker, push, reconnect sync)
   await initPWA();
@@ -47,7 +47,7 @@ import { createAnxietyChart } from "./chart.js";
 
   // 7. Wire up UI events
   wireNav();
-  wireAnxietyScale();
+  wireSession ScoreScale();
   wireCheckinSubmit(userId);
   wireMoodTags();
   wireExercises();
@@ -74,11 +74,11 @@ function wireNav() {
   });
 }
 
-// ── Anxiety scale ─────────────────────────────────────────────────
+// ── Session Score scale ─────────────────────────────────────────────────
 let _selectedScore = null;
 
-function wireAnxietyScale() {
-  const track = document.getElementById("anxiety-scale");
+function wireSession ScoreScale() {
+  const track = document.getElementById("score-scale");
   const display = document.getElementById("score-display");
 
   for (let i = 0; i <= 10; i++) {
@@ -108,11 +108,11 @@ function _getActiveTags() {
     .map((t) => t.dataset.tag);
 }
 
-// ── Check-in submit ───────────────────────────────────────────────
+// ── Session submit ───────────────────────────────────────────────
 function wireCheckinSubmit(userId) {
   document.getElementById("submit-checkin").addEventListener("click", () => {
     if (_selectedScore === null) {
-      _showToast("Please select your anxiety level (0–10).");
+      _showToast("Please select your score level (0–10).");
       return;
     }
 
@@ -121,9 +121,9 @@ function wireCheckinSubmit(userId) {
     const tags     = _getActiveTags();
     const sleepHrs = sleepVal !== "" ? parseFloat(sleepVal) : undefined;
 
-    const { record, streak, entryResult, trendResult } = submitAnxietyCheckin({
+    const { record, streak, entryResult, trendResult } = submitSession ScoreCheckin({
       userId,
-      anxiety_score: _selectedScore,
+      score_score: _selectedScore,
       note: moodText,
       sleep_hours: sleepHrs
     });
@@ -211,20 +211,20 @@ function renderSyncBadge() {
 
 // ── History tab ───────────────────────────────────────────────────
 function renderHistory(userId) {
-  const logs = getAnxietyHistory(userId, 30);
+  const logs = getSession ScoreHistory(userId, 30);
   const list = document.getElementById("history-list");
 
   if (logs.length === 0) {
-    list.innerHTML = `<p class="empty-state">No check-ins yet. Start your first one!</p>`;
+    list.innerHTML = `<p class="empty-state">No sessions yet. Start your first one!</p>`;
     return;
   }
 
   list.innerHTML = logs.map((entry) => {
-    const bg = _scoreBg(entry.anxiety_score);
+    const bg = _scoreBg(entry.score_score);
     return `
       <div class="history-item">
         <div class="history-score" style="background:${bg.bg};color:${bg.color}">
-          ${entry.anxiety_score}
+          ${entry.score_score}
         </div>
         <div class="history-meta">
           <div class="history-date">${_fmtDate(entry.created_at)}</div>
@@ -235,8 +235,8 @@ function renderHistory(userId) {
   }).join("");
 
   // Render mini chart
-  const chartData = logs.slice().reverse().map((e) => e.anxiety_score);
-  createAnxietyChart("anxiety-chart", chartData);
+  const chartData = logs.slice().reverse().map((e) => e.score_score);
+  createSession ScoreChart("score-chart", chartData);
 }
 
 function _scoreBg(score) {
