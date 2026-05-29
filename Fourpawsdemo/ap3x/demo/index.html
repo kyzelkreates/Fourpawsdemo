@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Four Paws Training &amp; Enrichment Academy</title>
+<style>
+:root{
+  --bg:#f5f7f0;--surface:#fff;--border:#c8d8b0;
+  --primary:#3a7d44;--accent:#f4a435;--text:#1e2d12;--muted:#5a6e47;--light:#8fa07a;
+  --high:#ef4444;--r:12px;--rs:8px;--shadow:0 4px 24px rgba(58,125,68,.12);--t:.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── Nav bar ── */
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.nav-logo{font-size:17px;font-weight:900;color:var(--primary);letter-spacing:-0.5px;display:flex;align-items:center;gap:8px}
+.nav-logo-paw{font-size:22px}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:8px}
+.nav-link{padding:8px 18px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:all var(--t);border:none}
+.nav-link.owner{background:var(--accent);color:#fff}
+.nav-link.owner:hover{background:#d4891a}
+.nav-link.trainer{background:var(--primary);color:#fff}
+.nav-link.trainer:hover{background:#2d6235}
+.nav-tour-btn{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all var(--t);border:2px solid var(--primary);color:var(--primary);background:transparent}
+.nav-tour-btn:hover{background:var(--primary);color:#fff}
+
+/* ── Hero ── */
+.hero{padding:80px 24px 60px;text-align:center;max-width:720px;margin:0 auto}
+.hero-eyebrow{display:inline-block;background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:5px 16px;font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:24px}
+.hero-title{font-size:48px;font-weight:900;color:var(--text);line-height:1.08;margin-bottom:20px;letter-spacing:-2px}
+.hero-title span{color:var(--primary)}
+.hero-sub{font-size:18px;color:var(--muted);max-width:520px;margin:0 auto 48px;line-height:1.65}
+
+/* ── Demo launch buttons ── */
+.demo-launch{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.demo-btn{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 28px;border-radius:16px;text-decoration:none;transition:all var(--t);border:none;cursor:pointer;min-width:200px;position:relative;overflow:hidden}
+.demo-btn::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity var(--t)}
+.demo-btn:hover::before{opacity:.06;background:#fff}
+.demo-btn:hover{transform:translateY(-3px)}
+.demo-btn.owner{background:linear-gradient(135deg,#d4891a,#f4a435);box-shadow:0 8px 24px rgba(244,164,53,.35)}
+.demo-btn.trainer{background:linear-gradient(135deg,#2d6235,#3a7d44);box-shadow:0 8px 24px rgba(58,125,68,.3)}
+.demo-btn-icon{font-size:32px}
+.demo-btn-title{font-size:16px;font-weight:800;color:#fff}
+.demo-btn-sub{font-size:12px;color:rgba(255,255,255,.82);font-weight:500}
+.demo-btn-arrow{font-size:18px;color:rgba(255,255,255,.8);margin-top:4px;transition:transform var(--t)}
+.demo-btn:hover .demo-btn-arrow{transform:translateX(4px)}
+.hero-note{font-size:12px;color:var(--light);margin-top:-28px;margin-bottom:48px}
+
+/* ── Feature strip ── */
+.features{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:48px 24px}
+.features-inner{max-width:960px;margin:0 auto}
+.features-title{text-align:center;font-size:24px;font-weight:800;margin-bottom:32px}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px}
+.feature-item{text-align:center;padding:8px}
+.feature-icon{font-size:30px;margin-bottom:10px}
+.feature-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.feature-desc{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* ── Preview cards ── */
+.previews{max-width:960px;margin:0 auto;padding:56px 24px}
+.previews-title{text-align:center;font-size:24px;font-weight:800;margin-bottom:32px}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:24px}
+.preview-card{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);transition:transform var(--t),box-shadow var(--t)}
+.preview-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(58,125,68,.18)}
+
+/* owner preview */
+.pv-owner{background:linear-gradient(135deg,#fef3e2,#fff8e1);padding:24px}
+.pv-trainer{background:linear-gradient(135deg,#1a3d22,#2d6235);padding:24px}
+.pv-header{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.pv-dot{width:8px;height:8px;border-radius:50%}
+.pv-dot.g{background:#3a7d44}.pv-dot.w{background:rgba(255,255,255,.8)}
+.pv-label{font-size:13px;font-weight:700}
+.pv-label.dark{color:#1e2d12}.pv-label.light{color:#fff}
+.pv-sublabel{font-size:11px}
+.pv-sublabel.dark{color:#5a6e47}.pv-sublabel.light{color:rgba(255,255,255,.6)}
+/* progress preview */
+.pv-scale{display:flex;gap:3px;margin-bottom:12px}
+.pv-sb{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.pv-selected-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.pv-big-score{font-size:38px;font-weight:900;color:#3a7d44}
+.pv-chip{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.pv-chip.advanced{background:#d1fae5;color:#065f46}
+.pv-chip.progressing{background:#fef3c7;color:#92400e}
+.pv-chip.beginner{background:#dbeafe;color:#1e40af}
+.pv-chip.missing{background:rgba(255,255,255,.15);color:rgba(255,255,255,.7)}
+.pv-tags{display:flex;gap:5px;flex-wrap:wrap}
+.pv-tag{padding:3px 9px;border-radius:99px;font-size:10px;font-weight:600}
+.pv-tag.on{background:#3a7d44;color:#fff}.pv-tag.off{background:#e6f4ea;color:#3a7d44}
+/* trainer preview */
+.pv-stat-row{display:flex;gap:8px;margin-bottom:12px}
+.pv-stat{background:rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;flex:1;text-align:center}
+.pv-stat-val{font-size:20px;font-weight:800;color:#fff}
+.pv-stat-lbl{font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em}
+.pv-rows{display:flex;flex-direction:column;gap:6px}
+.pv-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:6px;padding:6px 10px}
+.pv-row-name{font-size:12px;font-weight:600;color:#fff;flex:1}
+.pv-score-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+
+/* card body */
+.pv-body{padding:24px}
+.pv-role{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.pv-role.p{color:var(--accent)}.pv-role.c{color:var(--primary)}
+.pv-card-title{font-size:20px;font-weight:800;margin-bottom:8px}
+.pv-card-desc{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.pv-features{list-style:none;margin-bottom:20px;display:flex;flex-direction:column;gap:6px}
+.pv-features li{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:8px}
+.pv-features li::before{content:"✓";font-weight:700;color:var(--accent);flex-shrink:0;margin-top:1px}
+.pv-open-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:var(--r);font-size:15px;font-weight:700;text-decoration:none;transition:all var(--t);border:none;cursor:pointer}
+.pv-open-btn.p{background:var(--accent);color:#fff}
+.pv-open-btn.p:hover{background:#d4891a}
+.pv-open-btn.c{background:var(--primary);color:#fff}
+.pv-open-btn.c:hover{background:#2d6235}
+.btn-arr{font-size:18px;transition:transform var(--t)}
+.pv-open-btn:hover .btn-arr{transform:translateX(4px)}
+
+/* ── Footer ── */
+footer{padding:28px 24px;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--border);line-height:1.7}
+footer strong{color:var(--text)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+/* ══════════════════════════════════════════
+   FOUR PAWS GUIDE — TOUR OVERLAY SYSTEM
+══════════════════════════════════════════ */
+#fp-tour-welcome{position:fixed;inset:0;z-index:9999;background:rgba(10,30,14,.78);display:flex;align-items:center;justify-content:center;animation:fpFadeIn .3s ease}
+#fp-tour-welcome.fp-hidden{display:none}
+.fp-welcome-box{background:#fff;border-radius:20px;padding:40px 36px;max-width:440px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.fp-welcome-paw{font-size:52px;margin-bottom:12px}
+.fp-welcome-title{font-size:24px;font-weight:900;color:#1e2d12;margin-bottom:10px}
+.fp-welcome-sub{font-size:15px;color:#5a6e47;line-height:1.6;margin-bottom:28px}
+.fp-guide-badge{display:inline-flex;align-items:center;gap:8px;background:#f0faf0;border:1.5px solid #c8d8b0;border-radius:99px;padding:6px 16px;font-size:13px;font-weight:700;color:#3a7d44;margin-bottom:24px}
+.fp-welcome-btns{display:flex;gap:12px;justify-content:center}
+.fp-btn-start{background:#3a7d44;color:#fff;border:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s}
+.fp-btn-start:hover{background:#2d6235}
+.fp-btn-skip{background:none;border:2px solid #c8d8b0;color:#5a6e47;border-radius:12px;padding:13px 22px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.fp-btn-skip:hover{border-color:#3a7d44;color:#3a7d44}
+
+/* Tour overlay */
+#fp-tour-overlay{position:fixed;inset:0;z-index:9990;pointer-events:none}
+#fp-tour-overlay.fp-hidden{display:none}
+.fp-overlay-bg{position:absolute;inset:0;background:rgba(10,30,14,.72)}
+.fp-highlight-hole{position:absolute;border-radius:10px;box-shadow:0 0 0 9999px rgba(10,30,14,.72),0 0 0 3px #f4a435;transition:all .35s ease;z-index:9991}
+.fp-tooltip{position:absolute;background:#fff;border-radius:16px;padding:22px 24px;max-width:320px;min-width:260px;box-shadow:0 8px 32px rgba(0,0,0,.25);z-index:9992;pointer-events:all;transition:all .35s ease}
+.fp-tooltip::before{content:"";position:absolute;width:12px;height:12px;background:#fff;transform:rotate(45deg)}
+.fp-tooltip.fp-pos-bottom::before{top:-6px;left:50%;transform:translateX(-50%) rotate(45deg)}
+.fp-tooltip.fp-pos-top::before{bottom:-6px;left:50%;transform:translateX(-50%) rotate(45deg)}
+.fp-tooltip.fp-pos-left::before{right:-6px;top:50%;transform:translateY(-50%) rotate(45deg)}
+.fp-tooltip.fp-pos-right::before{left:-6px;top:50%;transform:translateY(-50%) rotate(45deg)}
+.fp-tt-guide{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.fp-tt-guide-icon{font-size:20px}
+.fp-tt-guide-name{font-size:11px;font-weight:700;color:#3a7d44;text-transform:uppercase;letter-spacing:.07em}
+.fp-tt-step{margin-left:auto;font-size:11px;color:#8fa07a;font-weight:600}
+.fp-tt-title{font-size:16px;font-weight:800;color:#1e2d12;margin-bottom:7px}
+.fp-tt-desc{font-size:14px;color:#5a6e47;line-height:1.55;margin-bottom:16px}
+.fp-tt-controls{display:flex;align-items:center;gap:8px}
+.fp-tt-dots{display:flex;gap:5px;flex:1}
+.fp-tt-dot{width:7px;height:7px;border-radius:50%;background:#c8d8b0;transition:background .2s}
+.fp-tt-dot.active{background:#3a7d44}
+.fp-tt-dot.done{background:#f4a435}
+.fp-tt-back{background:none;border:1.5px solid #c8d8b0;color:#5a6e47;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.fp-tt-back:hover{border-color:#3a7d44;color:#3a7d44}
+.fp-tt-next{background:#3a7d44;color:#fff;border:none;border-radius:8px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s}
+.fp-tt-next:hover{background:#2d6235}
+.fp-tt-skip{background:none;border:none;color:#8fa07a;font-size:12px;cursor:pointer;padding:4px 8px;transition:color .2s}
+.fp-tt-skip:hover{color:#ef4444}
+@keyframes fpFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fpSlideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fp-tooltip{animation:fpSlideUp .25s ease}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar" id="fp-nav" data-fp-tour="step5">
+  <div class="nav-logo"><span class="nav-logo-paw">🐾</span>Four Paws<span>·</span>Academy</div>
+  <div class="nav-links">
+    <a href="owner-demo.html" class="nav-link owner">🐶 Owner Portal</a>
+    <a href="trainer-demo.html" class="nav-link trainer">🎓 Trainer Dashboard</a>
+    <button class="nav-tour-btn" onclick="FourPawsTour.restart()">🗺️ Take Tour</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero" id="fp-hero" data-fp-tour="step1">
+  <div class="hero-eyebrow">Four Paws Training &amp; Enrichment Academy · Demo</div>
+  <h1 class="hero-title">Pet training &amp;<br>enrichment for <span>every paw</span></h1>
+  <p class="hero-sub">A structured learning platform for pet owners and trainers. Log progress, follow enrichment activities, and build lasting behaviours together.</p>
+
+  <div class="demo-launch">
+    <a href="owner-demo.html" class="demo-btn owner" id="fp-owner-btn" data-fp-tour="step2">
+      <div class="demo-btn-icon">🐶</div>
+      <div class="demo-btn-title">Owner Portal</div>
+      <div class="demo-btn-sub">Training log · Enrichment · Progress</div>
+      <div class="demo-btn-arrow">→</div>
+    </a>
+    <a href="trainer-demo.html" class="demo-btn trainer" id="fp-trainer-btn" data-fp-tour="step4">
+      <div class="demo-btn-icon">🎓</div>
+      <div class="demo-btn-title">Trainer Dashboard</div>
+      <div class="demo-btn-sub">Session tracking · Pet profiles · Reports</div>
+      <div class="demo-btn-arrow">→</div>
+    </a>
+  </div>
+  <p class="hero-note">No login required · Opens instantly · All data stays in your browser</p>
+</div>
+
+<!-- Feature strip -->
+<div class="features" id="fp-features" data-fp-tour="step3">
+  <div class="features-inner">
+    <div class="features-title">Everything in the academy demo</div>
+    <div class="feature-grid">
+      <div class="feature-item"><div class="feature-icon">🐾</div><div class="feature-name">Training Modules</div><div class="feature-desc">Structured lessons from puppy basics to advanced behaviour development</div></div>
+      <div class="feature-item"><div class="feature-icon">🧩</div><div class="feature-name">Enrichment Activities</div><div class="feature-desc">Interactive play, scent work, puzzle feeding, and mental stimulation guides</div></div>
+      <div class="feature-item"><div class="feature-icon">📈</div><div class="feature-name">Progress Tracking</div><div class="feature-desc">Visual milestones and achievement badges for every training goal</div></div>
+      <div class="feature-item"><div class="feature-icon">🔥</div><div class="feature-name">Streak &amp; Consistency</div><div class="feature-desc">Daily training streaks with XP points to keep motivation high</div></div>
+      <div class="feature-item"><div class="feature-icon">🎓</div><div class="feature-name">Trainer Notes</div><div class="feature-desc">Session logs with review tags, next steps, and owner guidance notes</div></div>
+      <div class="feature-item"><div class="feature-icon">🌙</div><div class="feature-name">Dark Mode</div><div class="feature-desc">Full dark/light mode support across all views</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Preview cards -->
+<div class="previews">
+  <div class="previews-title">Explore each module</div>
+  <div class="preview-grid">
+
+    <!-- Owner card -->
+    <div class="preview-card">
+      <div class="pv-owner">
+        <div class="pv-header">
+          <div class="pv-dot g"></div>
+          <div><div class="pv-label dark">Four Paws Academy</div><div class="pv-sublabel dark">Owner Portal</div></div>
+        </div>
+        <div class="pv-scale">
+          <div class="pv-sb" style="background:#d1fae5;color:#065f46">W1</div>
+          <div class="pv-sb" style="background:#d1fae5;color:#065f46">W2</div>
+          <div class="pv-sb" style="background:#fef9c3;color:#713f12">W3</div>
+          <div class="pv-sb" style="background:#fef9c3;color:#713f12;outline:2px solid #3a7d44;border-radius:5px">W4</div>
+          <div class="pv-sb" style="background:#e9d5ff;color:#4c1d95">W5</div>
+          <div class="pv-sb" style="background:#c7d2fe;color:#1e1b4b">W6</div>
+        </div>
+        <div class="pv-selected-row">
+          <div style="font-size:11px;color:#5a6e47">Progress:</div>
+          <div class="pv-big-score">67%</div>
+          <div class="pv-chip progressing" style="margin-left:auto">ON TRACK</div>
+        </div>
+        <div class="pv-tags">
+          <div class="pv-tag on">sit</div>
+          <div class="pv-tag on">stay</div>
+          <div class="pv-tag off">recall</div>
+          <div class="pv-tag off">loose-lead</div>
+        </div>
+      </div>
+      <div class="pv-body">
+        <div class="pv-role p">Owner Portal</div>
+        <div class="pv-card-title">Training Log &amp; Progress</div>
+        <div class="pv-card-desc">Mobile-first. Track daily sessions, log enrichment activities, and celebrate every milestone with your pet.</div>
+        <ul class="pv-features">
+          <li>Structured training modules with step-by-step lessons</li>
+          <li>Enrichment activity library (scent, puzzle, play)</li>
+          <li>Daily session logging and streak tracking</li>
+          <li>Progress milestones and achievement badges</li>
+        </ul>
+        <a href="owner-demo.html" class="pv-open-btn p">Open Owner Portal <span class="btn-arr">→</span></a>
+      </div>
+    </div>
+
+    <!-- Trainer card -->
+    <div class="preview-card">
+      <div class="pv-trainer">
+        <div class="pv-header">
+          <div class="pv-dot w"></div>
+          <div><div class="pv-label light">Four Paws Trainer</div><div class="pv-sublabel light">Dashboard</div></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(255,255,255,.7)">
+            <div style="width:6px;height:6px;border-radius:50%;background:#f4a435;animation:pulse 2s infinite"></div>Live
+          </div>
+        </div>
+        <div class="pv-stat-row">
+          <div class="pv-stat"><div class="pv-stat-val">8</div><div class="pv-stat-lbl">Pets</div></div>
+          <div class="pv-stat"><div class="pv-stat-val" style="color:#86efac">5</div><div class="pv-stat-lbl">On Track</div></div>
+          <div class="pv-stat"><div class="pv-stat-val" style="color:#fde68a">2</div><div class="pv-stat-lbl">Need Review</div></div>
+        </div>
+        <div class="pv-rows">
+          <div class="pv-row"><div class="pv-score-sm" style="background:#d1fae5;color:#065f46">A</div><div class="pv-row-name">Biscuit (Labrador)</div><span class="pv-chip advanced" style="font-size:10px;padding:2px 8px">ADVANCED</span></div>
+          <div class="pv-row"><div class="pv-score-sm" style="background:#fef3c7;color:#713f12">B</div><div class="pv-row-name">Pepper (Collie)</div><span class="pv-chip progressing" style="font-size:10px;padding:2px 8px">PROGRESSING</span></div>
+          <div class="pv-row"><div class="pv-score-sm" style="background:#dbeafe;color:#1e40af">C</div><div class="pv-row-name">Milo (Beagle)</div><span class="pv-chip beginner" style="font-size:10px;padding:2px 8px">BEGINNER</span></div>
+        </div>
+      </div>
+      <div class="pv-body">
+        <div class="pv-role c">Trainer Dashboard</div>
+        <div class="pv-card-title">Session &amp; Pet Management</div>
+        <div class="pv-card-desc">Full overview of all enrolled pets, training progress, session notes, and owner communications.</div>
+        <ul class="pv-features">
+          <li>Pet profile cards with training level and progress</li>
+          <li>Session notes with follow-up tags (Review / Continue / Graduate)</li>
+          <li>Enrichment plan builder for each pet</li>
+          <li>Owner progress reports and guidance tools</li>
+        </ul>
+        <a href="trainer-demo.html" class="pv-open-btn c">Open Trainer Dashboard <span class="btn-arr">→</span></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <strong>Four Paws Training &amp; Enrichment Academy</strong> — Demo Platform<br>
+  🐾 Supporting pet owners and trainers through structured, positive-reinforcement learning.<br>
+  For education and demonstration purposes · No medical or veterinary advice provided
+</footer>
+
+<!-- ══════════════════════════════════════════
+     FOUR PAWS GUIDE — TOUR WELCOME MODAL
+══════════════════════════════════════════ -->
+<div id="fp-tour-welcome">
+  <div class="fp-welcome-box">
+    <div class="fp-welcome-paw">🐾</div>
+    <div class="fp-welcome-title">Welcome to Four Paws Academy!</div>
+    <div class="fp-guide-badge">🐕 Four Paws Guide</div>
+    <div class="fp-welcome-sub">Hi there! I'm your <strong>Four Paws Guide</strong> — I'll walk you through the platform so you know exactly where everything lives. It only takes about a minute!</div>
+    <div class="fp-welcome-btns">
+      <button class="fp-btn-start" onclick="FourPawsTour.start()">🗺️ Start Tour</button>
+      <button class="fp-btn-skip" onclick="FourPawsTour.skip()">Skip for now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tour overlay -->
+<div id="fp-tour-overlay" class="fp-hidden">
+  <div class="fp-highlight-hole" id="fp-hole"></div>
+  <div class="fp-tooltip" id="fp-tooltip">
+    <div class="fp-tt-guide">
+      <span class="fp-tt-guide-icon">🐾</span>
+      <span class="fp-tt-guide-name">Four Paws Guide</span>
+      <span class="fp-tt-step" id="fp-step-label">1 / 5</span>
+    </div>
+    <div class="fp-tt-title" id="fp-tt-title">Title</div>
+    <div class="fp-tt-desc" id="fp-tt-desc">Description</div>
+    <div class="fp-tt-controls">
+      <div class="fp-tt-dots" id="fp-tt-dots"></div>
+      <button class="fp-tt-skip" onclick="FourPawsTour.finish()">✕ End tour</button>
+      <button class="fp-tt-back" id="fp-tt-back" onclick="FourPawsTour.prev()">← Back</button>
+      <button class="fp-tt-next" id="fp-tt-next" onclick="FourPawsTour.next()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   FOUR PAWS GUIDE TOUR ENGINE
+   Storage keys:
+     fourpaws_tour_completed
+     fourpaws_tour_step
+     fourpaws_tour_version
+═══════════════════════════════════════════════════ */
+const FourPawsTour = (function(){
+  const VERSION = '1.0';
+  const STEPS = [
+    {
+      selector: '#fp-hero',
+      title: '🏠 Academy Dashboard',
+      desc: 'This is your home base! Here you can see a quick overview of the training platform and jump straight into either the Owner Portal or the Trainer Dashboard.',
+      pos: 'bottom'
+    },
+    {
+      selector: '#fp-owner-btn',
+      title: '🐶 Owner Portal',
+      desc: 'This takes you into the Owner\'s view — where pet owners log daily training sessions, explore enrichment activities, and track their pet\'s progress week by week.',
+      pos: 'bottom'
+    },
+    {
+      selector: '#fp-features',
+      title: '🧩 Enrichment Activities',
+      desc: 'This section highlights all the core tools in the academy — from training modules and enrichment activities to streak tracking and progress milestones.',
+      pos: 'top'
+    },
+    {
+      selector: '#fp-trainer-btn',
+      title: '🎓 Trainer Dashboard',
+      desc: 'Trainers get a dedicated dashboard to manage multiple pets, log session notes, review individual progress, and send guidance to owners.',
+      pos: 'bottom'
+    },
+    {
+      selector: '#fp-nav',
+      title: '⚙️ Navigation & Settings',
+      desc: 'The top bar lets you switch between the Owner Portal and Trainer Dashboard at any time. You can also replay this tour anytime by clicking "Take Tour" up here!',
+      pos: 'bottom'
+    }
+  ];
+
+  let current = 0;
+
+  function isFirstTime(){
+    return !localStorage.getItem('fourpaws_tour_completed') &&
+           localStorage.getItem('fourpaws_tour_version') !== VERSION;
+  }
+
+  function init(){
+    if(isFirstTime()){
+      document.getElementById('fp-tour-welcome').classList.remove('fp-hidden');
+    } else {
+      document.getElementById('fp-tour-welcome').classList.add('fp-hidden');
+    }
+  }
+
+  function start(){
+    document.getElementById('fp-tour-welcome').classList.add('fp-hidden');
+    current = parseInt(localStorage.getItem('fourpaws_tour_step') || '0', 10);
+    if(current >= STEPS.length) current = 0;
+    document.getElementById('fp-tour-overlay').classList.remove('fp-hidden');
+    renderStep(current);
+  }
+
+  function skip(){
+    document.getElementById('fp-tour-welcome').classList.add('fp-hidden');
+    localStorage.setItem('fourpaws_tour_completed', 'true');
+    localStorage.setItem('fourpaws_tour_version', VERSION);
+  }
+
+  function finish(){
+    document.getElementById('fp-tour-overlay').classList.add('fp-hidden');
+    document.getElementById('fp-tour-welcome').classList.add('fp-hidden');
+    localStorage.setItem('fourpaws_tour_completed', 'true');
+    localStorage.setItem('fourpaws_tour_version', VERSION);
+    localStorage.removeItem('fourpaws_tour_step');
+  }
+
+  function restart(){
+    localStorage.removeItem('fourpaws_tour_completed');
+    localStorage.removeItem('fourpaws_tour_step');
+    localStorage.setItem('fourpaws_tour_version', VERSION);
+    current = 0;
+    document.getElementById('fp-tour-overlay').classList.remove('fp-hidden');
+    document.getElementById('fp-tour-welcome').classList.add('fp-hidden');
+    renderStep(current);
+  }
+
+  function next(){
+    if(current < STEPS.length - 1){
+      current++;
+      localStorage.setItem('fourpaws_tour_step', current);
+      renderStep(current);
+    } else {
+      finish();
+    }
+  }
+
+  function prev(){
+    if(current > 0){
+      current--;
+      localStorage.setItem('fourpaws_tour_step', current);
+      renderStep(current);
+    }
+  }
+
+  function getElRect(selector){
+    const el = document.querySelector(selector);
+    if(!el) return null;
+    const r = el.getBoundingClientRect();
+    return {
+      top: r.top + window.scrollY,
+      left: r.left + window.scrollX,
+      width: r.width,
+      height: r.height,
+      el
+    };
+  }
+
+  function renderStep(idx){
+    const step = STEPS[idx];
+    const pad = 10;
+    const rect = getElRect(step.selector);
+
+    if(rect){
+      rect.el.scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(() => positionElements(step, rect, pad, idx), 350);
+    }
+
+    // Update text
+    document.getElementById('fp-tt-title').textContent = step.title;
+    document.getElementById('fp-tt-desc').textContent = step.desc;
+    document.getElementById('fp-step-label').textContent = (idx+1) + ' / ' + STEPS.length;
+
+    // Dots
+    const dotsEl = document.getElementById('fp-tt-dots');
+    dotsEl.innerHTML = '';
+    STEPS.forEach((_,i) => {
+      const d = document.createElement('div');
+      d.className = 'fp-tt-dot' + (i === idx ? ' active' : i < idx ? ' done' : '');
+      dotsEl.appendChild(d);
+    });
+
+    // Back button
+    document.getElementById('fp-tt-back').style.display = idx === 0 ? 'none' : '';
+    // Next button label
+    document.getElementById('fp-tt-next').textContent = idx === STEPS.length-1 ? '🎉 Finish' : 'Next →';
+  }
+
+  function positionElements(step, rect, pad, idx){
+    const hole = document.getElementById('fp-hole');
+    const tooltip = document.getElementById('fp-tooltip');
+
+    hole.style.top = (rect.top - pad) + 'px';
+    hole.style.left = (rect.left - pad) + 'px';
+    hole.style.width = (rect.width + pad*2) + 'px';
+    hole.style.height = (rect.height + pad*2) + 'px';
+
+    const ttW = 320;
+    const ttH = 180;
+    let ttTop, ttLeft;
+    const pos = step.pos || 'bottom';
+
+    if(pos === 'bottom'){
+      ttTop = rect.top + rect.height + pad + 16;
+      ttLeft = rect.left + rect.width/2 - ttW/2;
+    } else if(pos === 'top'){
+      ttTop = rect.top - ttH - pad - 20;
+      ttLeft = rect.left + rect.width/2 - ttW/2;
+    } else if(pos === 'left'){
+      ttTop = rect.top + rect.height/2 - ttH/2;
+      ttLeft = rect.left - ttW - 20;
+    } else {
+      ttTop = rect.top + rect.height/2 - ttH/2;
+      ttLeft = rect.left + rect.width + 20;
+    }
+
+    // Clamp to viewport
+    ttLeft = Math.max(12, Math.min(ttLeft, window.innerWidth - ttW - 12));
+    ttTop = Math.max(80, ttTop);
+
+    tooltip.style.top = ttTop + 'px';
+    tooltip.style.left = ttLeft + 'px';
+    tooltip.className = 'fp-tooltip fp-pos-' + pos;
+  }
+
+  // Reposition on resize
+  window.addEventListener('resize', () => {
+    if(!document.getElementById('fp-tour-overlay').classList.contains('fp-hidden')){
+      renderStep(current);
+    }
+  });
+
+  return { init, start, skip, finish, next, prev, restart };
+})();
+
+window.addEventListener('DOMContentLoaded', () => FourPawsTour.init());
+</script>
+</body>
+</html>
