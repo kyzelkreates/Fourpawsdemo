@@ -1,0 +1,17 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/"
+  to = "/ap3x/demo/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/patient"
+  to = "/ap3x/demo/patient-demo.html"
+  status = 200
+
+[[redirects]]
+  from = "/clinician"
+  to = "/ap3x/demo/clinician-demo.html"
+  status = 200

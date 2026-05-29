@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AP3X Intelligent AI</title>
+<style>
+:root{
+  --bg:#f0f6ff;--surface:#fff;--border:#c8d8f0;
+  --primary:#2563eb;--accent:#10b981;--text:#1e293b;--muted:#64748b;--light:#94a3b8;
+  --high:#ef4444;--r:12px;--rs:8px;--shadow:0 4px 24px rgba(37,99,235,.1);--t:.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── Nav bar ────────────────────────────────────────────── */
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.nav-logo{font-size:18px;font-weight:900;color:var(--primary);letter-spacing:-0.5px}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:8px}
+.nav-link{padding:8px 18px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:all var(--t);border:none}
+.nav-link.patient{background:var(--accent);color:#fff}
+.nav-link.patient:hover{background:#059669}
+.nav-link.clinician{background:var(--primary);color:#fff}
+.nav-link.clinician:hover{background:#1d4ed8}
+
+/* ── Hero ───────────────────────────────────────────────── */
+.hero{padding:80px 24px 60px;text-align:center;max-width:720px;margin:0 auto}
+.hero-eyebrow{display:inline-block;background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:5px 16px;font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:24px}
+.hero-title{font-size:52px;font-weight:900;color:var(--text);line-height:1.08;margin-bottom:20px;letter-spacing:-2px}
+.hero-title span{color:var(--primary)}
+.hero-sub{font-size:18px;color:var(--muted);max-width:520px;margin:0 auto 48px;line-height:1.65}
+
+/* ── Demo launch buttons ─────────────────────────────────── */
+.demo-launch{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.demo-btn{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 28px;border-radius:16px;text-decoration:none;transition:all var(--t);border:none;cursor:pointer;min-width:200px;position:relative;overflow:hidden}
+.demo-btn::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity var(--t)}
+.demo-btn:hover::before{opacity:.06;background:#fff}
+.demo-btn:hover{transform:translateY(-3px)}
+.demo-btn.patient{background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 8px 24px rgba(16,185,129,.3)}
+.demo-btn.clinician{background:linear-gradient(135deg,#1d4ed8,#2563eb);box-shadow:0 8px 24px rgba(37,99,235,.3)}
+.demo-btn-icon{font-size:32px}
+.demo-btn-title{font-size:16px;font-weight:800;color:#fff}
+.demo-btn-sub{font-size:12px;color:rgba(255,255,255,.75);font-weight:500}
+.demo-btn-arrow{font-size:18px;color:rgba(255,255,255,.8);margin-top:4px;transition:transform var(--t)}
+.demo-btn:hover .demo-btn-arrow{transform:translateX(4px)}
+
+.hero-note{font-size:12px;color:var(--light);margin-top:-28px;margin-bottom:48px}
+
+/* ── Feature strip ──────────────────────────────────────── */
+.features{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:48px 24px}
+.features-inner{max-width:960px;margin:0 auto}
+.features-title{text-align:center;font-size:24px;font-weight:800;margin-bottom:32px}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px}
+.feature-item{text-align:center;padding:8px}
+.feature-icon{font-size:30px;margin-bottom:10px}
+.feature-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.feature-desc{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* ── Preview cards ──────────────────────────────────────── */
+.previews{max-width:960px;margin:0 auto;padding:56px 24px}
+.previews-title{text-align:center;font-size:24px;font-weight:800;margin-bottom:32px}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:24px}
+.preview-card{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);transition:transform var(--t),box-shadow var(--t)}
+.preview-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(37,99,235,.15)}
+
+/* patient preview */
+.pv-patient{background:linear-gradient(135deg,#e0f2fe,#f0fdf4);padding:24px}
+.pv-clinician{background:linear-gradient(135deg,#0f2d52,#1d4ed8);padding:24px}
+.pv-header{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.pv-dot{width:8px;height:8px;border-radius:50%}
+.pv-dot.b{background:#2563eb}.pv-dot.w{background:rgba(255,255,255,.8)}
+.pv-label{font-size:13px;font-weight:700}
+.pv-label.dark{color:#1e293b}.pv-label.light{color:#fff}
+.pv-sublabel{font-size:11px}
+.pv-sublabel.dark{color:#64748b}.pv-sublabel.light{color:rgba(255,255,255,.6)}
+/* scale preview */
+.pv-scale{display:flex;gap:3px;margin-bottom:12px}
+.pv-sb{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.pv-selected-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.pv-big-score{font-size:38px;font-weight:900;color:#2563eb}
+.pv-chip{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.pv-chip.medium{background:#fef3c7;color:#92400e}
+.pv-chip.high{background:#fee2e2;color:#991b1b}
+.pv-chip.low{background:#d1fae5;color:#065f46}
+.pv-chip.missing{background:rgba(255,255,255,.15);color:rgba(255,255,255,.7)}
+.pv-tags{display:flex;gap:5px;flex-wrap:wrap}
+.pv-tag{padding:3px 9px;border-radius:99px;font-size:10px;font-weight:600}
+.pv-tag.on{background:#2563eb;color:#fff}.pv-tag.off{background:#e8f0fe;color:#2563eb}
+/* clinician preview */
+.pv-stat-row{display:flex;gap:8px;margin-bottom:12px}
+.pv-stat{background:rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;flex:1;text-align:center}
+.pv-stat-val{font-size:20px;font-weight:800;color:#fff}
+.pv-stat-lbl{font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em}
+.pv-rows{display:flex;flex-direction:column;gap:6px}
+.pv-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:6px;padding:6px 10px}
+.pv-row-name{font-size:12px;font-weight:600;color:#fff;flex:1}
+.pv-score-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+
+/* card body */
+.pv-body{padding:24px}
+.pv-role{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.pv-role.p{color:var(--accent)}.pv-role.c{color:var(--primary)}
+.pv-card-title{font-size:20px;font-weight:800;margin-bottom:8px}
+.pv-card-desc{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.pv-features{list-style:none;margin-bottom:20px;display:flex;flex-direction:column;gap:6px}
+.pv-features li{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:8px}
+.pv-features li::before{content:"✓";font-weight:700;color:var(--accent);flex-shrink:0;margin-top:1px}
+.pv-open-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:var(--r);font-size:15px;font-weight:700;text-decoration:none;transition:all var(--t);border:none;cursor:pointer}
+.pv-open-btn.p{background:var(--accent);color:#fff}
+.pv-open-btn.p:hover{background:#059669}
+.pv-open-btn.c{background:var(--primary);color:#fff}
+.pv-open-btn.c:hover{background:#1d4ed8}
+.btn-arr{font-size:18px;transition:transform var(--t)}
+.pv-open-btn:hover .btn-arr{transform:translateX(4px)}
+
+/* ── Footer ─────────────────────────────────────────────── */
+footer{padding:28px 24px;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--border);line-height:1.7}
+footer strong{color:var(--text)}
+
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-logo">AP3X<span>·</span></div>
+  <div class="nav-links">
+    <a href="patient-demo.html" class="nav-link patient">🧑 Patient App</a>
+    <a href="clinician-demo.html" class="nav-link clinician">🩺 Clinician Dashboard</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">AP3X Intelligent AI · Clinical System</div>
+  <h1 class="hero-title">Anxiety monitoring<br>for <span>patients & clinicians</span></h1>
+  <p class="hero-sub">A dual-system platform. Patients log daily check-ins on their phone. Clinicians monitor risk in real time from a dashboard.</p>
+
+  <!-- Big demo buttons -->
+  <div class="demo-launch">
+    <a href="patient-demo.html" class="demo-btn patient">
+      <div class="demo-btn-icon">🧑</div>
+      <div class="demo-btn-title">Patient PWA</div>
+      <div class="demo-btn-sub">Daily check-in · Exercises · History</div>
+      <div class="demo-btn-arrow">→</div>
+    </a>
+    <a href="clinician-demo.html" class="demo-btn clinician">
+      <div class="demo-btn-icon">🩺</div>
+      <div class="demo-btn-title">Clinician Dashboard</div>
+      <div class="demo-btn-sub">Risk monitoring · Notes · Timeline</div>
+      <div class="demo-btn-arrow">→</div>
+    </a>
+  </div>
+
+  <p class="hero-note">No login required · Opens instantly · All data stays in your browser</p>
+</div>
+
+<!-- Feature strip -->
+<div class="features">
+  <div class="features-inner">
+    <div class="features-title">Everything in the demo</div>
+    <div class="feature-grid">
+      <div class="feature-item"><div class="feature-icon">📊</div><div class="feature-name">Anxiety Check-in</div><div class="feature-desc">0–10 scale with instant rules engine feedback on every entry</div></div>
+      <div class="feature-item"><div class="feature-icon">🫁</div><div class="feature-name">Breathing Exercises</div><div class="feature-desc">4-7-8, Box, 5-4-3-2-1 Grounding, Recovery Mode — all animated</div></div>
+      <div class="feature-item"><div class="feature-icon">📈</div><div class="feature-name">Live Risk Engine</div><div class="feature-desc">Rules auto-assign LOW, MEDIUM, HIGH, MISSING DATA per patient</div></div>
+      <div class="feature-item"><div class="feature-icon">🔥</div><div class="feature-name">Streak Tracking</div><div class="feature-desc">Daily check-in streaks persist across browser sessions</div></div>
+      <div class="feature-item"><div class="feature-icon">🩺</div><div class="feature-name">Clinician Notes</div><div class="feature-desc">Add notes with MONITOR / REVIEW / URGENT follow-up tags</div></div>
+      <div class="feature-item"><div class="feature-icon">🌙</div><div class="feature-name">Dark Mode</div><div class="feature-desc">Both apps support full dark/light mode toggle</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Preview cards with open buttons -->
+<div class="previews">
+  <div class="previews-title">Explore each system</div>
+  <div class="preview-grid">
+
+    <!-- Patient card -->
+    <div class="preview-card">
+      <div class="pv-patient">
+        <div class="pv-header">
+          <div class="pv-dot b"></div>
+          <div><div class="pv-label dark">AP3X Intelligent AI</div><div class="pv-sublabel dark">Patient App</div></div>
+        </div>
+        <div class="pv-scale">
+          <div class="pv-sb" style="background:#d1fae5;color:#065f46">0</div>
+          <div class="pv-sb" style="background:#d9f99d;color:#3f6212">2</div>
+          <div class="pv-sb" style="background:#fef9c3;color:#713f12">4</div>
+          <div class="pv-sb" style="background:#fed7aa;color:#7c2d12">6</div>
+          <div class="pv-sb" style="background:#fecaca;color:#7f1d1d;outline:2px solid #2563eb;border-radius:5px">7</div>
+          <div class="pv-sb" style="background:#fca5a5;color:#7f1d1d">9</div>
+          <div class="pv-sb" style="background:#fca5a5;color:#7f1d1d">10</div>
+        </div>
+        <div class="pv-selected-row">
+          <div style="font-size:11px;color:#64748b">Score:</div>
+          <div class="pv-big-score">7</div>
+          <div class="pv-chip medium" style="margin-left:auto">MEDIUM</div>
+        </div>
+        <div class="pv-tags">
+          <div class="pv-tag on">work</div>
+          <div class="pv-tag off">sleep</div>
+          <div class="pv-tag on">social</div>
+          <div class="pv-tag off">family</div>
+        </div>
+      </div>
+      <div class="pv-body">
+        <div class="pv-role p">Patient PWA</div>
+        <div class="pv-card-title">Daily Check-in App</div>
+        <div class="pv-card-desc">Mobile-first. Works offline. Log anxiety, mood, sleep, and triggers every day.</div>
+        <ul class="pv-features">
+          <li>0–10 anxiety scale with instant rule feedback</li>
+          <li>Mood notes, tags, sleep & trigger logging</li>
+          <li>4 animated breathing & grounding exercises</li>
+          <li>History chart and daily streak tracking</li>
+        </ul>
+        <a href="patient-demo.html" class="pv-open-btn p">Open Patient App <span class="btn-arr">→</span></a>
+      </div>
+    </div>
+
+    <!-- Clinician card -->
+    <div class="preview-card">
+      <div class="pv-clinician">
+        <div class="pv-header">
+          <div class="pv-dot w"></div>
+          <div><div class="pv-label light">AP3X Clinician</div><div class="pv-sublabel light">Dashboard</div></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(255,255,255,.7)">
+            <div style="width:6px;height:6px;border-radius:50%;background:#10b981;animation:pulse 2s infinite"></div>Live
+          </div>
+        </div>
+        <div class="pv-stat-row">
+          <div class="pv-stat"><div class="pv-stat-val">6</div><div class="pv-stat-lbl">Patients</div></div>
+          <div class="pv-stat"><div class="pv-stat-val" style="color:#fca5a5">3</div><div class="pv-stat-lbl">At Risk</div></div>
+          <div class="pv-stat"><div class="pv-stat-val" style="color:#fde68a">1</div><div class="pv-stat-lbl">Missing</div></div>
+        </div>
+        <div class="pv-rows">
+          <div class="pv-row"><div class="pv-score-sm" style="background:#fecaca;color:#7f1d1d">9</div><div class="pv-row-name">Alex T.</div><span class="pv-chip high">HIGH</span></div>
+          <div class="pv-row"><div class="pv-score-sm" style="background:#fef3c7;color:#713f12">6</div><div class="pv-row-name">Jordan M.</div><span class="pv-chip medium">MEDIUM</span></div>
+          <div class="pv-row"><div class="pv-score-sm" style="background:#d1fae5;color:#065f46">3</div><div class="pv-row-name">Sam R.</div><span class="pv-chip low">LOW</span></div>
+        </div>
+      </div>
+      <div class="pv-body">
+        <div class="pv-role c">Clinician Dashboard</div>
+        <div class="pv-card-title">Patient Monitoring</div>
+        <div class="pv-card-desc">Real-time overview of all patients. Risk states auto-calculated from the Intelligent AI rules engine.</div>
+        <ul class="pv-features">
+          <li>Risk cards with sparkline trends per patient</li>
+          <li>At-Risk view: HIGH / CRITICAL / MISSING filtered</li>
+          <li>Patient detail: timeline chart + mood + flags</li>
+          <li>Clinician notes with follow-up status tags</li>
+        </ul>
+        <a href="clinician-demo.html" class="pv-open-btn c">Open Clinician Dashboard <span class="btn-arr">→</span></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <strong>AP3X Intelligent AI</strong> — built on BCO Core by Kyzel Kreates<br>
+  NOT a medical device · Does not provide medical diagnoses · All outputs are informational only
+</footer>
+
+</body>
+</html>

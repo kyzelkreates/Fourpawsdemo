@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/ap3x/demo/index.html" },
+    { "source": "/patient", "destination": "/ap3x/demo/patient-demo.html" },
+    { "source": "/clinician", "destination": "/ap3x/demo/clinician-demo.html" }
+  ]
+}
