@@ -1,114 +1,116 @@
-// FourPaws AnxietyCore — Service Worker
-// ─────────────────────────────────────────────────────────────────
-// Extends bco-sw.js pattern for FourPaws patient assets.
-// Uses cache-first for static assets, network-first for API calls.
-// Registered from patient-app.js via pwa.js.
+// ═══════════════════════════════════════════════════════
+//  FOUR PAWS ACADEMY — PWA Service Worker
+//  Offline-first caching for Training Companion
+// ═══════════════════════════════════════════════════════
 
-const CACHE_NAME = "fourpaws-cache-v1";
+const CACHE_NAME = 'fourpaws-training-v2';
+const OFFLINE_PAGE = '/pwa/index.html';
 
-const CORE_ASSETS = [
-  "/fourpaws/patient-pwa/index.html",
-  "/fourpaws/patient-pwa/patient.css",
-  "/fourpaws/patient-pwa/patient-app.js",
-  "/fourpaws/patient-pwa/chart.js",
-  "/fourpaws/patient-pwa/manifest.json",
-  "/icons/fourpaws-icon-192.png",
-  "/icons/fourpaws-icon-512.png"
+const PRECACHE_ASSETS = [
+  '/pwa/index.html',
+  '/pwa/patient.css',
+  '/pwa/patient-app.js',
+  '/pwa/manifest.json',
+  '/pwa/ap3x-sw.js',
 ];
 
-// ── Install ───────────────────────────────────────────────────────
-self.addEventListener("install", (event) => {
+// ── Install: pre-cache core assets ───────────────────
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log("[FourPaws SW] Caching core assets.");
-      // addAll with individual catch to avoid failing on missing icons
-      return Promise.allSettled(
-        CORE_ASSETS.map((url) =>
-          fetch(url).then((res) => {
-            if (res.ok) cache.put(url, res);
-          }).catch(() => {})
-        )
-      );
-    })
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(PRECACHE_ASSETS).catch(() => {
+        // Fail silently — assets may not exist at install time
+      });
+    }).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// ── Activate ──────────────────────────────────────────────────────
-self.addEventListener("activate", (event) => {
+// ── Activate: purge old caches ────────────────────────
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((keys) =>
+    caches.keys().then(keys =>
       Promise.all(
         keys
-          .filter((k) => k !== CACHE_NAME && k.startsWith("fourpaws-"))
-          .map((k) => caches.delete(k))
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// ── Fetch strategy ────────────────────────────────────────────────
-self.addEventListener("fetch", (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+// ── Fetch: cache-first with network fallback ──────────
+self.addEventListener('fetch', event => {
+  // Only handle GET requests
+  if (event.request.method !== 'GET') return;
 
-  // Network-first for Supabase / API calls
-  if (
-    url.hostname.includes("supabase.co") ||
-    url.pathname.startsWith("/api/")
-  ) {
-    event.respondWith(_networkFirst(request));
-    return;
-  }
+  // Skip non-http requests (chrome-extension, etc.)
+  if (!event.request.url.startsWith('http')) return;
 
-  // Cache-first for FourPaws assets
-  if (url.pathname.startsWith("/fourpaws/") || url.pathname.startsWith("/icons/")) {
-    event.respondWith(_cacheFirst(request));
-    return;
-  }
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
 
-  // Fall through to BCO SW for everything else
+      return fetch(event.request).then(response => {
+        // Only cache valid responses for same-origin assets
+        if (
+          response.status === 200 &&
+          response.type === 'basic' &&
+          event.request.url.includes('/pwa/')
+        ) {
+          const toCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, toCache));
+        }
+        return response;
+      }).catch(() => {
+        // Network failed — return offline page for navigation
+        if (event.request.mode === 'navigate') {
+          return caches.match(OFFLINE_PAGE);
+        }
+        return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+      });
+    })
+  );
 });
 
-async function _cacheFirst(request) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
+// ── Background sync (future: push sessions to trainer) ─
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-sessions') {
+    event.waitUntil(syncPendingSessions());
+  }
+});
+
+async function syncPendingSessions() {
   try {
-    const res = await fetch(request);
-    if (res.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, res.clone());
-    }
-    return res;
-  } catch {
-    return new Response("Offline — FourPaws AnxietyCore", { status: 503 });
+    // Placeholder: in production this would POST pending sessions to the academy API
+    const pending = await getPendingSessions();
+    if (!pending.length) return;
+    console.log('[Four Paws SW] Syncing', pending.length, 'pending session(s)');
+  } catch (err) {
+    console.warn('[Four Paws SW] Sync failed:', err);
   }
 }
 
-async function _networkFirst(request) {
-  try {
-    const res = await fetch(request);
-    if (res.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, res.clone());
-    }
-    return res;
-  } catch {
-    const cached = await caches.match(request);
-    return cached || new Response(JSON.stringify({ offline: true }), {
-      status: 503,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
+function getPendingSessions() {
+  return Promise.resolve([]);
 }
 
-// ── Background sync (future extension point) ─────────────────────
-self.addEventListener("sync", (event) => {
-  if (event.tag === "fourpaws-sync-queue") {
-    // Trigger sync flush via a BroadcastChannel message to the app
-    const bc = new BroadcastChannel("fourpaws-sync");
-    bc.postMessage({ type: "FLUSH_QUEUE" });
-    bc.close();
-  }
+// ── Push notifications (future: trainer messages) ─────
+self.addEventListener('push', event => {
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || 'Four Paws Academy';
+  const options = {
+    body: data.body || 'You have a new message from your trainer.',
+    icon: '/icons/fp-icon-192.png',
+    badge: '/icons/fp-badge-96.png',
+    tag: data.tag || 'fourpaws-notification',
+    data: { url: data.url || '/pwa/' },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url || '/pwa/')
+  );
 });
