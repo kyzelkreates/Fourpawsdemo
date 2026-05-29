@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>Four Paws Academy — Owner Portal</title>
+<title>Four Paws Academy — Owner Training Companion</title>
 <style>
 :root{
   --bg:#f5f7f0;--surface:#fff;--surface2:#eef4e8;--border:#c8d8b0;
@@ -300,11 +300,11 @@ canvas{width:100%!important;display:block}
 <div class="tab-page" id="tab-home">
   <div class="home-greeting">
     <div class="hg-title" id="greetingText">Good morning, Taylor 👋</div>
-    <div class="hg-sub">How's training going today? Log your session.</div>
+    <div class="hg-sub">How's your pup doing today? Let's track their progress.</div>
   </div>
 
   <div style="margin-bottom:16px">
-    <div class="form-label">Today's Training Energy</div>
+    <div class="form-label">How's your dog's energy today?</div>
     <div class="mood-row">
       <button class="mood-btn" data-mood="1" onclick="selectMood(1)"><span class="mood-emoji">😰</span><span class="mood-label">Exhausted</span></button>
       <button class="mood-btn" data-mood="2" onclick="selectMood(2)"><span class="mood-emoji">😔</span><span class="mood-label">Tired</span></button>
@@ -346,7 +346,7 @@ canvas{width:100%!important;display:block}
     <div class="chart-header">
       <span class="chart-title">This Week</span>
       <div class="chart-tabs">
-        <button class="chart-tab active" onclick="switchMiniChart('anxiety',this)">Progress</button>
+        <button class="chart-tab active" onclick="switchMiniChart('score',this)">Progress</button>
         <button class="chart-tab" onclick="switchMiniChart('sleep',this)">Sleep</button>
         <button class="chart-tab" onclick="switchMiniChart('mood',this)">Mood</button>
       </div>
@@ -354,13 +354,13 @@ canvas{width:100%!important;display:block}
     <canvas id="miniChart" height="80"></canvas>
   </div>
 
-  <button class="btn-emergency" onclick="openEmergency()">🆘 I need help right now</button>
+  <button class="btn-emergency" onclick="showToast('Connecting to your trainer…')">🐾 Contact My Trainer</button>
 </div>
 
 <!-- CHECK-IN TAB -->
 <div class="tab-page hidden" id="tab-checkin">
   <div class="section-title" id="fp-section-checkin">Daily Training Log</div>
-  <div class="section-sub">Takes about 2 minutes</div>
+  <div class="section-sub">Quick 2-minute session log — your trainer sees this</div>
 
   <div class="step-progress"><div class="step-progress-bar" id="checkinBar" style="width:20%"></div></div>
   <div class="step-indicator">
@@ -374,8 +374,8 @@ canvas{width:100%!important;display:block}
   <!-- Step 1: Session Score -->
   <div class="checkin-step" id="step-0">
     <div class="scale-wrap">
-      <div class="scale-header"><span class="scale-title">🐾 Session Difficulty</span><span style="font-size:12px;color:var(--muted)">How challenging was it?</span></div>
-      <div class="scale-labels"><span>None</span><span>Moderate</span><span>Extreme</span></div>
+      <div class="scale-header"><span class="scale-title">🐾 How did the session go?</span><span style="font-size:12px;color:var(--muted)">0 = easy win → 10 = very tough</span></div>
+      <div class="scale-labels"><span>Easy win</span><span>Moderate</span><span>Very tough</span></div>
       <div class="scale-track" id="anxietyScale"></div>
       <div class="score-display" id="anxietyVal">—</div>
       <div class="score-label" id="anxietyLabel"></div>
@@ -386,22 +386,22 @@ canvas{width:100%!important;display:block}
   <!-- Step 2: Sleep + Physical -->
   <div class="checkin-step hidden" id="step-1">
     <div class="form-card">
-      <div class="form-card-title">😴 Sleep Quality</div>
+      <div class="form-card-title">😴 Owner Energy Level Today</div>
       <div class="scale-labels"><span>Poor</span><span>Average</span><span>Excellent</span></div>
       <div class="scale-track" id="sleepScale"></div>
       <div class="score-display" id="sleepVal" style="font-size:22px">—</div>
     </div>
     <div class="form-card">
-      <div class="form-card-title">💪 Physical Symptoms</div>
+      <div class="form-card-title">🐕 How was your dog’s focus?</div>
       <div class="tag-group" id="physicalTags">
-        <span class="tag" onclick="toggleTag(this)">Heart racing</span>
-        <span class="tag" onclick="toggleTag(this)">Tight chest</span>
-        <span class="tag" onclick="toggleTag(this)">Sweating</span>
-        <span class="tag" onclick="toggleTag(this)">Distracted</span>
-        <span class="tag" onclick="toggleTag(this)">Anxious/Reactive</span>
+        <span class="tag" onclick="toggleTag(this)">Very focused 🎯</span>
+        <span class="tag" onclick="toggleTag(this)">Easily distracted</span>
+        <span class="tag" onclick="toggleTag(this)">Over-excited</span>
+        <span class="tag" onclick="toggleTag(this)">Reactive to triggers</span>
         <span class="tag" onclick="toggleTag(this)">Over-threshold</span>
-        <span class="tag" onclick="toggleTag(this)">Tired</span>
-        <span class="tag" onclick="toggleTag(this)">None</span>
+        <span class="tag" onclick="toggleTag(this)">Calm &amp; engaged 😌</span>
+        <span class="tag" onclick="toggleTag(this)">Tired / low drive</span>
+        <span class="tag" onclick="toggleTag(this)">Best session ever 🌟</span>
       </div>
     </div>
     <div class="btn-row">
@@ -491,7 +491,7 @@ canvas{width:100%!important;display:block}
   <div class="section-sub">Your session log &amp; progress over time</div>
 
   <div class="history-stats">
-    <div class="hstat"><div class="hstat-val" id="avgScore">4.2</div><div class="hstat-lbl">Avg Score</div></div>
+    <div class="hstat"><div class="hstat-val" id="avgScore">4.2</div><div class="hstat-lbl">Avg Session Score</div></div>
     <div class="hstat"><div class="hstat-val" id="totalCheckins">18</div><div class="hstat-lbl">Sessions</div></div>
     <div class="hstat"><div class="hstat-val" id="improvePct">↓12%</div><div class="hstat-lbl">This Week</div></div>
   </div>
@@ -500,7 +500,7 @@ canvas{width:100%!important;display:block}
     <div class="chart-header">
       <span class="chart-title">30-Day Trend</span>
       <div class="chart-tabs">
-        <button class="chart-tab active" onclick="switchHistChart('anxiety',this)">Progress</button>
+        <button class="chart-tab active" onclick="switchHistChart('score',this)">Progress</button>
         <button class="chart-tab" onclick="switchHistChart('sleep',this)">Sleep</button>
       </div>
     </div>
@@ -512,14 +512,14 @@ canvas{width:100%!important;display:block}
 
 <!-- JOURNAL TAB -->
 <div class="tab-page hidden" id="tab-journal">
-  <div class="section-title">Training Notes</div>
+  <div class="section-title">📓 Training Notes</div>
   <div class="section-sub">Session reflections, breakthroughs &amp; ideas</div>
 
   <div class="journal-prompts" id="journalPrompts"></div>
 
   <div class="journal-editor" id="journalEditor">
-    <div class="journal-prompt-text" id="activePrompt">Write freely about how you're feeling today…</div>
-    <textarea class="journal-ta" id="journalTA" placeholder="Start writing…" oninput="updateWC()"></textarea>
+    <div class="journal-prompt-text" id="activePrompt">Reflect on today’s training session with your dog…</div>
+    <textarea class="journal-ta" id="journalTA" placeholder="Write about what happened, what worked, and what to try next…" oninput="updateWC()"></textarea>
     <div class="journal-footer">
       <span class="wc" id="wcDisplay">0 words</span>
       <div style="display:flex;gap:6px">
@@ -528,12 +528,12 @@ canvas{width:100%!important;display:block}
       </div>
     </div>
     <div class="mood-tag-row" id="journalMoodTags">
-      <span class="tag" onclick="toggleTag(this)">😰 Anxious</span>
-      <span class="tag" onclick="toggleTag(this)">😔 Sad</span>
-      <span class="tag" onclick="toggleTag(this)">😐 Neutral</span>
-      <span class="tag" onclick="toggleTag(this)">🙂 Hopeful</span>
+      <span class="tag" onclick="toggleTag(this)">😌 Calm &amp; positive</span>
       <span class="tag" onclick="toggleTag(this)">😤 Frustrated</span>
-      <span class="tag" onclick="toggleTag(this)">😌 Calm</span>
+      <span class="tag" onclick="toggleTag(this)">😊 Really pleased</span>
+      <span class="tag" onclick="toggleTag(this)">🤔 Uncertain</span>
+      <span class="tag" onclick="toggleTag(this)">💪 Motivated</span>
+      <span class="tag" onclick="toggleTag(this)">🌟 Breakthrough today</span>
     </div>
   </div>
 
@@ -679,7 +679,7 @@ function defaultCheckins(){
 function setGreeting(){
   const h = new Date().getHours();
   const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('greetingText').textContent = g + ', Jordan 👋';
+  document.getElementById('greetingText').textContent = g + ', Puppy Parent 🐶';
 }
 setGreeting();
 
@@ -739,10 +739,10 @@ function buildScale(containerId, valueId, stateKey, max){
         b.classList.add('selected');
         var vEl = document.getElementById(valueId);
         if(vEl) vEl.textContent = val;
-        if(stateKey === 'anxiety'){
-          S.anxiety = val;
+        if(stateKey === 'score'){
+          S.score = val;
           var lbl = document.getElementById('anxietyLabel');
-          if(lbl) lbl.textContent = val<=2 ? '✅ Easy' : val<=4 ? '🟡 Moderate' : val<=6 ? '🟠 Challenging' : val<=8 ? '🔴 Hard' : '🔴 Very Hard';
+          if(lbl) lbl.textContent = val<=2 ? '🌟 Brilliant session!' : val<=4 ? '✅ Good session' : val<=6 ? '🟡 Moderate difficulty' : val<=8 ? '🟠 Tough session' : '🔴 Really hard day';
         }
         if(stateKey === 'sleep') S.sleep = val;
       };
@@ -750,7 +750,7 @@ function buildScale(containerId, valueId, stateKey, max){
     })(i);
   }
 }
-buildScale('anxietyScale','anxietyVal','anxiety',10);
+buildScale('anxietyScale','anxietyVal','score',10);
 buildScale('sleepScale','sleepVal','sleep',10);
 
 // ── Tags / chips ──────────────────────────────────────
@@ -785,7 +785,7 @@ function startNewCheckin(){
     if(d){ d.classList.toggle('active',i===0); d.classList.remove('done'); }
   }
   // Reset scales
-  buildScale('anxietyScale','anxietyVal','anxiety',10);
+  buildScale('anxietyScale','anxietyVal','score',10);
   buildScale('sleepScale','sleepVal','sleep',10);
   document.getElementById('anxietyVal').textContent = '—';
   document.getElementById('anxietyLabel').textContent = '';
@@ -797,19 +797,19 @@ function startNewCheckin(){
 }
 
 function submitCheckin(){
-  var anxiety = S.anxiety !== null ? S.anxiety : 5;
+  var anxiety = S.score !== null ? S.score : 5;
   var risk = anxiety<=3 ? 'LOW' : anxiety<=6 ? 'MEDIUM' : anxiety<=8 ? 'HIGH' : 'CRITICAL';
   var msgs = {
-    LOW: 'Excellent session! Your pet was brilliant today. Consistent short sessions are the secret — keep it up!',
-    MEDIUM: 'Good effort! Your pet had some moments of challenge but stayed engaged. Try an enrichment activity to wind down.',
-    HIGH: 'Tough session — that\'s okay! Every dog has off days. Keep sessions short and end on a positive note.',
-    CRITICAL: 'Really hard day. Take a break and try again tomorrow. Consider reaching out to your trainer for guidance.'
+    LOW: 'Brilliant session! Your dog performed superbly. Short, consistent sessions build the best foundation.',
+    MEDIUM: 'Good effort! Some challenges but your dog stayed engaged. Finish with an enrichment activity to wind down.',
+    HIGH: 'Tough session — completely normal. Every dog has off days. Keep it short and always end on a win.',
+    CRITICAL: 'Really hard day. Rest now and try again tomorrow. Contact your trainer for personalised guidance.'
   };
   var tips = {
-    LOW: '💡 Tip: Jackpot rewards on great sessions tell your dog they nailed it — use them wisely!',
-    MEDIUM: '💡 Tip: Always end sessions on something your dog can succeed at, even just a sit.',
-    HIGH: '💡 Tip: A 5-minute sniff walk resets your dog\'s arousal better than drilling exercises.',
-    CRITICAL: '💡 Tip: Management first, training second. Set your dog up for success before the next session.'
+    LOW: '💡 Tip: Jackpot rewards (5–10 treats at once) on brilliant sessions signal to your dog they absolutely nailed it!',
+    MEDIUM: '💡 Tip: Always end on something your dog can succeed at — a simple sit or name response works perfectly.',
+    HIGH: '💡 Tip: A 5-minute sniff walk on a long lead resets arousal far better than drilling exercises.',
+    CRITICAL: '💡 Tip: Management first, training second. Remove the trigger, simplify the environment, then try again.'
   };
   // Collect triggers from chips
   var triggers = [];
@@ -853,7 +853,7 @@ function renderMiniChart(type){
   var c = document.getElementById('miniChart');
   if(!c) return;
   var slice = S.checkins.slice(0,7).reverse();
-  var data = slice.map(function(ci){ return type==='sleep' ? ci.sleep : ci.anxiety; });
+  var data = slice.map(function(ci){ return type==='sleep' ? ci.sleep : (ci.score||ci.anxiety||0); });
   var labels = slice.map(function(ci){ var d=new Date(ci.date); return ['Su','Mo','Tu','We','Th','Fr','Sa'][d.getDay()]; });
   drawLineChart(c, labels, data, type==='sleep'?'#10b981':'#2563eb', type==='sleep'?'rgba(16,185,129,.15)':'rgba(37,99,235,.15)');
 }
@@ -871,7 +871,7 @@ function renderHistChart(type){
   var c = document.getElementById('histChart');
   if(!c) return;
   var slice = S.checkins.slice(0,14).reverse();
-  var data = slice.map(function(ci){ return type==='sleep' ? ci.sleep : ci.anxiety; });
+  var data = slice.map(function(ci){ return type==='sleep' ? ci.sleep : (ci.score||ci.anxiety||0); });
   var labels = slice.map(function(ci){ var d=new Date(ci.date); return (d.getDate())+'/'+(d.getMonth()+1); });
   drawLineChart(c, labels, data, type==='sleep'?'#10b981':'#2563eb', type==='sleep'?'rgba(16,185,129,.15)':'rgba(37,99,235,.15)');
 }
@@ -918,7 +918,7 @@ function drawLineChart(canvas, labels, data, color, fill){
 // ── History tab ───────────────────────────────────────
 function renderHistory(){
   var total = S.checkins.length;
-  var avg = total ? (S.checkins.reduce(function(a,c){ return a+c.anxiety; },0)/total).toFixed(1) : '0';
+  var avg = total ? (S.checkins.reduce(function(a,c){ return a+(c.score||c.anxiety||0); },0)/total).toFixed(1) : '0';
   document.getElementById('avgScore').textContent = avg;
   document.getElementById('totalCheckins').textContent = total;
   var recent = S.checkins.slice(0,7).reduce(function(a,c){ return a+c.anxiety; },0) / Math.min(7,total||1);
@@ -1121,12 +1121,12 @@ function stopGrounding(){
 
 // ── Journal ───────────────────────────────────────────
 var PROMPTS = [
-  'What went really well in today\'s session?',
-  'What skill did your pet make the most progress on?',
-  'What was challenging and how can you adjust next time?',
-  'Describe a moment where your pet surprised you today.',
-  'What enrichment activity does your pet love most?',
-  'What training goal do you want to work on next?',
+  'What went brilliantly in today\'s training session?',
+  'Which skill improved the most this week?',
+  'What was challenging — and how will you adjust?',
+  'Describe a moment your dog really surprised you.',
+  'Which enrichment activity does your dog love most?',
+  'What training milestone do you want to hit next?',
 ];
 
 function renderJournal(){
@@ -1177,7 +1177,7 @@ function saveJournal(){
   if(ta) ta.value = '';
   document.querySelectorAll('#journalMoodTags .tag').forEach(function(t){ t.classList.remove('active'); });
   updateWC();
-  showToast('📓 Entry saved! +20 XP');
+  showToast('📓 Training note saved! +20 XP');
   S.xp += 20;
   document.getElementById('xpText').textContent = '⚡ '+S.xp+' XP';
   renderJournalList();
@@ -1193,7 +1193,7 @@ function renderJournalList(){
   var el = document.getElementById('journalList');
   if(!el) return;
   if(!S.journalEntries.length){
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">No journal entries yet — write your first one above!</div>';
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">No training notes yet — write your first reflection above!</div>';
     return;
   }
   el.innerHTML = S.journalEntries.map(function(e){
@@ -1277,7 +1277,7 @@ function saveNewGoal(){
 }
 
 // ── Emergency ─────────────────────────────────────────
-function openEmergency(){ document.getElementById('emergencyModal').classList.remove('hidden'); }
+function showToast('Connecting to your trainer…'){ document.getElementById('emergencyModal').classList.remove('hidden'); }
 function closeEmergency(){ document.getElementById('emergencyModal').classList.add('hidden'); }
 
 // ── Toast ─────────────────────────────────────────────

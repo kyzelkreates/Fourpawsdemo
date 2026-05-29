@@ -4,24 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <meta name="theme-color" content="#3a7d44" />
-  <meta name="description" content="Four Paws Training &amp; Enrichment Academy — Owner training log PWA" />
-  <title>Four Paws Academy — Owner PWA</title>
-
-  <!-- PWA manifest -->
-  <link rel="manifest" href="/ap3x/patient-pwa/manifest.json" />
-  <link rel="apple-touch-icon" href="/icons/ap3x-icon-192.png" />
-
-  <!-- Styles -->
+  <meta name="description" content="Four Paws Training & Enrichment Academy — Intelligent Dog Training Companion" />
+  <title>Four Paws Academy — Training Companion</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/fp-icon-192.png" />
   <link rel="stylesheet" href="./patient.css" />
 </head>
-<body class="theme-light" data-ap3x="patient-pwa">
+<body class="theme-light" data-fp="pwa">
 
-  <!-- ── Header ─────────────────────────────────────────────── -->
-  <header class="ap3x-header">
+  <header class="fp-header">
     <div class="header-brand">
       <span class="brand-dot"></span>
       <span class="brand-name">🐾 Four Paws</span>
-      <span class="brand-sub">Academy</span>
+      <span class="brand-sub">Training Companion</span>
     </div>
     <div class="header-actions">
       <span id="sync-indicator" class="sync-indicator" title="Pending sync items">
@@ -31,19 +26,21 @@
           <path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
         </svg>
       </span>
-      <button class="btn-icon" id="theme-toggle" title="Toggle dark/light mode">🌙</button>
+      <button class="btn-icon" id="theme-toggle" title="Toggle theme">🌙</button>
     </div>
   </header>
 
-  <!-- ── Streak banner ──────────────────────────────────────── -->
   <div id="streak-banner" class="streak-banner hidden">
     <span class="streak-fire">🔥</span>
-    <span id="streak-text">0 day streak</span>
+    <span id="streak-text">0-day training streak</span>
   </div>
 
-  <!-- ── Main nav tabs ──────────────────────────────────────── -->
   <nav class="bottom-nav" id="bottom-nav">
-    <button class="nav-tab active" data-tab="checkin">
+    <button class="nav-tab active" data-tab="home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-tab" data-tab="checkin">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
       </svg>
@@ -53,194 +50,196 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
       </svg>
-      <span>History</span>
+      <span>Progress</span>
     </button>
     <button class="nav-tab" data-tab="exercises">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
-        <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/>
-        <line x1="14" y1="1" x2="14" y2="4"/>
+        <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
       </svg>
       <span>Enrichment</span>
     </button>
-    <button class="nav-tab" data-tab="log">
+    <button class="nav-tab" data-tab="coach">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
       </svg>
-      <span>Triggers</span>
+      <span>AI Coach</span>
     </button>
   </nav>
 
-  <!-- ── Page: Check-in ─────────────────────────────────────── -->
-  <main id="tab-checkin" class="tab-page active">
-    <h2 class="section-title">How did training go? 🐾</h2>
-    <p class="section-sub">Rate today's session difficulty (0 = easy, 10 = very hard)</p>
+  <!-- ── HOME ── -->
+  <main id="tab-home" class="tab-page active">
+    <div class="home-hero">
+      <div class="hero-greeting" id="hero-greeting">Good morning 👋</div>
+      <div class="hero-dog" id="hero-dog-name">Your Training Companion</div>
+      <div class="hero-sub">Keep up the great work — consistency builds champions 🐕</div>
+    </div>
 
-    <!-- Anxiety scale -->
-    <div class="anxiety-scale-wrap">
-      <div class="scale-labels">
-        <span>Easy</span><span>Moderate</span><span>Challenging</span>
+    <div class="today-tasks">
+      <div class="section-label">📋 Today's Training Plan</div>
+      <div id="today-tasks-list"></div>
+    </div>
+
+    <div class="insight-card" id="daily-tip">
+      <div class="insight-icon">💡</div>
+      <div class="insight-body">
+        <div class="insight-title">Today's Training Tip</div>
+        <div class="insight-text" id="tip-text">Short, frequent sessions (5 min × 3) beat one long 30-minute session every time.</div>
       </div>
-      <div class="scale-track" id="anxiety-scale">
-        <!-- 0–10 buttons generated by JS -->
+    </div>
+
+    <div class="section-label" style="margin-top:16px">📈 This Week's Progress</div>
+    <div class="week-chart-wrap">
+      <canvas id="week-chart" height="90"></canvas>
+    </div>
+
+    <div class="milestone-strip" id="milestone-strip"></div>
+  </main>
+
+  <!-- ── LOG SESSION ── -->
+  <main id="tab-checkin" class="tab-page hidden">
+    <h2 class="section-title">🐾 Log Training Session</h2>
+    <p class="section-sub">Rate today's session and track progress</p>
+
+    <div class="scale-wrap">
+      <div class="scale-header">
+        <span class="scale-label">Session Score</span>
+        <span class="scale-hint">0 = easy win · 10 = very tough</span>
       </div>
+      <div class="scale-labels"><span>Easy</span><span>Moderate</span><span>Tough</span></div>
+      <div class="scale-track" id="score-scale"></div>
       <div class="selected-score-display" id="score-display">–</div>
+      <div class="score-context" id="score-context"></div>
     </div>
 
-    <!-- Mood text -->
     <div class="form-block">
-      <label class="form-label">Session notes <span class="optional">(optional)</span></label>
-      <textarea id="mood-input" class="form-textarea" placeholder="How did your pet respond? Any breakthroughs or challenges today?" rows="3"></textarea>
-    </div>
-
-    <!-- Mood tags -->
-    <div class="form-block">
-      <label class="form-label">Tags</label>
-      <div class="tag-group" id="mood-tags">
-        <button class="tag" data-tag="recall">recall</button>
-        <button class="tag" data-tag="loose-lead">loose-lead</button>
-        <button class="tag" data-tag="sit/stay">sit/stay</button>
-        <button class="tag" data-tag="enrichment">enrichment</button>
-        <button class="tag" data-tag="reactivity">reactivity</button>
-        <button class="tag" data-tag="scent-work">scent-work</button>
+      <label class="form-label">Skills practised today</label>
+      <div class="tag-group" id="skills-tags">
+        <button class="tag" data-tag="Recall">Recall</button>
+        <button class="tag" data-tag="Loose lead">Loose lead</button>
+        <button class="tag" data-tag="Sit / Down">Sit / Down</button>
+        <button class="tag" data-tag="Stay">Stay</button>
+        <button class="tag" data-tag="Polite greeting">Polite greeting</button>
+        <button class="tag" data-tag="Focus / attention">Focus / attention</button>
+        <button class="tag" data-tag="Socialisation">Socialisation</button>
+        <button class="tag" data-tag="Crate training">Crate training</button>
+        <button class="tag" data-tag="Enrichment activity">Enrichment activity</button>
+        <button class="tag" data-tag="Confidence games">Confidence games</button>
       </div>
     </div>
 
-    <!-- Sleep -->
     <div class="form-block">
       <label class="form-label">Session length (minutes)</label>
-      <input type="number" id="sleep-input" class="form-input" min="0" max="24" step="0.5" placeholder="e.g. 10" />
+      <input type="number" id="duration-input" class="form-input" min="1" max="60" step="1" placeholder="e.g. 10" />
     </div>
 
-    <!-- Submit -->
-    <button class="btn-primary" id="submit-checkin">Save Training Session ✓</button>
+    <div class="form-block">
+      <label class="form-label">How was your dog's focus?</label>
+      <div class="tag-group" id="focus-tags">
+        <button class="tag" data-tag="Super focused">Super focused 🎯</button>
+        <button class="tag" data-tag="Easily distracted">Easily distracted</button>
+        <button class="tag" data-tag="Over-excited">Over-excited</button>
+        <button class="tag" data-tag="Reactive">Reactive to triggers</button>
+        <button class="tag" data-tag="Calm and engaged">Calm &amp; engaged 😌</button>
+        <button class="tag" data-tag="Tired">Tired / low drive</button>
+      </div>
+    </div>
 
-    <!-- Feedback card (shown after submit) -->
+    <div class="form-block">
+      <label class="form-label">Session notes <span class="optional">(optional)</span></label>
+      <textarea id="session-note" class="form-textarea" placeholder="What happened? Any breakthroughs or challenges to note for your trainer…" rows="3"></textarea>
+    </div>
+
+    <button class="btn-primary" id="submit-session">Save Training Session ✓</button>
+
     <div id="feedback-card" class="feedback-card hidden">
-      <div id="feedback-risk-badge" class="risk-badge"></div>
-      <p id="feedback-suggestions" class="feedback-suggestions"></p>
-    </div>
-
-    <!-- Emergency button -->
-    <div class="emergency-section">
-      <button class="btn-emergency" id="emergency-btn">
-        🐾 I need training support
-      </button>
+      <div id="feedback-score-badge" class="score-badge"></div>
+      <p id="feedback-message" class="feedback-message"></p>
+      <p id="feedback-tip" class="feedback-tip"></p>
     </div>
   </main>
 
-  <!-- ── Page: History ──────────────────────────────────────── -->
+  <!-- ── PROGRESS ── -->
   <main id="tab-history" class="tab-page hidden">
-    <h2 class="section-title">Training History 📈</h2>
+    <h2 class="section-title">📈 Training Progress</h2>
+    <p class="section-sub">Your behaviour improvement journey</p>
+
+    <div class="progress-stats" id="progress-stats"></div>
+
+    <div class="chart-tabs-row">
+      <button class="chart-tab-btn active" onclick="switchProgressChart('score',this)">Session Scores</button>
+      <button class="chart-tab-btn" onclick="switchProgressChart('recall',this)">Recall</button>
+      <button class="chart-tab-btn" onclick="switchProgressChart('behaviour',this)">Behaviour</button>
+    </div>
     <div class="history-chart-wrap">
-      <canvas id="anxiety-chart" height="160"></canvas>
+      <canvas id="progress-chart" height="160"></canvas>
     </div>
-    <div id="history-list" class="history-list">
-      <p class="empty-state">No sessions logged yet. Start your first training log!</p>
-    </div>
+
+    <div class="section-label" style="margin-top:16px">🏆 Milestones Achieved</div>
+    <div id="milestones-list" class="milestones-list"></div>
+
+    <div class="section-label" style="margin-top:16px">📋 Recent Sessions</div>
+    <div id="history-list" class="history-list"></div>
   </main>
 
-  <!-- ── Page: Exercises ────────────────────────────────────── -->
+  <!-- ── ENRICHMENT ── -->
   <main id="tab-exercises" class="tab-page hidden">
-    <h2 class="section-title">Enrichment Activities 🧩</h2>
-    <p class="section-sub">Keep your pet mentally stimulated between sessions</p>
+    <h2 class="section-title">🧩 Enrichment Activities</h2>
+    <p class="section-sub">Mental stimulation, confidence building &amp; structured play</p>
 
-    <div class="exercise-cards" id="exercise-cards">
-
-      <!-- Sniff Walk -->
-      <div class="exercise-card" data-exercise="sniff">
-        <div class="exercise-icon">👃</div>
-        <div class="exercise-info">
-          <h3>Sniff Walk Timer</h3>
-          <p>Let your dog lead · 10 min nose work</p>
-        </div>
-        <button class="btn-start-exercise">Start</button>
-      </div>
-
-      <!-- Muffin Tin Game -->
-      <div class="exercise-card" data-exercise="muffin">
-        <div class="exercise-icon">🧁</div>
-        <div class="exercise-info">
-          <h3>Muffin Tin Game</h3>
-          <p>Hide treats · Let your dog search</p>
-        </div>
-        <button class="btn-start-exercise">Start</button>
-      </div>
-
-      <!-- Scatter Feeding -->
-      <div class="exercise-card" data-exercise="scatter">
-        <div class="exercise-icon">🌿</div>
-        <div class="exercise-info">
-          <h3>Scatter Feeding</h3>
-          <p>Scatter kibble in grass for nose work</p>
-        </div>
-        <button class="btn-start-exercise">Start</button>
-      </div>
-
-      <!-- Lick Mat Session -->
-      <div class="exercise-card" data-exercise="lickmat">
-        <div class="exercise-icon">🌙</div>
-        <div class="exercise-info">
-          <h3>Lick Mat Calm-Down</h3>
-          <p>Promotes calm · Mental stimulation</p>
-        </div>
-        <button class="btn-start-exercise">Start</button>
-      </div>
+    <div class="ex-filter-row">
+      <button class="ex-filter active" onclick="filterEnrichment('all',this)">All</button>
+      <button class="ex-filter" onclick="filterEnrichment('scent',this)">🐽 Scent</button>
+      <button class="ex-filter" onclick="filterEnrichment('puzzle',this)">🧩 Puzzle</button>
+      <button class="ex-filter" onclick="filterEnrichment('confidence',this)">💪 Confidence</button>
+      <button class="ex-filter" onclick="filterEnrichment('calm',this)">😌 Calm</button>
+      <button class="ex-filter" onclick="filterEnrichment('play',this)">🎾 Play</button>
     </div>
 
-    <!-- Exercise runner modal -->
+    <div class="exercise-cards" id="exercise-cards"></div>
+
     <div id="exercise-runner" class="exercise-runner hidden">
       <div class="runner-inner">
-        <div class="runner-visual" id="runner-visual">
+        <div class="runner-title" id="runner-title">Activity</div>
+        <div class="runner-visual">
           <div class="breath-circle" id="breath-circle"></div>
         </div>
         <div class="runner-instruction" id="runner-instruction">Get ready…</div>
         <div class="runner-step" id="runner-step"></div>
-        <button class="btn-secondary" id="runner-stop">End Exercise</button>
+        <button class="btn-secondary" id="runner-stop">End Activity</button>
       </div>
     </div>
   </main>
 
-  <!-- ── Page: Log ──────────────────────────────────────────── -->
-  <main id="tab-log" class="tab-page hidden">
-    <h2 class="section-title">Training Log 📋</h2>
+  <!-- ── AI COACH ── -->
+  <main id="tab-coach" class="tab-page hidden">
+    <h2 class="section-title">🤖 AI Training Coach</h2>
+    <p class="section-sub">Personalised guidance powered by behavioural intelligence</p>
 
-    <!-- Trigger log -->
-    <div class="log-section">
-      <h3 class="log-subtitle">Log a Challenge</h3>
-      <input id="trigger-name" class="form-input" placeholder="Challenge name (e.g. loose-lead near traffic)" />
-      <textarea id="trigger-desc" class="form-textarea" placeholder="What happened? How did you handle it?" rows="2"></textarea>
-      <div class="slider-wrap">
-        <label class="form-label">Difficulty: <span id="trigger-severity-val">5</span>/10</label>
-        <input type="range" id="trigger-severity" min="1" max="10" value="5" class="form-slider" />
+    <div class="ai-coach-panel">
+      <div class="ai-panel-header">
+        <span class="ai-badge-pill">🧠 AI Coach — Active</span>
+        <span class="ai-online-dot"></span>
       </div>
-      <button class="btn-primary" id="submit-trigger">Log Challenge</button>
+      <div id="coach-chat" class="coach-chat"></div>
+      <div class="coach-quick-btns" id="coach-quick-btns"></div>
+      <div class="coach-input-row">
+        <input type="text" id="coach-input" class="coach-input" placeholder="Ask about training, behaviour, enrichment…" />
+        <button class="coach-send-btn" onclick="sendCoachMessage()">➤</button>
+      </div>
     </div>
 
-    <!-- Recent triggers -->
-    <div class="log-section">
-      <h3 class="log-subtitle">Recent Challenges</h3>
-      <div id="trigger-list" class="trigger-list">
-        <p class="empty-state">No challenges logged yet. Keep going!</p>
-      </div>
+    <div class="section-label" style="margin-top:16px">⚡ Quick Topics</div>
+    <div class="quick-topics" id="quick-topics"></div>
+
+    <div class="disclaimer-box">
+      <p>🐾 <strong>Four Paws AI Coach</strong> provides general training guidance based on positive reinforcement principles. Always work alongside a qualified trainer for complex behaviour issues. This is not veterinary advice.</p>
     </div>
   </main>
 
-  <!-- ── Footer disclaimer ──────────────────────────────────── -->
   <footer class="fp-footer">
-    <p id="disclaimer-text"></p>
+    <p id="disclaimer-text">Four Paws Training &amp; Enrichment Academy · AI-Assisted Canine Behaviour Platform · For education &amp; training support only</p>
   </footer>
-
-  <!-- ── Emergency modal ────────────────────────────────────── -->
-  <div id="emergency-modal" class="modal hidden">
-    <div class="modal-inner">
-      <h3>🐾 Training Support</h3>
-      <p>Need help with a training challenge? Reach out to your trainer or the Four Paws support team.</p>
-      <a id="emergency-contact-link" class="btn-emergency-large" href="tel:999">Call for help</a>
-      <button class="btn-secondary" id="close-emergency">Close</button>
-    </div>
-  </div>
 
   <script type="module" src="./patient-app.js"></script>
 </body>
