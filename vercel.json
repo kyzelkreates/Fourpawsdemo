@@ -81,22 +81,5 @@
         }
       ]
     }
-  ],
-  "redirects": [
-    {
-      "source": "/ap3x/demo/index.html",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/ap3x/demo/owner-demo.html",
-      "destination": "/owner",
-      "permanent": true
-    },
-    {
-      "source": "/ap3x/demo/trainer-demo.html",
-      "destination": "/trainer",
-      "permanent": true
-    }
   ]
 }
