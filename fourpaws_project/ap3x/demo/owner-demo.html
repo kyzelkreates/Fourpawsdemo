@@ -4,57 +4,22 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>Four Paws Academy — Owner Training Companion</title>
-<script src="./dataProvider.js">
+<script src="./storage.js"></script>
+<script src="./ai-layer.js"></script>
+<script src="./dataProvider.js"></script>
+<script>
 // ══════════════════════════════════════════════════════════
 //  PUPPY MASTERCLASS — Owner Portal
 // ══════════════════════════════════════════════════════════
-const CURRICULUM = [
-  { id:1, name:'Module 1 — Foundations', emoji:'🌱', lessons:[
-    {id:'l1_1',name:'Understanding Puppy Psychology',  desc:'How dogs learn, critical periods and building trust',              tip:'Make every interaction positive — puppies learn through association.',xp:50},
-    {id:'l1_2',name:'Marker Word Training',            desc:'Introducing the clicker or verbal marker cue',                   tip:'Your marker must always be followed by a reward — no exceptions.',xp:50},
-    {id:'l1_3',name:'Focus & Attention Building',      desc:'Teaching your dog to check in with you voluntarily',             tip:'Reward every eye contact your dog offers.',xp:60},
-    {id:'l1_4',name:'Reward Timing Fundamentals',      desc:'Mark the exact moment of the behaviour you want',               tip:'The reward must land within 1.5 seconds of the behaviour.',xp:60},
-    {id:'l1_5',name:'Calmness Foundations',            desc:'Building a settle cue and reducing arousal at home',             tip:'Reward any moment of stillness — even accidental.',xp:80},
-  ]},
-  { id:2, name:'Module 2 — Core Obedience', emoji:'🎯', lessons:[
-    {id:'l2_1',name:'Sit & Down Reliability',          desc:'Building 20+ successful reps in multiple environments',          tip:'A reliable sit means 9/10 responses anywhere.',xp:60},
-    {id:'l2_2',name:'Recall Foundations',              desc:'Building "come" as the most rewarding thing in the world',       tip:'Never call your dog to something unpleasant — protect that recall cue.',xp:80},
-    {id:'l2_3',name:'Loose Lead Walking',              desc:'Teaching your dog that a loose lead keeps the walk going',       tip:'Reward at your hip, not out front.',xp:80},
-    {id:'l2_4',name:'Calm Door Behaviour',             desc:'No rushing, no jumping — a controlled exit routine',            tip:'Your dog only gets to leave when all four paws are on the floor.',xp:60},
-    {id:'l2_5',name:'Polite Greeting Skills',          desc:'Four paws on floor when meeting people and dogs',               tip:'End the greeting the moment jumping begins.',xp:70},
-  ]},
-  { id:3, name:'Module 3 — Socialisation', emoji:'🌍', lessons:[
-    {id:'l3_1',name:'Environmental Confidence',        desc:'Novel sounds, surfaces and environments',                        tip:'Never force interaction — let your dog choose to approach.',xp:70},
-    {id:'l3_2',name:'Positive Social Exposure',        desc:'Structured introductions to other dogs and people',             tip:'One calm positive interaction beats 20 chaotic ones.',xp:80},
-    {id:'l3_3',name:'Reducing Overstimulation',        desc:'Managing arousal in high-distraction environments',             tip:'A sniff walk is the best pre-session warm-up.',xp:80},
-    {id:'l3_4',name:'New Experience Handling',         desc:'Vets, groomers, car travel — positive conditioning',           tip:'Work at the lowest intensity your dog is comfortable with.',xp:70},
-    {id:'l3_5',name:'Confidence Building Games',       desc:'Wobble boards, novel objects and exploration games',            tip:'Reward every brave investigative moment.',xp:80},
-  ]},
-  { id:4, name:'Module 4 — Home Life', emoji:'🏠', lessons:[
-    {id:'l4_1',name:'Toilet Training System',          desc:'A consistent routine that ends accidents fast',                 tip:'Take outside every 45 mins, after every meal, sleep and play.',xp:60},
-    {id:'l4_2',name:'Crate Confidence',                desc:'A safe, voluntary retreat your dog loves',                     tip:'Never lock the crate until your dog enters willingly.',xp:70},
-    {id:'l4_3',name:'Alone Time Training',             desc:'Preventing separation distress through gradual independence',   tip:'Start with 10 seconds. Build to 5 mins before increasing.',xp:80},
-    {id:'l4_4',name:'Reducing Destructive Behaviour',  desc:'Management, enrichment and appropriate outlets',               tip:'Management first — remove the opportunity, then provide a better alternative.',xp:70},
-    {id:'l4_5',name:'Calm Household Behaviour',        desc:'Settle on mat, calm greetings and relaxed mealtimes',         tip:'Reward all calm moments — even accidental ones.',xp:70},
-  ]},
-  { id:5, name:'Module 5 — Enrichment & Development', emoji:'🧩', lessons:[
-    {id:'l5_1',name:'Mental Stimulation Games',        desc:'Puzzle feeders, snuffle mats and problem-solving',             tip:'10 minutes of mental work beats 30 minutes of walking.',xp:80},
-    {id:'l5_2',name:'Structured Play Systems',         desc:'Using play as reinforcement — tug, chase and retrieve',        tip:'Make yourself more fun than the environment.',xp:80},
-    {id:'l5_3',name:'Scent Work Foundations',          desc:'Introducing nose work games and hide-and-seek',               tip:'A dog who sniffs is a calm and happy dog.',xp:90},
-    {id:'l5_4',name:'Long-Term Habit Reinforcement',   desc:'Maintaining skills under distraction, distance and duration',  tip:'The 3 Ds: duration, distance, distraction — one at a time.',xp:80},
-    {id:'l5_5',name:'Advanced Enrichment Planning',    desc:'Designing a weekly enrichment schedule for your dog',          tip:'Aim for: 1 scent, 1 puzzle, 1 confidence, 1 play every 48 hours.',xp:90},
-  ]},
-];
+// CURRICULUM sourced from storage.js (FP_STORE) — do not redefine here
+// FP_COURSE and FP_STORE are globally available via storage.js
+var CURRICULUM = typeof FP_STORE !== 'undefined' ? FP_STORE.getModules() : [];
 
 function getCompletedLessons(){
-  var dogId = typeof FP_DATA !== 'undefined' ? FP_DATA.getActiveDogId() : null;
-  var key = dogId ? 'lessons_done_'+dogId : 'lessons_done_demo';
-  try{ return JSON.parse(localStorage.getItem(key)||'[]'); }catch(e){ return []; }
+  return typeof FP_STORE !== 'undefined' ? FP_STORE.getCompletedLessons() : [];
 }
 function saveCompletedLessons(list){
-  var dogId = typeof FP_DATA !== 'undefined' ? FP_DATA.getActiveDogId() : null;
-  var key = dogId ? 'lessons_done_'+dogId : 'lessons_done_demo';
-  localStorage.setItem(key, JSON.stringify(list));
+  if(typeof FP_STORE !== 'undefined') FP_STORE.setCompletedLessons(list);
 }
 
 function renderLessonsTab(){
@@ -64,16 +29,17 @@ function renderLessonsTab(){
   var curMod = CURRICULUM.find(function(m){ return !m.lessons.every(function(l){ return done.includes(l.id); }); }) || CURRICULUM[CURRICULUM.length-1];
 
   // Update profile card
-  var dogName = localStorage.getItem('fp_dog_name') || 'Your Dog';
-  var breed   = localStorage.getItem('fp_dog_breed') || '';
-  var age     = localStorage.getItem('fp_dog_age') || '';
+  var _profile = typeof FP_STORE !== 'undefined' ? FP_STORE.getDogProfile() : {};
+  var dogName  = _profile.name  || localStorage.getItem('fp_dog_name')  || 'Your Dog';
+  var breed    = _profile.breed || localStorage.getItem('fp_dog_breed') || '';
+  var age      = _profile.age   || localStorage.getItem('fp_dog_age')   || '';
   var pnEl = document.getElementById('profile-dog-name'); if(pnEl) pnEl.textContent = dogName + '\'s Course';
   var pmEl = document.getElementById('profile-dog-meta'); if(pmEl) pmEl.textContent = [breed,age].filter(Boolean).join(' · ') || 'Four Paws Puppy Masterclass';
   var chipsEl = document.getElementById('profile-dog-chips');
   if(chipsEl) chipsEl.innerHTML = [
     pct+'% complete',
     done.length+'/'+total+' lessons',
-    '🔥 ' + (parseInt(localStorage.getItem('fp_streak'))||0) + ' day streak'
+    '🔥 ' + (typeof FP_STORE !== 'undefined' ? FP_STORE.getStreak() : (parseInt(localStorage.getItem('fp_streak'))||0)) + ' day streak'
   ].map(function(t){ return '<span class="profile-chip">'+t+'</span>'; }).join('');
   var bar = document.getElementById('course-progress-bar'); if(bar) bar.style.width=pct+'%';
   var lbl = document.getElementById('course-pct-lbl'); if(lbl) lbl.textContent=pct+'%';
@@ -152,7 +118,7 @@ function updateTrainerStrip(){
   var sub = document.getElementById('trainer-strip-sub');
   if(sub) sub.textContent = nextLesson ? 'Next: ' + nextLesson.name : 'All lessons complete! 🎉';
   var name = document.getElementById('trainer-strip-name');
-  if(name) name.textContent = localStorage.getItem('fp_trainer_name') || 'Four Paws Academy';
+  if(name) name.textContent = (typeof FP_STORE !== 'undefined' ? FP_STORE.getTrainer().name : null) || localStorage.getItem('fp_trainer_name') || 'Four Paws Academy';
 }
 
 // ── Override goTab to render lessons on demand ─────────────────────────────
@@ -493,6 +459,295 @@ canvas{width:100%!important;display:block}
 /* ── Section title ── */
 .section-title{font-size:20px;font-weight:800;margin-bottom:3px;letter-spacing:-.4px}
 .section-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+
+
+/* ══════════════════════════════════════════════════════════
+   UI POLISH — Owner Training Portal
+   Fixes: card sizing, spacing, overflow, mobile responsiveness
+═══════════════════════════════════════════════════════════ */
+
+/* ─── PWA safe area ─── */
+:root {
+  --sp-xs: 6px; --sp-sm: 10px; --sp-md: 16px; --sp-lg: 18px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+body {
+  padding-bottom: calc(60px + var(--safe-bottom));
+  overflow-x: hidden;
+}
+
+/* ─── Tab pages ─── */
+.tab-page { padding: var(--sp-lg) var(--sp-md); max-width: 600px; margin: 0 auto; }
+
+/* ─── Bottom nav ─── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  display: flex; z-index: 100;
+  padding: 4px 0 calc(var(--safe-bottom) + 4px);
+  box-shadow: 0 -2px 12px rgba(0,0,0,.08);
+}
+.nav-tab {
+  flex: 1; min-width: 0; display: flex; flex-direction: column;
+  align-items: center; gap: 2px; padding: 7px 2px 5px;
+  background: none; border: none; font-size: 9.5px; cursor: pointer;
+  color: var(--muted); transition: color var(--t); position: relative;
+  overflow: hidden;
+}
+.nav-tab > *:first-child { font-size: 18px; line-height: 1; }
+.nav-tab span:last-child { white-space: nowrap; overflow: hidden; max-width: 100%; text-overflow: ellipsis; }
+.nav-tab.active { color: var(--primary); }
+
+/* ─── Home greeting ─── */
+.home-greeting { margin-bottom: var(--sp-md); }
+.hg-title { font-size: clamp(18px, 5vw, 24px); font-weight: 800; letter-spacing: -.5px; }
+.hg-sub { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+/* ─── Quick actions — 2-col ─── */
+.quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: var(--sp-md);
+}
+.qa-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 13px 11px;
+  display: flex; flex-direction: column;
+  align-items: flex-start; gap: 3px;
+  cursor: pointer; transition: all .18s;
+  text-align: left; box-shadow: var(--shadow);
+  min-width: 0;
+}
+.qa-btn:active { transform: scale(.97); }
+.qa-icon  { font-size: 22px; line-height: 1; }
+.qa-label { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+.qa-desc  { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+
+/* ─── Mood row ─── */
+.mood-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 14px; }
+.mood-btn {
+  flex: 1; min-width: 52px; display: flex; flex-direction: column;
+  align-items: center; gap: 3px; padding: 10px 6px;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--r); cursor: pointer; transition: all .18s;
+  font-size: 11px; font-weight: 600; color: var(--muted);
+}
+.mood-btn.active { border-color: var(--primary); color: var(--primary); background: var(--surface2); }
+.mood-emoji { font-size: 22px; line-height: 1.2; }
+
+/* ─── Insight strip ─── */
+.insight-strip {
+  background: var(--surface2); border-left: 3px solid var(--primary);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 12px 14px; margin-bottom: var(--sp-md);
+}
+.insight-strip h4 { font-size: 12px; font-weight: 700; margin-bottom: 5px; }
+.insight-strip p  { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 0; }
+
+/* ─── Chart wrap ─── */
+.chart-wrap { background: var(--surface); border-radius: var(--r); padding: 14px; box-shadow: var(--shadow); margin-bottom: var(--sp-md); overflow: hidden; }
+.chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
+.chart-title  { font-size: 13px; font-weight: 700; }
+.chart-tabs   { display: flex; gap: 4px; flex-wrap: wrap; }
+.chart-tab    { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: none; color: var(--muted); }
+.chart-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+/* ─── Section titles ─── */
+.section-title { font-size: 20px; font-weight: 800; margin-bottom: 3px; letter-spacing: -.4px; line-height: 1.2; }
+.section-sub   { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+
+/* ─── Log section ─── */
+.log-section { border-radius: var(--r); padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow); background: var(--surface); }
+
+/* ─── Form ─── */
+.form-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; display: block; }
+.step-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; letter-spacing: -.3px; }
+.step-sub   { font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+
+/* ─── Tags ─── */
+.tag-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.tag {
+  padding: 5px 12px; border-radius: 99px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all .18s;
+  white-space: nowrap;
+}
+.tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ─── Trigger chips ─── */
+.trigger-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.trigger-chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 12px; border-radius: var(--r);
+  background: var(--surface); border: 1.5px solid var(--border);
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all .18s;
+}
+.trigger-chip.active { border-color: var(--primary); background: var(--surface2); }
+.tc-icon { font-size: 16px; }
+
+/* ─── Scale ─── */
+.scale-track { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+.scale-btn {
+  flex: 1; min-width: 28px; padding: 8px 4px; text-align: center;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--rs); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .18s;
+}
+.scale-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.score-display { font-size: 36px; font-weight: 900; color: var(--primary); text-align: center; letter-spacing: -2px; }
+.score-label   { font-size: 13px; color: var(--muted); text-align: center; min-height: 20px; }
+
+/* ─── History stats ─── */
+.history-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.hstat { background: var(--surface); border-radius: var(--r); padding: 12px; text-align: center; box-shadow: var(--shadow); }
+.hstat-val { font-size: 22px; font-weight: 900; color: var(--primary); letter-spacing: -1px; line-height: 1.1; }
+.hstat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; margin-top: 3px; }
+
+/* ─── History list ─── */
+.history-list { display: flex; flex-direction: column; gap: 0; }
+.history-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.history-item:last-child { border-bottom: none; }
+.hi-top  { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+.hi-score{ font-size: 20px; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
+.hi-date { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.hi-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.hi-tag  { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--surface2); }
+.hi-note { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.45; }
+
+/* ─── Achievements ─── */
+.achievement-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.achievement-item {
+  background: var(--surface); border-radius: var(--r); padding: 11px 7px;
+  text-align: center; box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+}
+.achievement-item.unlocked { border-color: var(--accent); background: linear-gradient(135deg,#fffbeb,#fff); }
+.ach-icon { font-size: 26px; margin-bottom: 4px; line-height: 1; }
+.ach-name { font-size: 10px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.ach-lock { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+/* ─── Goals ─── */
+.goals-header { display: flex; align-items: center; justify-content: space-between; margin: 14px 0 10px; }
+.goal-item { background: var(--surface); border-radius: var(--r); padding: 12px 14px; box-shadow: var(--shadow); margin-bottom: 10px; }
+.goal-name { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.goal-days { display: flex; gap: 5px; }
+.goal-day  { width: 30px; height: 30px; border-radius: 50%; background: var(--surface2); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; cursor: pointer; transition: all .18s; flex-shrink: 0; }
+.goal-day.done { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ─── Journal ─── */
+.journal-prompts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.journal-prompt { padding: 5px 12px; border-radius: 99px; background: var(--surface2); border: 1.5px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; }
+.journal-prompt.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.journal-list { display: flex; flex-direction: column; gap: 0; margin-top: 14px; }
+.j-entry { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.j-entry:last-child { border-bottom: none; }
+.j-date { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.j-text { font-size: 13px; line-height: 1.5; }
+
+/* ─── Exercise cards ─── */
+.ex-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.ex-filter-btn { padding: 5px 12px; border-radius: 99px; background: var(--surface2); border: 1.5px solid var(--border); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.ex-filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.ex-cards { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 400px) { .ex-cards { grid-template-columns: 1fr 1fr; } }
+
+/* ─── Buttons ─── */
+.btn-primary {
+  width: 100%; padding: 14px; border-radius: var(--r);
+  background: var(--primary); color: #fff; border: none;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: all .18s; margin-top: 12px;
+}
+.btn-primary:active { transform: scale(.98); background: var(--primary-d); }
+.btn-secondary {
+  padding: 10px 18px; border-radius: var(--r);
+  background: none; border: 1.5px solid var(--border);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  color: var(--text); transition: all .18s;
+}
+.btn-secondary:active { background: var(--surface2); }
+.btn-sm {
+  padding: 7px 14px; border-radius: var(--rs);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid var(--border); background: var(--surface); color: var(--text);
+  transition: all .18s; white-space: nowrap;
+}
+.btn-sm.filled { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-emergency {
+  width: 100%; padding: 14px; border-radius: var(--r);
+  background: linear-gradient(135deg,#0d3320,#1a4d28); color: #fff;
+  border: none; font-size: 14px; font-weight: 700; cursor: pointer;
+  margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .18s;
+}
+.btn-emergency:active { opacity: .85; }
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed; bottom: calc(70px + var(--safe-bottom)); left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--sidebar); color: #fff;
+  padding: 10px 20px; border-radius: var(--r);
+  font-size: 13px; font-weight: 600; z-index: 9999;
+  opacity: 0; transition: all .3s; pointer-events: none;
+  white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─── Runner ─── */
+.exercise-runner, .grounding-runner {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; padding: 20px;
+}
+.runner-card {
+  background: var(--surface); border-radius: var(--r);
+  padding: 28px; max-width: 340px; width: 100%; text-align: center;
+  box-shadow: 0 16px 48px rgba(0,0,0,.3);
+}
+.runner-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.runner-body  { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+.runner-phase { font-size: 48px; font-weight: 900; color: var(--primary); letter-spacing: -2px; }
+.runner-lbl   { font-size: 14px; color: var(--muted); margin-top: 8px; }
+
+/* ─── Emergency modal ─── */
+.emergency-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 300; padding: 0 0 var(--safe-bottom);
+}
+.emergency-card {
+  background: var(--surface); border-radius: var(--r) var(--r) 0 0;
+  padding: 24px 20px; width: 100%; max-width: 480px;
+  max-height: 80vh; overflow-y: auto;
+}
+.em-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.em-sub   { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+
+/* ─── Add goal modal ─── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 400; padding: 20px;
+}
+.modal-card { background: var(--surface); border-radius: var(--r); padding: 22px; width: 100%; max-width: 360px; }
+.modal-title { font-size: 16px; font-weight: 800; margin-bottom: 14px; }
+.modal-input {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
+  border-radius: var(--rs); background: var(--surface2);
+  color: var(--text); font-size: 14px; font-family: inherit; outline: none;
+}
+.modal-input:focus { border-color: var(--primary); }
+
+/* ─── Responsive: wider screens ─── */
+@media (min-width: 520px) {
+  .quick-actions { grid-template-columns: repeat(3,1fr); }
+  .achievement-row { grid-template-columns: repeat(4,1fr); }
+  .history-stats { gap: 14px; }
+}
 
 </style>
 </head>
@@ -957,7 +1212,7 @@ function applyTheme(){
 applyTheme();
 document.getElementById('themeToggle').onclick = function(){
   dark = !dark;
-  localStorage.setItem('theme', dark ? 'dark' : '');
+  localStorage.setItem('theme', dark ? 'dark' : ''); if(typeof FP_STORE!=='undefined') FP_STORE.setTheme('owner', dark?'dark':'');
   applyTheme();
 };
 
@@ -1102,6 +1357,18 @@ function submitCheckin(){
     risk: risk
   });
   localStorage.setItem('checkins', JSON.stringify(S.checkins));
+  // Mirror to FP_STORE (SSOT) for trainer dashboard reads
+  if(typeof FP_STORE !== 'undefined'){
+    var latestCheckin = S.checkins[0];
+    FP_STORE.addSession({
+      score:       latestCheckin ? latestCheckin.score : 0,
+      context:     latestCheckin ? (latestCheckin.triggers||[]) : [],
+      methods:     latestCheckin ? (latestCheckin.coping||[]) : [],
+      difficulty:  latestCheckin ? latestCheckin.difficulty : 'LOW',
+      note:        latestCheckin ? latestCheckin.note : '',
+    });
+    FP_STORE.updateStreak();
+  }
   S.xp += 50;
   S.streak += 1;
   document.getElementById('xpText').textContent = '⚡ '+S.xp+' XP';
@@ -1325,6 +1592,7 @@ function markExerciseDone(id){
   if(S.exercisesCompleted.indexOf(id) === -1){
     S.exercisesCompleted.push(id);
     localStorage.setItem('ex_done', JSON.stringify(S.exercisesCompleted));
+  if(typeof FP_STORE !== 'undefined' && id) FP_STORE.markEnrichDone(id);
   }
 }
 
@@ -1440,6 +1708,7 @@ function saveJournal(){
     moods: moods
   });
   localStorage.setItem('journal', JSON.stringify(S.journalEntries));
+  if(typeof FP_STORE !== 'undefined' && entry) FP_STORE.addJournal({ text: entry.text, mood: entry.mood || '' });
   if(ta) ta.value = '';
   document.querySelectorAll('#journalMoodTags .tag').forEach(function(t){ t.classList.remove('active'); });
   updateWC();
@@ -1495,7 +1764,7 @@ function getMasteryAchievements(){
     {icon:'🏠',name:'Home Life',     unlocked:CURRICULUM[3].lessons.every(function(l){return done.includes(l.id);})},
     {icon:'🧩',name:'Enrichment',    unlocked:CURRICULUM[4].lessons.every(function(l){return done.includes(l.id);})},
     {icon:'🏆',name:'Graduate',      unlocked:done.length>=25},
-    {icon:'🔥',name:'7-Day Streak',  unlocked:(parseInt(localStorage.getItem('fp_streak'))||0)>=7},
+    {icon:'🔥',name:'7-Day Streak',  unlocked:(typeof FP_STORE!=='undefined'?FP_STORE.getStreak():parseInt(localStorage.getItem('fp_streak')||0))>=7},
   ];
   return all;
 }
@@ -1531,6 +1800,7 @@ function toggleGoalDay(gid, day){
   if(g){
     g.days[day] = g.days[day] ? 0 : 1;
     localStorage.setItem('goals', JSON.stringify(S.goals));
+  if(typeof FP_STORE !== 'undefined') FP_STORE.setGoals(S.goals);
     renderGoals();
     showToast(g.days[day] ? '✅ Day marked!' : 'Day unmarked');
   }
@@ -1552,6 +1822,7 @@ function saveNewGoal(){
   if(!name){ showToast('Enter a goal name first!'); return; }
   S.goals.push({id:Date.now(), name:name, cat:cat, target:7, days:[0,0,0,0,0,0,0]});
   localStorage.setItem('goals', JSON.stringify(S.goals));
+  if(typeof FP_STORE !== 'undefined') FP_STORE.setGoals(S.goals);
   if(nameEl) nameEl.value = '';
   closeGoalModal();
   renderGoals();

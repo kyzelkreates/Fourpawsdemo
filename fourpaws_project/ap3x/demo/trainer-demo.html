@@ -4,7 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Four Paws Academy — Trainer Intelligence OS</title>
-<script src="./dataProvider.js">
+<script src="./storage.js"></script>
+<script src="./ai-layer.js"></script>
+<script src="./dataProvider.js"></script>
+<script>
 
 // ══════════════════════════════════════════════════════════
 //  DEPLOY OWNER PORTAL — Trainer OS
@@ -47,14 +50,18 @@ function generatePortalAccess(){
     createdAt: new Date().toISOString()
   };
 
-  // Save dog profile so owner portal can read it
+  // Save dog profile so owner portal can read it via FP_STORE
+  if(typeof FP_STORE !== 'undefined'){
+    FP_STORE.setDogProfile({ name:dog, breed:breed, age:age });
+    FP_STORE.setTrainer({ name:'Alex Rivera · Four Paws Academy', notes:notes });
+    FP_STORE.addClient(client);
+  }
+  // Legacy fallback keys (for compatibility with older owner builds)
   localStorage.setItem('fp_dog_name', dog);
   localStorage.setItem('fp_dog_breed', breed);
   localStorage.setItem('fp_dog_age', age);
   localStorage.setItem('fp_trainer_name', 'Alex Rivera · Four Paws Academy');
   localStorage.setItem('fp_trainer_notes', notes);
-
-  // Save code
   var codes = JSON.parse(localStorage.getItem('fp_access_codes')||'[]');
   codes.push(client);
   localStorage.setItem('fp_access_codes', JSON.stringify(codes));
@@ -131,7 +138,7 @@ function copyInstructions(){
 }
 
 function renderDeploy(){
-  var codes   = JSON.parse(localStorage.getItem('fp_access_codes')||'[]');
+  var codes = (typeof FP_STORE!=='undefined' && FP_STORE.getClients().length) ? FP_STORE.getClients() : JSON.parse(localStorage.getItem('fp_access_codes')||'[]');
   var roster  = document.getElementById('dep-client-roster');
   var empty   = document.getElementById('dep-roster-empty');
   if(!roster) return;
@@ -453,6 +460,183 @@ canvas{display:block}
 .cs-installed{background:#d1fae5;color:#065f46}
 .cs-pending{background:#fef3c7;color:#92400e}
 .cs-new{background:#e0e7ff;color:#3730a3}
+
+
+/* ══════════════════════════════════════════════════════════
+   UI POLISH — Trainer Intelligence OS
+   Fixes: card alignment, spacing, text overflow, responsiveness
+═══════════════════════════════════════════════════════════ */
+
+/* ─── Spacing & sizing scale ─── */
+:root {
+  --sp-xs: 6px;  --sp-sm: 10px; --sp-md: 16px;
+  --sp-lg: 22px; --sp-xl: 32px;
+  --card-gap: 14px;
+  --content-max: 1200px;
+}
+
+/* ─── Layout ─── */
+.main-area { overflow-x: hidden; }
+.view { padding: var(--sp-lg) var(--sp-lg); max-width: var(--content-max); }
+@media (min-width: 1400px) { .view { padding: var(--sp-lg) var(--sp-xl); } }
+
+/* ─── Stats row — responsive ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--card-gap);
+  margin-bottom: var(--sp-lg);
+}
+.stat-card { min-width: 0; }
+.stat-val { font-size: clamp(20px, 2.5vw, 28px); }
+
+/* ─── Two-column grid — responsive ─── */
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--card-gap);
+  margin-bottom: var(--card-gap);
+}
+
+/* ─── Cards ─── */
+.card { min-width: 0; overflow: hidden; }
+.card-header { padding: 12px 16px; flex-wrap: wrap; gap: 6px; }
+.card-body { padding: 14px 16px; }
+.card-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ─── Tables — prevent overflow ─── */
+.dog-table { table-layout: fixed; width: 100%; }
+.dog-table th, .dog-table td {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 9px 10px;
+}
+.scrollable-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ─── Dog avatar sizing ─── */
+.dog-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+
+/* ─── View header — wrap on small screens ─── */
+.view-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--sp-lg); gap: var(--sp-sm);
+  flex-wrap: wrap;
+}
+.view-actions { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
+
+/* ─── Progress rows ─── */
+.prog-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px; min-width: 0;
+}
+.prog-label {
+  font-size: 12px; color: var(--muted); font-weight: 600;
+  min-width: 100px; max-width: 120px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+.prog-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 99px; overflow: hidden; min-width: 0; }
+.prog-fill  { height: 100%; border-radius: 99px; }
+.prog-val   { font-size: 12px; font-weight: 700; width: 34px; text-align: right; flex-shrink: 0; }
+
+/* ─── Metric grid ─── */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.metric-card { background: var(--surface2); border-radius: var(--r); padding: 12px; text-align: center; }
+.metric-val  { font-size: 20px; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
+
+/* ─── AI panel ─── */
+.ai-insight { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); min-width: 0; }
+.ai-insight:last-child { border-bottom: none; }
+.ai-insight-icon { font-size: 16px; flex-shrink: 0; width: 24px; text-align: center; }
+.ai-insight-text { font-size: 12px; line-height: 1.55; color: var(--text); min-width: 0; }
+.ai-insight-text strong { font-weight: 700; }
+
+/* ─── Buttons — consistent sizing ─── */
+.btn-sm {
+  padding: 6px 12px; border-radius: var(--rs); font-size: 12px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: all var(--t); border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--text);
+}
+.btn-sm:hover { border-color: var(--primary); color: var(--primary); }
+.btn-sm.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-sm.primary:hover { background: var(--primary-d); }
+.btn-sm.accent  { background: var(--accent);  color: #fff; border-color: var(--accent);  }
+
+/* ─── Status pills — no wrap ─── */
+.status-pill { white-space: nowrap; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 700; }
+
+/* ─── Badge variants ─── */
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 700; white-space: nowrap; }
+.badge-green  { background: #d1fae5; color: #065f46; }
+.badge-amber  { background: #fef3c7; color: #92400e; }
+.badge-red    { background: #fee2e2; color: #991b1b; }
+.badge-purple { background: #ede9fe; color: #5b21b6; }
+.badge-gray   { background: var(--surface2); color: var(--muted); }
+
+/* ─── Detail panel ─── */
+.detail-panel { width: min(420px, 96vw); }
+
+/* ─── Sidebar nav text ─── */
+.nav-item span:not(.ni-icon):not(.nav-badge) {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;
+}
+
+/* ─── Topbar search responsive ─── */
+@media (max-width: 900px) {
+  .tb-search { min-width: 130px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 680px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; min-height: auto; height: auto; position: relative; flex-direction: row; flex-wrap: wrap; padding-bottom: 8px; }
+  .sb-nav { flex-direction: row; flex-wrap: wrap; padding: 4px; }
+  .nav-item { font-size: 11px; padding: 6px 8px; }
+  .main-area { width: 100%; }
+  .view { padding: 14px 12px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* ─── Section divider ─── */
+.section-divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+/* ─── Timeline items ─── */
+.tl-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); min-width: 0; }
+.tl-item:last-child { border-bottom: none; }
+.tl-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.tl-content { flex: 1; min-width: 0; }
+.tl-top  { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.tl-name { font-size: 13px; font-weight: 600; }
+.tl-time { font-size: 11px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+.tl-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 5px 0; }
+.tl-tag  { background: var(--surface2); font-size: 11px; padding: 2px 7px; border-radius: 99px; }
+.tl-note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ─── Note item ─── */
+.note-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.note-item:last-child { border-bottom: none; }
+.note-text { font-size: 13px; margin-bottom: 5px; line-height: 1.5; }
+.note-meta { font-size: 11px; color: var(--muted); display: flex; gap: 10px; }
+
+/* ─── Urgent grid ─── */
+.urgent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.urgent-card { background: var(--surface); border-radius: var(--r); padding: 13px; box-shadow: var(--shadow); border-left: 3px solid var(--high); cursor: pointer; transition: box-shadow var(--t); min-width: 0; }
+.urgent-card:hover { box-shadow: var(--shadow-md); }
+.uc-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.uc-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.uc-meta { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+
+/* ─── Toast ─── */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--sidebar); color: #fff; padding: 10px 20px; border-radius: var(--r);
+  font-size: 13px; font-weight: 600; z-index: 9999; opacity: 0; transition: all .3s;
+  white-space: nowrap; max-width: 90vw; text-overflow: ellipsis; overflow: hidden; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 </style>
 </head>
@@ -1015,8 +1199,8 @@ updateClock();setInterval(updateClock,10000);
 (function(){const h=new Date().getHours();document.getElementById('overviewGreeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', Alex 👋';})();
 
 // Theme
-let dark=localStorage.getItem('fpTrainerTheme')==='dark';
-function toggleTheme(){dark=!dark;localStorage.setItem('fpTrainerTheme',dark?'dark':'');applyTheme();}
+let dark=(typeof FP_STORE!=='undefined'?FP_STORE.getTheme('trainer'):localStorage.getItem('fpTrainerTheme'))==='dark';
+function toggleTheme(){dark=!dark;if(typeof FP_STORE!=='undefined')FP_STORE.setTheme('trainer',dark?'dark':'');localStorage.setItem('fpTrainerTheme',dark?'dark':'');applyTheme();}
 function applyTheme(){document.documentElement.setAttribute('data-theme',dark?'dark':'');document.querySelectorAll('#themeToggle').forEach(b=>b.textContent=dark?'☀️':'🌙');}
 applyTheme();
 
@@ -1033,6 +1217,7 @@ function showView(v){
 }
 
 // Stats
+function _avg(field){var active=DOGS.filter(function(d){return d.behaviourScore>0;});return active.length?Math.round(active.reduce(function(s,d){return s+(d[field]||0);},0)/active.length):0;}
 function renderStats(){
   const total=DOGS.length,stellar=DOGS.filter(d=>d.status==='STELLAR').length,critical=DOGS.filter(d=>d.status==='CRITICAL').length,stalled=DOGS.filter(d=>d.status==='STALLED').length,inactive=DOGS.filter(d=>d.status==='INACTIVE').length;
   const active=DOGS.filter(d=>d.behaviourScore>0);const avg=Math.round(active.reduce((s,d)=>s+d.behaviourScore,0)/active.length);
@@ -1087,16 +1272,22 @@ function renderDonut(){
 }
 
 // AI insights
-const AI_INSIGHTS=[
-  {icon:'🔴',text:'<strong>Luna</strong> (German Shepherd) — Reactivity flag active. Score down 7 pts in 2 weeks. 1:1 session needed urgently.'},
-  {icon:'⚠️',text:'<strong>Biscuit</strong> (Labrador) — Loose-lead stalling at 45%. Owner reward timing off. Schedule coaching call.'},
-  {icon:'⏸',text:'<strong>Charlie</strong> (Golden Retriever) — 7 days inactive. Owner unresponsive. Final outreach recommended.'},
-  {icon:'🌟',text:'<strong>Pepper</strong> (Border Collie) — Top performer. Ready for Module 4. Owner engagement exceptional.'},
-  {icon:'📈',text:'<strong>Bella</strong> (French Bulldog) — Plateau detected. Reduce session frequency, add enrichment.'},
-  {icon:'🧩',text:'<strong>Milo</strong> (Golden Retriever) — 88% enrichment engagement. Channel into recall for fast gains.'},
-];
-function renderAIInsightsMini(){document.getElementById('aiInsightsMini').innerHTML=AI_INSIGHTS.slice(0,3).map(i=>`<div class="ai-insight"><div class="ai-insight-icon">${i.icon}</div><div class="ai-insight-text">${i.text}</div></div>`).join('');}
-function renderAIFull(){document.getElementById('aiFullInsights').innerHTML=AI_INSIGHTS.map(i=>`<div class="ai-insight"><div class="ai-insight-icon">${i.icon}</div><div class="ai-insight-text">${i.text}</div></div>`).join('');}
+// AI insights derived from FP_AI (ai-layer.js) — not hardcoded
+// Generates from DOGS data + FP_AI.analyse()
+function getAIInsights(){
+  if(!DOGS||!DOGS.length) return [];
+  return DOGS.filter(function(d){return d.behaviourScore>0;}).map(function(d){
+    var storageData={sessions:d.sessionLog||[],completedLessons:d.completedLessons||[],streak:d.streak||0};
+    var insight=typeof FP_AI!=='undefined'?FP_AI.analyse(storageData):null;
+    if(!insight) return {icon:'📊',text:'<strong>'+d.name+'</strong> — data pending'};
+    var icon=insight.riskLevel==='HIGH'?'🔴':insight.riskLevel==='MEDIUM'?'⚠️':'🌟';
+    var action=insight.suggestedActions[0]||'Continue monitoring';
+    return {icon:icon,text:'<strong>'+d.name+'</strong> ('+d.breed+') — '+(insight.dropOff?insight.dropOff.msg:insight.trendSummary)+' <em style="color:var(--muted);font-size:11px">→ '+action+'</em>'};
+  });
+}
+var AI_INSIGHTS = []; // populated on render via getAIInsights()
+function renderAIInsightsMini(){var ins=getAIInsights();document.getElementById('aiInsightsMini').innerHTML=ins.slice(0,3).map(function(i){return '<div class="ai-insight"><div class="ai-insight-icon">'+i.icon+'</div><div class="ai-insight-text">'+i.text+'</div></div>';}).join('');}
+function renderAIFull(){var ins=getAIInsights();document.getElementById('aiFullInsights').innerHTML=ins.map(function(i){return '<div class="ai-insight"><div class="ai-insight-icon">'+i.icon+'</div><div class="ai-insight-text">'+i.text+'</div></div>';}).join('');}
 
 function renderAIActions(){
   const actions=[{p:'URGENT',dog:'Luna',action:'Book emergency 1:1 session',icon:'📞'},{p:'TODAY',dog:'Biscuit',action:'Send reward timing coaching video',icon:'🎥'},{p:'TODAY',dog:'Charlie',action:'Send final re-engagement email',icon:'📧'},{p:'THIS WEEK',dog:'Bella',action:'Update plan — reduce session frequency',icon:'📝'},{p:'THIS WEEK',dog:'Pepper',action:'Unlock Module 4 content',icon:'🔓'},{p:'THIS WEEK',dog:'Milo',action:'Add scent work enrichment plan',icon:'👃'}];
@@ -1183,13 +1374,8 @@ function renderAnalyticsCharts(){
 }
 
 // Courses
-const MODULES=[
-  {n:1,name:'Foundations',lessons:['Understanding Puppy Psychology','Marker Word Training','Focus & Attention Building','Reward Timing Fundamentals','Calmness Foundations']},
-  {n:2,name:'Core Obedience',lessons:['Sit & Down Reliability','Recall Foundations','Loose Lead Walking','Calm Door Behaviour','Polite Greeting Skills']},
-  {n:3,name:'Socialisation & Confidence',lessons:['Environmental Confidence','Positive Social Exposure','Reducing Overstimulation','New Experience Handling','Confidence Building Games']},
-  {n:4,name:'Home Life Success',lessons:['Toilet Training System','Crate Confidence','Alone Time Training','Reducing Destructive Behaviour','Calm Household Behaviour']},
-  {n:5,name:'Enrichment & Long-Term Development',lessons:['Mental Stimulation Games','Structured Play Systems','Scent Work Foundations','Long-Term Habit Reinforcement','Advanced Enrichment Planning']},
-];
+// MODULES sourced from storage.js (FP_STORE) — do not redefine here
+var MODULES = typeof FP_STORE !== 'undefined' ? FP_STORE.getModules().map(function(m){ return {n:m.n, name:m.name, id:m.id, lessons:m.lessons.map(function(l){return l.name;})}; }) : [];
 function renderCourses(){
   const active=DOGS.filter(d=>d.behaviourScore>0);
   document.getElementById('coursesView').innerHTML=`<div class="two-col"><div>${MODULES.map(m=>{const inM=active.filter(d=>d.moduleNum===m.n).length,past=active.filter(d=>d.moduleNum>m.n).length;return`<div class="card" style="margin-bottom:12px"><div class="card-header"><div class="card-title">Module ${m.n} — ${m.name}</div><div style="display:flex;gap:8px"><span class="badge badge-green">${past} done</span><span class="badge badge-amber">${inM} active</span></div></div><div class="card-body">${m.lessons.map((l,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px"><span>${i<3?'✅':'⏳'}</span><span>${l}</span><span style="margin-left:auto;font-size:11px;color:var(--muted)">${i<2?'All dogs':'In progress'}</span></div>`).join('')}</div></div>`;}).join('')}</div><div><div class="card"><div class="card-header"><div class="card-title">🐕 Dog Module Status</div></div><div class="card-body">${active.map(d=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div class="dog-av" style="background:${d.avatar};width:28px;height:28px;font-size:11px">${d.initials}</div><div style="flex:1"><div style="font-size:12px;font-weight:700">${d.name}</div><div style="font-size:11px;color:var(--muted)">${d.module}</div></div><div style="font-size:12px;font-weight:600;color:var(--primary)">L${d.lessonNum}/5</div></div>`).join('')}</div></div></div></div>`;
@@ -1270,8 +1456,8 @@ showView('overview');
 // ══════════════════════════════════════════════════════
 const PWA_KEY = 'fp_pwa_events';
 
-function pwaGetEvents()  { try { return JSON.parse(localStorage.getItem(PWA_KEY)||'[]'); } catch(e){ return []; } }
-function pwaSaveEvents(ev){ localStorage.setItem(PWA_KEY, JSON.stringify(ev)); }
+function pwaGetEvents()  { return typeof FP_STORE!=='undefined' ? FP_STORE.getPWAEvents() : (function(){ try{return JSON.parse(localStorage.getItem(PWA_KEY)||'[]');}catch(e){return [];} })(); }
+function pwaSaveEvents(ev){ if(typeof FP_STORE!=='undefined'){FP_STORE._raw.set('pwa_events',ev);}else{localStorage.setItem(PWA_KEY,JSON.stringify(ev));} }
 function pwaLog(type, meta){
   var events = pwaGetEvents();
   events.unshift({
