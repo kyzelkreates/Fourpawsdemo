@@ -4,6 +4,161 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>Four Paws Academy — Owner Training Companion</title>
+<script src="./dataProvider.js">
+// ══════════════════════════════════════════════════════════
+//  PUPPY MASTERCLASS — Owner Portal
+// ══════════════════════════════════════════════════════════
+const CURRICULUM = [
+  { id:1, name:'Module 1 — Foundations', emoji:'🌱', lessons:[
+    {id:'l1_1',name:'Understanding Puppy Psychology',  desc:'How dogs learn, critical periods and building trust',              tip:'Make every interaction positive — puppies learn through association.',xp:50},
+    {id:'l1_2',name:'Marker Word Training',            desc:'Introducing the clicker or verbal marker cue',                   tip:'Your marker must always be followed by a reward — no exceptions.',xp:50},
+    {id:'l1_3',name:'Focus & Attention Building',      desc:'Teaching your dog to check in with you voluntarily',             tip:'Reward every eye contact your dog offers.',xp:60},
+    {id:'l1_4',name:'Reward Timing Fundamentals',      desc:'Mark the exact moment of the behaviour you want',               tip:'The reward must land within 1.5 seconds of the behaviour.',xp:60},
+    {id:'l1_5',name:'Calmness Foundations',            desc:'Building a settle cue and reducing arousal at home',             tip:'Reward any moment of stillness — even accidental.',xp:80},
+  ]},
+  { id:2, name:'Module 2 — Core Obedience', emoji:'🎯', lessons:[
+    {id:'l2_1',name:'Sit & Down Reliability',          desc:'Building 20+ successful reps in multiple environments',          tip:'A reliable sit means 9/10 responses anywhere.',xp:60},
+    {id:'l2_2',name:'Recall Foundations',              desc:'Building "come" as the most rewarding thing in the world',       tip:'Never call your dog to something unpleasant — protect that recall cue.',xp:80},
+    {id:'l2_3',name:'Loose Lead Walking',              desc:'Teaching your dog that a loose lead keeps the walk going',       tip:'Reward at your hip, not out front.',xp:80},
+    {id:'l2_4',name:'Calm Door Behaviour',             desc:'No rushing, no jumping — a controlled exit routine',            tip:'Your dog only gets to leave when all four paws are on the floor.',xp:60},
+    {id:'l2_5',name:'Polite Greeting Skills',          desc:'Four paws on floor when meeting people and dogs',               tip:'End the greeting the moment jumping begins.',xp:70},
+  ]},
+  { id:3, name:'Module 3 — Socialisation', emoji:'🌍', lessons:[
+    {id:'l3_1',name:'Environmental Confidence',        desc:'Novel sounds, surfaces and environments',                        tip:'Never force interaction — let your dog choose to approach.',xp:70},
+    {id:'l3_2',name:'Positive Social Exposure',        desc:'Structured introductions to other dogs and people',             tip:'One calm positive interaction beats 20 chaotic ones.',xp:80},
+    {id:'l3_3',name:'Reducing Overstimulation',        desc:'Managing arousal in high-distraction environments',             tip:'A sniff walk is the best pre-session warm-up.',xp:80},
+    {id:'l3_4',name:'New Experience Handling',         desc:'Vets, groomers, car travel — positive conditioning',           tip:'Work at the lowest intensity your dog is comfortable with.',xp:70},
+    {id:'l3_5',name:'Confidence Building Games',       desc:'Wobble boards, novel objects and exploration games',            tip:'Reward every brave investigative moment.',xp:80},
+  ]},
+  { id:4, name:'Module 4 — Home Life', emoji:'🏠', lessons:[
+    {id:'l4_1',name:'Toilet Training System',          desc:'A consistent routine that ends accidents fast',                 tip:'Take outside every 45 mins, after every meal, sleep and play.',xp:60},
+    {id:'l4_2',name:'Crate Confidence',                desc:'A safe, voluntary retreat your dog loves',                     tip:'Never lock the crate until your dog enters willingly.',xp:70},
+    {id:'l4_3',name:'Alone Time Training',             desc:'Preventing separation distress through gradual independence',   tip:'Start with 10 seconds. Build to 5 mins before increasing.',xp:80},
+    {id:'l4_4',name:'Reducing Destructive Behaviour',  desc:'Management, enrichment and appropriate outlets',               tip:'Management first — remove the opportunity, then provide a better alternative.',xp:70},
+    {id:'l4_5',name:'Calm Household Behaviour',        desc:'Settle on mat, calm greetings and relaxed mealtimes',         tip:'Reward all calm moments — even accidental ones.',xp:70},
+  ]},
+  { id:5, name:'Module 5 — Enrichment & Development', emoji:'🧩', lessons:[
+    {id:'l5_1',name:'Mental Stimulation Games',        desc:'Puzzle feeders, snuffle mats and problem-solving',             tip:'10 minutes of mental work beats 30 minutes of walking.',xp:80},
+    {id:'l5_2',name:'Structured Play Systems',         desc:'Using play as reinforcement — tug, chase and retrieve',        tip:'Make yourself more fun than the environment.',xp:80},
+    {id:'l5_3',name:'Scent Work Foundations',          desc:'Introducing nose work games and hide-and-seek',               tip:'A dog who sniffs is a calm and happy dog.',xp:90},
+    {id:'l5_4',name:'Long-Term Habit Reinforcement',   desc:'Maintaining skills under distraction, distance and duration',  tip:'The 3 Ds: duration, distance, distraction — one at a time.',xp:80},
+    {id:'l5_5',name:'Advanced Enrichment Planning',    desc:'Designing a weekly enrichment schedule for your dog',          tip:'Aim for: 1 scent, 1 puzzle, 1 confidence, 1 play every 48 hours.',xp:90},
+  ]},
+];
+
+function getCompletedLessons(){
+  var dogId = typeof FP_DATA !== 'undefined' ? FP_DATA.getActiveDogId() : null;
+  var key = dogId ? 'lessons_done_'+dogId : 'lessons_done_demo';
+  try{ return JSON.parse(localStorage.getItem(key)||'[]'); }catch(e){ return []; }
+}
+function saveCompletedLessons(list){
+  var dogId = typeof FP_DATA !== 'undefined' ? FP_DATA.getActiveDogId() : null;
+  var key = dogId ? 'lessons_done_'+dogId : 'lessons_done_demo';
+  localStorage.setItem(key, JSON.stringify(list));
+}
+
+function renderLessonsTab(){
+  var done   = getCompletedLessons();
+  var total  = CURRICULUM.reduce(function(s,m){ return s+m.lessons.length; }, 0);
+  var pct    = Math.round(done.length/total*100);
+  var curMod = CURRICULUM.find(function(m){ return !m.lessons.every(function(l){ return done.includes(l.id); }); }) || CURRICULUM[CURRICULUM.length-1];
+
+  // Update profile card
+  var dogName = localStorage.getItem('fp_dog_name') || 'Your Dog';
+  var breed   = localStorage.getItem('fp_dog_breed') || '';
+  var age     = localStorage.getItem('fp_dog_age') || '';
+  var pnEl = document.getElementById('profile-dog-name'); if(pnEl) pnEl.textContent = dogName + '\'s Course';
+  var pmEl = document.getElementById('profile-dog-meta'); if(pmEl) pmEl.textContent = [breed,age].filter(Boolean).join(' · ') || 'Four Paws Puppy Masterclass';
+  var chipsEl = document.getElementById('profile-dog-chips');
+  if(chipsEl) chipsEl.innerHTML = [
+    pct+'% complete',
+    done.length+'/'+total+' lessons',
+    '🔥 ' + (parseInt(localStorage.getItem('fp_streak'))||0) + ' day streak'
+  ].map(function(t){ return '<span class="profile-chip">'+t+'</span>'; }).join('');
+  var bar = document.getElementById('course-progress-bar'); if(bar) bar.style.width=pct+'%';
+  var lbl = document.getElementById('course-pct-lbl'); if(lbl) lbl.textContent=pct+'%';
+
+  // Render modules
+  var container = document.getElementById('modules-container');
+  if(!container) return;
+  container.innerHTML = '';
+  CURRICULUM.forEach(function(mod){
+    var doneCnt = mod.lessons.filter(function(l){ return done.includes(l.id); }).length;
+    var allDone = doneCnt === mod.lessons.length;
+    var isActive = mod.id === curMod.id;
+    var modPct = Math.round(doneCnt/mod.lessons.length*100);
+    var numCls = allDone?'done':isActive?'active':'';
+    var numTxt = allDone?'✓':mod.id;
+
+    var block = document.createElement('div');
+    block.className = 'module-block' + (isActive||allDone?' open':'');
+    block.innerHTML =
+      '<div class="module-header" onclick="this.closest(\'.module-block\').classList.toggle(\'open\')">' +
+        '<div class="module-num '+numCls+'">'+numTxt+'</div>' +
+        '<div class="module-info">' +
+          '<div class="module-name">'+mod.emoji+' '+mod.name+'</div>' +
+          '<div class="module-meta">'+doneCnt+'/'+mod.lessons.length+' lessons · '+(allDone?'✅ Complete':isActive?'▶ In Progress':'🔒')+'</div>' +
+        '</div>' +
+        '<span class="module-chevron">▼</span>' +
+      '</div>' +
+      '<div class="mod-prog-bar"><div class="mod-prog-fill" style="width:'+modPct+'%"></div></div>' +
+      '<div class="module-lessons">' +
+        mod.lessons.map(function(l, li){
+          var isDone = done.includes(l.id);
+          var isNext = !isDone && li === doneCnt && (isActive||allDone);
+          var locked = !isDone && !isActive && !allDone && mod.id > curMod.id;
+          return '<div class="lesson-row">' +
+            '<div class="lesson-check '+(isDone?'done':isNext?'next':'')+'" onclick="toggleLesson(\''+l.id+'\','+locked+')">'+
+              (isDone?'✓':isNext?'▶':'')+
+            '</div>' +
+            '<div style="flex:1;min-width:0">' +
+              '<div class="lesson-name '+(isDone?'done':'')+'">'+l.name+'</div>' +
+              '<div class="lesson-desc">'+l.desc+'</div>' +
+              ((isDone||isNext)?'<div class="lesson-tip">💡 '+l.tip+'</div>':'') +
+            '</div>' +
+            '<div class="lesson-xp">+'+l.xp+' XP</div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+    container.appendChild(block);
+  });
+}
+
+function toggleLesson(id, locked){
+  if(locked){ showToast('🔒 Complete earlier modules first'); return; }
+  var done = getCompletedLessons();
+  var idx  = done.indexOf(id);
+  if(idx > -1){ done.splice(idx,1); }
+  else {
+    done.push(id);
+    var lesson = CURRICULUM.flatMap(function(m){ return m.lessons; }).find(function(l){ return l.id===id; });
+    if(lesson) showToast('🎉 Lesson complete! +'+lesson.xp+' XP');
+    var mod = CURRICULUM.find(function(m){ return m.lessons.some(function(l){ return l.id===id; }); });
+    if(mod && mod.lessons.every(function(l){ return done.includes(l.id); })){
+      setTimeout(function(){ showToast('🏅 '+mod.name+' complete!'); }, 1200);
+    }
+  }
+  saveCompletedLessons(done);
+  renderLessonsTab();
+  renderGoals(); // refresh achievements
+}
+
+// ── Trainer strip ──────────────────────────────────────────────────────────
+function updateTrainerStrip(){
+  var done   = getCompletedLessons();
+  var total  = CURRICULUM.reduce(function(s,m){ return s+m.lessons.length; }, 0);
+  var curMod = CURRICULUM.find(function(m){ return !m.lessons.every(function(l){ return done.includes(l.id); }); });
+  var nextLesson = curMod ? curMod.lessons.find(function(l){ return !done.includes(l.id); }) : null;
+  var sub = document.getElementById('trainer-strip-sub');
+  if(sub) sub.textContent = nextLesson ? 'Next: ' + nextLesson.name : 'All lessons complete! 🎉';
+  var name = document.getElementById('trainer-strip-name');
+  if(name) name.textContent = localStorage.getItem('fp_trainer_name') || 'Four Paws Academy';
+}
+
+// ── Override goTab to render lessons on demand ─────────────────────────────
+var _origGoTab = typeof goTab === 'function' ? goTab : null;
+
+</script>
 <style>
 :root{
   --bg:#f5f7f0;--surface:#fff;--surface2:#eef4e8;--border:#c8d8b0;
@@ -128,13 +283,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 
 /* feedback */
 .feedback-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:18px;margin-top:16px;animation:fadeIn .3s ease}
-.feedback-card.risk-high{border-color:var(--high);background:#fff5f5}
-.feedback-card.risk-critical{border-color:var(--critical);background:#faf5ff}
-.risk-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
-.risk-badge.LOW{background:#d1fae5;color:#065f46}
-.risk-badge.MEDIUM{background:#fef3c7;color:#92400e}
-.risk-badge.HIGH{background:#fee2e2;color:#991b1b}
-.risk-badge.CRITICAL{background:#ede9fe;color:#4c1d95}
+.feedback-card.difficulty-high{border-color:var(--high);background:#fff5f5}
+.feedback-card.difficulty-critical{border-color:var(--critical);background:#faf5ff}
+.difficulty-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.difficulty-badge.LOW{background:#d1fae5;color:#065f46}
+.difficulty-badge.MEDIUM{background:#fef3c7;color:#92400e}
+.difficulty-badge.HIGH{background:#fee2e2;color:#991b1b}
+.difficulty-badge.CRITICAL{background:#ede9fe;color:#4c1d95}
 .feedback-sugg{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:12px}
 .feedback-actions{display:flex;gap:8px;flex-wrap:wrap}
 .feedback-tip{font-size:13px;color:var(--muted);background:var(--surface2);border-radius:var(--rs);padding:8px 12px;margin-top:8px;border-left:3px solid var(--accent)}
@@ -275,6 +430,70 @@ canvas{width:100%!important;display:block}
 .fp-footer{padding:12px 16px 20px;font-size:11px;color:var(--light);text-align:center;line-height:1.4;border-top:1px solid var(--border)}
 .divider{height:1px;background:var(--border);margin:14px 0}
 .hidden{display:none!important}
+
+/* ── Lessons / Masterclass ── */
+.module-block{background:var(--surface);border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:12px;overflow:hidden}
+.module-header{display:flex;align-items:center;gap:10px;padding:13px 15px;cursor:pointer;user-select:none}
+.module-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;background:var(--surface2);color:var(--muted)}
+.module-num.done{background:var(--low);color:#fff}
+.module-num.active{background:var(--primary);color:#fff}
+.module-info{flex:1;min-width:0}
+.module-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.module-meta{font-size:11px;color:var(--muted);margin-top:1px}
+.module-chevron{font-size:12px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.module-block.open .module-chevron{transform:rotate(180deg)}
+.module-lessons{display:none;padding:0 14px 14px}
+.module-block.open .module-lessons{display:block}
+.lesson-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.lesson-row:last-child{border-bottom:none}
+.lesson-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;transition:all .2s;cursor:pointer}
+.lesson-check.done{background:var(--low);border-color:var(--low);color:#fff}
+.lesson-check.next{background:var(--primary);border-color:var(--primary);color:#fff}
+.lesson-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.lesson-name.done{text-decoration:line-through;opacity:.6}
+.lesson-desc{font-size:11px;color:var(--muted);line-height:1.45}
+.lesson-tip{font-size:11px;color:var(--primary);background:var(--surface2);border-left:3px solid var(--primary);padding:6px 10px;border-radius:0 6px 6px 0;margin-top:6px;line-height:1.5}
+.lesson-xp{font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;margin-top:2px}
+.mod-prog-bar{height:4px;background:var(--surface2);border-radius:99px;overflow:hidden;margin:6px 14px 0}
+.mod-prog-fill{height:100%;background:var(--primary);border-radius:99px;transition:width .6s ease}
+
+/* ── Profile chips ── */
+.profile-chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:2px 10px;font-size:10px;font-weight:600;color:#fff}
+
+/* ── History stats ── */
+.history-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.hstat{background:var(--surface);border-radius:var(--r);padding:12px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.hstat-val{font-size:22px;font-weight:900;color:var(--primary);letter-spacing:-1px}
+.hstat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-top:2px}
+
+/* ── Goals / Badges tab ── */
+.achievement-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.achievement-item{background:var(--surface);border-radius:var(--r);padding:12px 8px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.06);border:1.5px solid var(--border)}
+.achievement-item.unlocked{border-color:var(--accent);background:linear-gradient(135deg,#fffbeb,#fff)}
+.ach-icon{font-size:28px;margin-bottom:4px}
+.ach-name{font-size:11px;font-weight:700;color:var(--text);line-height:1.3}
+.ach-lock{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* ── Nav tab sizing fix for 6 tabs ── */
+.bottom-nav{display:flex;justify-content:space-around;padding:6px 0 calc(env(safe-area-inset-bottom)+6px)}
+.nav-tab{flex:1;min-width:0;padding:8px 2px;font-size:9px}
+.nav-tab>span{white-space:nowrap}
+
+/* ── Quick actions grid ── */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.qa-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;cursor:pointer;transition:all .18s;text-align:left;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.qa-btn:active{transform:scale(.97)}
+.qa-icon{font-size:22px}
+.qa-label{font-size:13px;font-weight:700;color:var(--text)}
+.qa-desc{font-size:11px;color:var(--muted)}
+
+/* ── Log section ── */
+.log-section{border-radius:var(--r);padding:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+
+/* ── Section title ── */
+.section-title{font-size:20px;font-weight:800;margin-bottom:3px;letter-spacing:-.4px}
+.section-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+
 </style>
 </head>
 <body>
@@ -315,6 +534,11 @@ canvas{width:100%!important;display:block}
   </div>
 
   <div class="quick-actions">
+    <button class="qa-btn" onclick="goTab('lessons')">
+      <span class="qa-icon">🎓</span>
+      <span class="qa-label">My Lessons</span>
+      <span class="qa-desc">Puppy Masterclass</span>
+    </button>
     <button class="qa-btn" onclick="goTab('checkin')">
       <span class="qa-icon">📋</span>
       <span class="qa-label">Log Session</span>
@@ -354,6 +578,16 @@ canvas{width:100%!important;display:block}
     <canvas id="miniChart" height="80"></canvas>
   </div>
 
+  <!-- Trainer connection strip -->
+  <div id="trainer-strip" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:20px">🎓</span>
+    <div style="flex:1">
+      <div style="font-size:12px;font-weight:700" id="trainer-strip-name">Four Paws Academy</div>
+      <div style="font-size:11px;color:var(--muted)" id="trainer-strip-sub">Tap to view your next lesson</div>
+    </div>
+    <button class="btn-sm filled" onclick="goTab('lessons')" style="font-size:12px;padding:6px 12px">View →</button>
+  </div>
+
   <button class="btn-emergency" onclick="openEmergency()">🐾 Contact My Trainer</button>
 </div>
 
@@ -376,9 +610,9 @@ canvas{width:100%!important;display:block}
     <div class="scale-wrap">
       <div class="scale-header"><span class="scale-title">🐾 How did the session go?</span><span style="font-size:12px;color:var(--muted)">0 = easy win → 10 = very tough</span></div>
       <div class="scale-labels"><span>Easy win</span><span>Moderate</span><span>Very tough</span></div>
-      <div class="scale-track" id="anxietyScale"></div>
-      <div class="score-display" id="anxietyVal">—</div>
-      <div class="score-label" id="anxietyLabel"></div>
+      <div class="scale-track" id="sessionScale"></div>
+      <div class="score-display" id="sessionVal">—</div>
+      <div class="score-label" id="sessionLabel"></div>
     </div>
     <button class="btn-primary" onclick="nextStep(1)">Continue →</button>
   </div>
@@ -438,7 +672,7 @@ canvas{width:100%!important;display:block}
     <div class="form-card">
       <div class="form-card-title">📝 Anything else?</div>
       <label class="form-label">Training methods used today</label>
-      <div class="tag-group" style="margin-bottom:12px" id="copingTags">
+      <div class="tag-group" style="margin-bottom:12px" id="methodTags">
         <span class="tag" onclick="toggleTag(this)">Luring</span>
         <span class="tag" onclick="toggleTag(this)">Shaping</span>
         <span class="tag" onclick="toggleTag(this)">Free shaping</span>
@@ -469,6 +703,35 @@ canvas{width:100%!important;display:block}
     </div>
     <div style="margin-top:16px;font-size:13px;color:var(--muted);text-align:center">Session saved! Your trainer can see your log ✓</div>
   </div>
+</div>
+
+<!-- LESSONS TAB -->
+<div class="tab-page hidden" id="tab-lessons">
+  <div class="section-title">🎓 Puppy Masterclass</div>
+  <div class="section-sub">Your assigned training programme</div>
+
+  <!-- Dog profile card -->
+  <div class="log-section" id="dog-profile-card" style="background:linear-gradient(135deg,#0d3320,#1a4d28);color:#fff;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">🐕</div>
+      <div style="flex:1">
+        <div style="font-size:17px;font-weight:800;margin-bottom:2px" id="profile-dog-name">Loading…</div>
+        <div style="font-size:12px;opacity:.75" id="profile-dog-meta">Breed · Age</div>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap" id="profile-dog-chips"></div>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;opacity:.7;margin-bottom:5px">
+        <span>Course progress</span><span id="course-pct-lbl">0%</span>
+      </div>
+      <div style="background:rgba(255,255,255,.15);border-radius:99px;height:6px">
+        <div id="course-progress-bar" style="height:100%;background:var(--accent);border-radius:99px;width:0%;transition:width .8s ease"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module list -->
+  <div id="modules-container"></div>
 </div>
 
 <!-- EXERCISES TAB -->
@@ -561,17 +824,17 @@ canvas{width:100%!important;display:block}
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-tab active" id="nav-home" onclick="goTab('home')">🏠<span>Home</span></button>
-  <button class="nav-tab" id="nav-checkin" onclick="goTab('checkin')"><span style="font-size:18px">📋</span><span>Log Session</span><div class="notif-dot" id="checkinDot"></div></button>
+  <button class="nav-tab" id="nav-checkin" onclick="goTab('checkin')"><span style="font-size:18px">📋</span><span>Log</span><div class="notif-dot" id="checkinDot"></div></button>
+  <button class="nav-tab" id="nav-lessons" onclick="goTab('lessons')">🎓<span>Lessons</span></button>
   <button class="nav-tab" id="nav-exercises" onclick="goTab('exercises')">🧩<span>Enrich</span></button>
-  <button class="nav-tab" id="nav-history" onclick="goTab('history')">📊<span>History</span></button>
-  <button class="nav-tab" id="nav-journal" onclick="goTab('journal')">📓<span>Notes</span></button>
-  <button class="nav-tab" id="nav-goals" onclick="goTab('goals')">🎯<span>Goals</span></button>
+  <button class="nav-tab" id="nav-history" onclick="goTab('history')">📊<span>Progress</span></button>
+  <button class="nav-tab" id="nav-goals" onclick="goTab('goals')">🏅<span>Badges</span></button>
 </nav>
 
 <!-- Exercise runner -->
 <div class="ex-runner hidden" id="exRunner">
   <div class="runner-inner">
-    <div class="runner-title" id="runnerTitle">4-7-8 Breathing</div>
+    <div class="runner-title" id="runnerTitle">Breathing Reset</div>
     <div class="breath-circle" id="breathCircle"></div>
     <div class="runner-instr" id="runnerInstr">Inhale</div>
     <div class="runner-count" id="runnerCount">4</div>
@@ -585,7 +848,7 @@ canvas{width:100%!important;display:block}
 <!-- Grounding runner -->
 <div class="ex-runner hidden" id="groundRunner">
   <div class="runner-inner">
-    <div class="runner-title">5-4-3-2-1 Grounding</div>
+    <div class="runner-title">5-4-3-2-1 Focus &amp; Calm</div>
     <div class="ground-step">
       <div class="ground-number" id="groundNum">5</div>
       <div class="ground-prompt" id="groundPrompt">Things you can SEE</div>
@@ -605,7 +868,7 @@ canvas{width:100%!important;display:block}
     <p>Need help with a training challenge? Your trainer is here to support you.</p>
     <a href="tel:116123" class="btn-emerg-large">📞 Call Samaritans: 116 123</a>
     <a href="sms:85258" class="btn-emerg-large" style="background:#7c3aed">💬 Text SHOUT: 85258</a>
-    <button class="btn-secondary" style="margin-top:8px" onclick="goTab('exercises');closeEmergency()">🫁 Try a Breathing Exercise</button>
+    <button class="btn-secondary" style="margin-top:8px" onclick="goTab('exercises');closeEmergency()">🧩 Try an Enrichment Activity</button>
     <button class="btn-secondary" onclick="closeEmergency()">I'm okay, close this</button>
   </div>
 </div>
@@ -667,13 +930,13 @@ function defaultGoals(){
 function defaultCheckins(){
   const now=Date.now(); const day=86400000;
   return [
-    {date:now,score:3,sleep:7,note:'Great recall practice in the garden',triggers:['Familiar Routine'],coping:['Food reward'],risk:'LOW'},
-    {date:now-day,score:6,sleep:5,note:'Loose-lead work near other dogs',triggers:['Other Dogs'],coping:['Play reward'],risk:'MEDIUM'},
-    {date:now-day*2,score:4,sleep:6,note:'Mix of sit, stay and target training',triggers:['New Skill'],coping:['Shaping'],risk:'MEDIUM'},
-    {date:now-day*3,score:8,sleep:4,note:'Reactive incident near traffic, ended early',triggers:['High Distraction'],coping:['Luring'],risk:'HIGH'},
-    {date:now-day*4,score:2,sleep:8,note:'Best session yet! Mastered down-stay',triggers:[],coping:['Play reward','Food reward'],risk:'LOW'},
-    {date:now-day*5,score:5,sleep:6,note:'New environment - park session',triggers:['New Environment'],coping:['Food reward'],risk:'MEDIUM'},
-    {date:now-day*6,score:3,sleep:7,note:'Morning enrichment + recall practice',triggers:[],coping:['Shaping'],risk:'LOW'},
+    {date:now,score:3,sleep:7,note:'Great recall practice in the garden',triggers:['Familiar Routine'],coping:['Food reward'],difficulty:'LOW'},
+    {date:now-day,score:6,sleep:5,note:'Loose-lead work near other dogs',triggers:['Other Dogs'],coping:['Play reward'],difficulty:'MEDIUM'},
+    {date:now-day*2,score:4,sleep:6,note:'Mix of sit, stay and target training',triggers:['New Skill'],coping:['Shaping'],difficulty:'MEDIUM'},
+    {date:now-day*3,score:8,sleep:4,note:'Reactive incident near traffic, ended early',triggers:['High Distraction'],coping:['Luring'],difficulty:'HIGH'},
+    {date:now-day*4,score:2,sleep:8,note:'Best session yet! Mastered down-stay',triggers:[],coping:['Play reward','Food reward'],difficulty:'LOW'},
+    {date:now-day*5,score:5,sleep:6,note:'New environment - park session',triggers:['New Environment'],coping:['Food reward'],difficulty:'MEDIUM'},
+    {date:now-day*6,score:3,sleep:7,note:'Morning enrichment + recall practice',triggers:[],coping:['Shaping'],difficulty:'LOW'},
   ];
 }
 
@@ -683,7 +946,7 @@ function setGreeting(){
   const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   document.getElementById('greetingText').textContent = g + ', Puppy Parent 🐶';
 }
-setGreeting();
+setGreeting(); updateTrainerStrip();
 
 // ── Theme ─────────────────────────────────────────────
 let dark = localStorage.getItem('theme') === 'dark';
@@ -702,6 +965,7 @@ document.getElementById('themeToggle').onclick = function(){
 function goTab(t){
   document.querySelectorAll('.tab-page').forEach(function(p){ p.classList.add('hidden'); });
   document.querySelectorAll('.nav-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(t==='lessons'){ setTimeout(renderLessonsTab,10); }
   var page = document.getElementById('tab-'+t);
   if(page) page.classList.remove('hidden');
   var nb = document.getElementById('nav-'+t);
@@ -743,7 +1007,7 @@ function buildScale(containerId, valueId, stateKey, max){
         if(vEl) vEl.textContent = val;
         if(stateKey === 'score'){
           S.score = val;
-          var lbl = document.getElementById('anxietyLabel');
+          var lbl = document.getElementById('sessionLabel');
           if(lbl) lbl.textContent = val<=2 ? '🌟 Brilliant session!' : val<=4 ? '✅ Good session' : val<=6 ? '🟡 Moderate difficulty' : val<=8 ? '🟠 Tough session' : '🔴 Really hard day';
         }
         if(stateKey === 'sleep') S.sleep = val;
@@ -752,7 +1016,7 @@ function buildScale(containerId, valueId, stateKey, max){
     })(i);
   }
 }
-buildScale('anxietyScale','anxietyVal','score',10);
+buildScale('sessionScale','sessionVal','score',10);
 buildScale('sleepScale','sleepVal','sleep',10);
 
 // ── Tags / chips ──────────────────────────────────────
@@ -787,7 +1051,7 @@ function startNewCheckin(){
     if(d){ d.classList.toggle('active',i===0); d.classList.remove('done'); }
   }
   // Reset scales
-  buildScale('anxietyScale','anxietyVal','score',10);
+  buildScale('sessionScale','sessionVal','score',10);
   buildScale('sleepScale','sleepVal','sleep',10);
   document.getElementById('anxietyVal').textContent = '—';
   document.getElementById('anxietyLabel').textContent = '';
@@ -937,7 +1201,7 @@ function renderHistory(){
     var riskColors = {LOW:'#d1fae5',MEDIUM:'#fef3c7',HIGH:'#fee2e2',CRITICAL:'#ede9fe'};
     var riskText = {LOW:'#065f46',MEDIUM:'#92400e',HIGH:'#991b1b',CRITICAL:'#4c1d95'};
     var tags = (ci.triggers||[]).map(function(t){ return '<span class="h-tag">'+t+'</span>'; }).join('');
-    var rtag = '<span class="h-tag" style="background:'+( riskColors[ci.risk]||'#f1f5f9')+';color:'+(riskText[ci.risk]||'#475569')+'">'+ci.risk+'</span>';
+    var rtag = '<span class="h-tag" style="background:'+( riskColors[ci.difficulty]||'#f1f5f9')+';color:'+(riskText[ci.difficulty]||'#475569')+'">'+ci.difficulty+'</span>';
     return '<div class="history-item">'
       +'<div class="h-score" style="background:'+bg+';color:'+col+'">'+sc+'</div>'
       +'<div class="h-meta">'
@@ -1219,6 +1483,22 @@ var ACHIEVEMENTS = [
   {icon:'🏆',name:'Graduate',       locked:true},
 ];
 
+function getMasteryAchievements(){
+  var done = getCompletedLessons();
+  var mods = CURRICULUM.filter(function(m){ return m.lessons.every(function(l){ return done.includes(l.id); }); });
+  var all  = [
+    {icon:'🎓',name:'First Lesson',  unlocked:done.length>=1},
+    {icon:'📚',name:'5 Lessons',     unlocked:done.length>=5},
+    {icon:'🌱',name:'Foundations',   unlocked:CURRICULUM[0].lessons.every(function(l){return done.includes(l.id);})},
+    {icon:'🎯',name:'Core Obedience',unlocked:CURRICULUM[1].lessons.every(function(l){return done.includes(l.id);})},
+    {icon:'🌍',name:'Socialisation', unlocked:CURRICULUM[2].lessons.every(function(l){return done.includes(l.id);})},
+    {icon:'🏠',name:'Home Life',     unlocked:CURRICULUM[3].lessons.every(function(l){return done.includes(l.id);})},
+    {icon:'🧩',name:'Enrichment',    unlocked:CURRICULUM[4].lessons.every(function(l){return done.includes(l.id);})},
+    {icon:'🏆',name:'Graduate',      unlocked:done.length>=25},
+    {icon:'🔥',name:'7-Day Streak',  unlocked:(parseInt(localStorage.getItem('fp_streak'))||0)>=7},
+  ];
+  return all;
+}
 function renderGoals(){
   var achEl = document.getElementById('achievements');
   if(achEl){

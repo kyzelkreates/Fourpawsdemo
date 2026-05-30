@@ -4,6 +4,175 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Four Paws Academy — Trainer Intelligence OS</title>
+<script src="./dataProvider.js">
+
+// ══════════════════════════════════════════════════════════
+//  DEPLOY OWNER PORTAL — Trainer OS
+// ══════════════════════════════════════════════════════════
+var _depCurrentCode = '';
+var _depCurrentLink = '';
+
+function generateCode(){
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for(var i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+function generatePortalAccess(){
+  var owner  = (document.getElementById('dep-owner-name')||{}).value||'';
+  var email  = (document.getElementById('dep-email')||{}).value||'';
+  var dog    = (document.getElementById('dep-dog-name')||{}).value||'';
+  var breed  = (document.getElementById('dep-breed')||{}).value||'';
+  var age    = (document.getElementById('dep-age')||{}).value||'';
+  var module = (document.getElementById('dep-module')||{}).value||'1';
+  var notes  = (document.getElementById('dep-notes')||{}).value||'';
+
+  if(!owner||!dog){ showToast('⚠️ Owner name and dog name are required'); return; }
+
+  var code = generateCode();
+  _depCurrentCode = code;
+  _depCurrentLink = location.origin + '/owner?code=' + code;
+
+  // Save to storage
+  var client = {
+    id: 'C_'+Date.now(),
+    ownerName: owner, email: email,
+    dogName: dog, breed: breed, age: age,
+    module: parseInt(module),
+    notes: notes,
+    code: code,
+    link: _depCurrentLink,
+    status: 'pending',
+    createdAt: new Date().toISOString()
+  };
+
+  // Save dog profile so owner portal can read it
+  localStorage.setItem('fp_dog_name', dog);
+  localStorage.setItem('fp_dog_breed', breed);
+  localStorage.setItem('fp_dog_age', age);
+  localStorage.setItem('fp_trainer_name', 'Alex Rivera · Four Paws Academy');
+  localStorage.setItem('fp_trainer_notes', notes);
+
+  // Save code
+  var codes = JSON.parse(localStorage.getItem('fp_access_codes')||'[]');
+  codes.push(client);
+  localStorage.setItem('fp_access_codes', JSON.stringify(codes));
+
+  // Show steps
+  var s2 = document.getElementById('dep-step-2');
+  var s3 = document.getElementById('dep-step-3');
+  if(s2) s2.style.display='block';
+  if(s3) s3.style.display='block';
+
+  var codeEl = document.getElementById('dep-code');
+  if(codeEl) codeEl.textContent = code;
+
+  var linkEl = document.getElementById('dep-link-display');
+  if(linkEl) linkEl.textContent = _depCurrentLink;
+
+  // Simple QR visual (text-based placeholder — real QR via API when Supabase is live)
+  var qr = document.getElementById('dep-qr');
+  if(qr){
+    qr.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,.6);text-align:center;padding:10px">QR Code<br><span style="font-size:28px">📲</span><br>'+code+'</div>';
+  }
+
+  showToast('✅ Portal access generated for ' + dog + '! Code: ' + code);
+  renderDeploy();
+}
+
+function copyInstallLink(){
+  navigator.clipboard && navigator.clipboard.writeText(_depCurrentLink).then(function(){ showToast('📋 Install link copied!'); }).catch(function(){ showToast('Link: ' + _depCurrentLink); });
+}
+function copyCode(){
+  navigator.clipboard && navigator.clipboard.writeText(_depCurrentCode).then(function(){ showToast('🔑 Code copied: ' + _depCurrentCode); }).catch(function(){ showToast('Code: ' + _depCurrentCode); });
+}
+function shareViaEmail(){
+  var owner   = (document.getElementById('dep-owner-name')||{}).value||'Owner';
+  var dog     = (document.getElementById('dep-dog-name')||{}).value||'your dog';
+  var email   = (document.getElementById('dep-email')||{}).value||'';
+  var subject = encodeURIComponent('Your Four Paws Training Portal is ready — ' + dog);
+  var body    = encodeURIComponent(
+    'Hi ' + owner + ',
+
+' +
+    'Your personalised dog training portal for ' + dog + ' is ready!
+
+' +
+    '📲 Install Link: ' + _depCurrentLink + '
+' +
+    '🔑 Access Code: ' + _depCurrentCode + '
+
+' +
+    'How to install:
+' +
+    '• iPhone/iPad: Open in Safari → Share → Add to Home Screen
+' +
+    '• Android: Open in Chrome → Menu → Add to Home Screen
+' +
+    '• Desktop: Open in Chrome/Edge → Click ⊕ in address bar
+
+' +
+    'Once installed, open the app and enter your access code when prompted.
+
+' +
+    'Looking forward to working with you and ' + dog + '!
+
+' +
+    'Alex Rivera
+Four Paws Training & Enrichment Academy'
+  );
+  window.open('mailto:' + email + '?subject=' + subject + '&body=' + body);
+}
+function copyInstructions(){
+  var el = document.getElementById('dep-instructions');
+  var txt = el ? el.innerText : '';
+  navigator.clipboard && navigator.clipboard.writeText(txt).then(function(){ showToast('📋 Instructions copied!'); });
+}
+
+function renderDeploy(){
+  var codes   = JSON.parse(localStorage.getItem('fp_access_codes')||'[]');
+  var roster  = document.getElementById('dep-client-roster');
+  var empty   = document.getElementById('dep-roster-empty');
+  if(!roster) return;
+  if(!codes.length){ roster.innerHTML=''; if(empty) empty.style.display='block'; return; }
+  if(empty) empty.style.display='none';
+  var colors  = ['#3a7d44','#f4a435','#3b82f6','#ef4444','#6366f1','#10b981'];
+  roster.innerHTML = codes.slice().reverse().map(function(c,i){
+    var col = colors[i%colors.length];
+    var initials = (c.ownerName||'?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
+    var statusCls = c.status==='installed'?'cs-installed':c.status==='active'?'cs-installed':'cs-pending';
+    var statusTxt = c.status==='installed'?'✅ Installed':c.status==='active'?'✅ Active':'⏳ Pending';
+    return '<div class="client-row">' +
+      '<div class="client-av" style="background:'+col+'">'+initials+'</div>' +
+      '<div class="client-info">' +
+        '<div class="client-name">'+c.ownerName+' &mdash; '+c.dogName+'</div>' +
+        '<div class="client-meta">Code: <strong>'+c.code+'</strong> &middot; '+c.breed+' &middot; '+c.age+'</div>' +
+      '</div>' +
+      '<span class="client-status '+statusCls+'">'+statusTxt+'</span>' +
+      '<button class="btn-sm" style="margin-left:8px" onclick="reDeploy(''+c.id+'')">Resend</button>' +
+    '</div>';
+  }).join('');
+}
+
+function reDeploy(id){
+  var codes = JSON.parse(localStorage.getItem('fp_access_codes')||'[]');
+  var cl = codes.find(function(c){ return c.id===id; });
+  if(!cl) return;
+  _depCurrentCode = cl.code;
+  _depCurrentLink = cl.link || location.origin + '/owner?code='+cl.code;
+  document.getElementById('dep-step-2').style.display='block';
+  document.getElementById('dep-step-3').style.display='block';
+  document.getElementById('dep-code').textContent = cl.code;
+  document.getElementById('dep-link-display').textContent = _depCurrentLink;
+  document.getElementById('dep-owner-name').value = cl.ownerName;
+  document.getElementById('dep-email').value = cl.email||'';
+  document.getElementById('dep-dog-name').value = cl.dogName;
+  document.getElementById('dep-breed').value = cl.breed||'';
+  showToast('Loaded: '+cl.dogName+' — Code: '+cl.code);
+}
+
+</script>
 <style>
 :root{
   --bg:#f3f7f0;--surface:#fff;--surface2:#eef4e8;--surface3:#e4eedc;
@@ -255,6 +424,36 @@ canvas{display:block}
 .srb-sub{font-size:11px;opacity:.7;line-height:1.5}
 .srb-badge{background:rgba(244,164,53,.18);border:1px solid rgba(244,164,53,.35);color:var(--accent);font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
 
+
+/* ── Deploy Portal View ── */
+.deploy-step{background:var(--surface);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:14px}
+.deploy-step-num{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.ds-circle{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ds-title{font-size:14px;font-weight:700}
+.ds-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.deploy-form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.deploy-form-row.three{grid-template-columns:1fr 1fr 1fr}
+.deploy-field label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+.deploy-field input,.deploy-field select,.deploy-field textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--surface2);color:var(--text);font-size:13px;outline:none;font-family:inherit;transition:border-color .18s}
+.deploy-field input:focus,.deploy-field select:focus,.deploy-field textarea:focus{border-color:var(--primary)}
+.access-code-box{background:linear-gradient(135deg,#0d3320,#1a4d28);border-radius:var(--r);padding:20px;color:#fff;text-align:center;margin-top:12px}
+.acb-code{font-size:36px;font-weight:900;letter-spacing:8px;margin:12px 0;font-family:monospace;color:var(--accent)}
+.acb-label{font-size:12px;opacity:.7}
+.qr-placeholder{width:140px;height:140px;background:rgba(255,255,255,.1);border-radius:12px;margin:12px auto;display:flex;align-items:center;justify-content:center;font-size:48px;border:2px dashed rgba(255,255,255,.25)}
+.install-instructions{background:var(--surface2);border-radius:var(--r);padding:14px 16px;font-size:13px;line-height:1.8;border-left:3px solid var(--primary)}
+.install-instructions strong{color:var(--primary)}
+.client-roster{display:flex;flex-direction:column;gap:0}
+.client-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.client-row:last-child{border-bottom:none}
+.client-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.client-info{flex:1;min-width:0}
+.client-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-meta{font-size:11px;color:var(--muted)}
+.client-status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px}
+.cs-installed{background:#d1fae5;color:#065f46}
+.cs-pending{background:#fef3c7;color:#92400e}
+.cs-new{background:#e0e7ff;color:#3730a3}
+
 </style>
 </head>
 <body>
@@ -287,6 +486,7 @@ canvas{display:block}
     <button class="nav-item" id="nav-certs" onclick="showView('certs')"><span class="ni-icon">🏅</span><span>Certifications</span></button>
     <button class="nav-item" id="nav-revenue" onclick="showView('revenue')"><span class="ni-icon">💰</span><span>Revenue Analytics</span></button>
     <button class="nav-item" id="nav-settings" onclick="showView('settings')"><span class="ni-icon">⚙️</span><span>Settings</span></button>
+    <button class="nav-item" id="nav-deploy" onclick="showView('deploy')"><span class="ni-icon">🚀</span><span>Deploy Portal</span><span class="nav-badge acc">NEW</span></button>
     <button class="nav-item" id="nav-pwa" onclick="showView('pwa')"><span class="ni-icon">📲</span><span>PWA Metrics</span><span class="nav-badge acc" id="pwaBadge" style="display:none">LIVE</span></button>
   </nav>
   <div class="sb-footer">
@@ -560,6 +760,105 @@ canvas{display:block}
     </div>
   </div>
 
+
+  <!-- VIEW: DEPLOY OWNER PORTAL -->
+  <div class="view hidden" id="view-deploy">
+    <div class="view-header">
+      <div><div class="view-title">🚀 Deploy Owner Portal</div><div class="view-sub">Generate client access, install links and QR codes for the Owner Training Portal PWA</div></div>
+      <div class="view-actions">
+        <button class="btn-sm" onclick="showView('dogs')">🐕 All Dogs</button>
+      </div>
+    </div>
+
+    <!-- Step 1: Create client -->
+    <div class="deploy-step">
+      <div class="deploy-step-num">
+        <div class="ds-circle">1</div>
+        <div><div class="ds-title">Create or Select Client</div><div class="ds-sub">Owner details for portal access</div></div>
+      </div>
+      <div class="deploy-form-row">
+        <div class="deploy-field"><label>Owner Name</label><input type="text" id="dep-owner-name" placeholder="e.g. Sarah Mitchell"/></div>
+        <div class="deploy-field"><label>Email</label><input type="email" id="dep-email" placeholder="sarah@example.com"/></div>
+      </div>
+      <div class="deploy-form-row three">
+        <div class="deploy-field"><label>Dog's Name</label><input type="text" id="dep-dog-name" placeholder="e.g. Luna"/></div>
+        <div class="deploy-field"><label>Breed</label><input type="text" id="dep-breed" placeholder="e.g. Labrador"/></div>
+        <div class="deploy-field"><label>Age</label>
+          <select id="dep-age">
+            <option>8–16 weeks</option><option>4–6 months</option><option>6–12 months</option><option>1–2 years</option><option>2+ years</option>
+          </select>
+        </div>
+      </div>
+      <div class="deploy-form-row">
+        <div class="deploy-field"><label>Starting Module</label>
+          <select id="dep-module">
+            <option value="1">Module 1 — Foundations</option>
+            <option value="2">Module 2 — Core Obedience</option>
+            <option value="3">Module 3 — Socialisation</option>
+            <option value="4">Module 4 — Home Life</option>
+            <option value="5">Module 5 — Enrichment</option>
+          </select>
+        </div>
+        <div class="deploy-field"><label>Trainer Notes (shown in owner portal)</label><input type="text" id="dep-notes" placeholder="Focus on recall and loose lead walking"/></div>
+      </div>
+      <button class="btn-sm primary" onclick="generatePortalAccess()">⚡ Generate Portal Access</button>
+    </div>
+
+    <!-- Step 2: Access code + link -->
+    <div class="deploy-step" id="dep-step-2" style="display:none">
+      <div class="deploy-step-num">
+        <div class="ds-circle">2</div>
+        <div><div class="ds-title">Access Code Generated</div><div class="ds-sub">Share this with the owner to activate their portal</div></div>
+      </div>
+      <div class="access-code-box">
+        <div class="acb-label">Owner Access Code</div>
+        <div class="acb-code" id="dep-code">––––––</div>
+        <div class="qr-placeholder" id="dep-qr">📲</div>
+        <div class="acb-label" id="dep-link-display" style="font-size:11px;margin-bottom:12px;opacity:.6"></div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.2)" onclick="copyInstallLink()">📋 Copy Link</button>
+          <button class="btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.2)" onclick="copyCode()">🔑 Copy Code</button>
+          <button class="btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.2)" onclick="shareViaEmail()">📧 Email Owner</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Install instructions -->
+    <div class="deploy-step" id="dep-step-3" style="display:none">
+      <div class="deploy-step-num">
+        <div class="ds-circle">3</div>
+        <div><div class="ds-title">Owner Install Instructions</div><div class="ds-sub">Send these to the owner alongside their access code</div></div>
+      </div>
+      <div class="install-instructions" id="dep-instructions">
+        <strong>How to install your Four Paws Training Portal:</strong><br><br>
+        <strong>📱 On iPhone/iPad (Safari):</strong><br>
+        1. Open Safari and go to your install link<br>
+        2. Tap the <strong>Share</strong> button (□↑)<br>
+        3. Tap <strong>"Add to Home Screen"</strong><br>
+        4. Tap <strong>Add</strong><br><br>
+        <strong>🤖 On Android (Chrome):</strong><br>
+        1. Open Chrome and go to your install link<br>
+        2. Tap the menu (⋮) or the install banner<br>
+        3. Tap <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong><br><br>
+        <strong>🖥 On Desktop (Chrome/Edge):</strong><br>
+        1. Open Chrome or Edge and go to your install link<br>
+        2. Click the install icon (⊕) in the address bar<br>
+        3. Click <strong>Install</strong>
+      </div>
+      <button class="btn-sm primary" style="margin-top:12px" onclick="copyInstructions()">📋 Copy Instructions</button>
+    </div>
+
+    <!-- Client roster -->
+    <div class="deploy-step">
+      <div class="deploy-step-num">
+        <div class="ds-circle">✓</div>
+        <div><div class="ds-title">Deployed Clients</div><div class="ds-sub">All clients with portal access generated</div></div>
+      </div>
+      <div class="client-roster" id="dep-client-roster"></div>
+      <div id="dep-roster-empty" style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No clients deployed yet — create your first above ↑</div>
+    </div>
+  </div>
+
 </div><!-- end main-area -->
 </div><!-- end layout -->
 
@@ -727,9 +1026,9 @@ function showView(v){
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   const vEl=document.getElementById('view-'+v);if(vEl)vEl.classList.remove('hidden');
   const nEl=document.getElementById('nav-'+v);if(nEl)nEl.classList.add('active');
-  const T={overview:'Overview',pwa:'PWA Metrics',alerts:'Behaviour Alerts',dogs:'All Dogs',stalled:'Needs Attention',sessions:'Session Log',analytics:'Behaviour Analytics',ai:'AI Guidance Centre',courses:'Courses',enrichment:'Enrichment Planner',progress:'Progress Tracking',certs:'Certifications',revenue:'Revenue Analytics',settings:'Settings'};
+  const T={overview:'Overview',pwa:'PWA Metrics',deploy:'Deploy Portal',alerts:'Behaviour Alerts',dogs:'All Dogs',stalled:'Needs Attention',sessions:'Session Log',analytics:'Behaviour Analytics',ai:'AI Guidance Centre',courses:'Courses',enrichment:'Enrichment Planner',progress:'Progress Tracking',certs:'Certifications',revenue:'Revenue Analytics',settings:'Settings'};
   document.getElementById('topbarTitle').textContent=T[v]||v;
-  const renders={overview:()=>{renderStats();setTimeout(()=>{renderOverviewChart('all');renderDonut();},60);renderUrgentGrid();renderAIInsightsMini();renderRecentSessions();},alerts:renderAlerts,dogs:()=>renderDogsTable(currentFilter),stalled:renderStalledList,sessions:renderSessions,analytics:()=>{renderAnalyticsStats();setTimeout(renderAnalyticsCharts,60);},ai:()=>{renderAIFull();renderAIActions();initAIChat();renderAIPredictions();},courses:renderCourses,enrichment:renderEnrichmentPlanner,progress:renderProgress,certs:renderCerts,revenue:renderRevenue,pwa:renderPWAMetrics};
+  const renders={overview:()=>{renderStats();setTimeout(()=>{renderOverviewChart('all');renderDonut();},60);renderUrgentGrid();renderAIInsightsMini();renderRecentSessions();},alerts:renderAlerts,dogs:()=>renderDogsTable(currentFilter),stalled:renderStalledList,sessions:renderSessions,analytics:()=>{renderAnalyticsStats();setTimeout(renderAnalyticsCharts,60);},ai:()=>{renderAIFull();renderAIActions();initAIChat();renderAIPredictions();},courses:renderCourses,enrichment:renderEnrichmentPlanner,progress:renderProgress,certs:renderCerts,revenue:renderRevenue,pwa:renderPWAMetrics,deploy:renderDeploy};
   if(renders[v])renders[v]();
 }
 
