@@ -1,26 +1,36 @@
 {
   "rewrites": [
-    { "source": "/",                 "destination": "/ap3x/demo/index.html" },
-    { "source": "/owner",            "destination": "/ap3x/demo/owner-demo.html" },
-    { "source": "/trainer",          "destination": "/ap3x/demo/trainer-demo.html" },
-    { "source": "/manifest.json",    "destination": "/ap3x/demo/manifest.json" },
-    { "source": "/sw.js",            "destination": "/ap3x/demo/sw.js" },
-    { "source": "/icons/:file",      "destination": "/icons/:file" }
+    { "source": "/",                  "destination": "/ap3x/demo/index.html" },
+    { "source": "/owner",             "destination": "/ap3x/demo/owner-demo.html" },
+    { "source": "/trainer",           "destination": "/ap3x/demo/trainer-demo.html" },
+    { "source": "/manifest.json",     "destination": "/ap3x/demo/manifest.json" },
+    { "source": "/sw.js",             "destination": "/ap3x/demo/sw.js" },
+    { "source": "/storage.js",        "destination": "/ap3x/demo/storage.js" },
+    { "source": "/ai-layer.js",       "destination": "/ap3x/demo/ai-layer.js" },
+    { "source": "/dataProvider.js",   "destination": "/ap3x/demo/dataProvider.js" },
+    { "source": "/icons/:file",       "destination": "/icons/:file" }
   ],
   "headers": [
     {
       "source": "/sw.js",
       "headers": [
-        { "key": "Cache-Control",   "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Content-Type",    "value": "application/javascript" },
-        { "key": "Service-Worker-Allowed", "value": "/" }
+        { "key": "Cache-Control",            "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Content-Type",             "value": "application/javascript" },
+        { "key": "Service-Worker-Allowed",   "value": "/" }
       ]
     },
     {
       "source": "/manifest.json",
       "headers": [
-        { "key": "Content-Type", "value": "application/manifest+json" },
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        { "key": "Content-Type",   "value": "application/manifest+json" },
+        { "key": "Cache-Control",  "value": "public, max-age=86400" }
+      ]
+    },
+    {
+      "source": "/(storage|ai-layer|dataProvider).js",
+      "headers": [
+        { "key": "Content-Type",   "value": "application/javascript" },
+        { "key": "Cache-Control",  "value": "no-cache, no-store, must-revalidate" }
       ]
     }
   ]
