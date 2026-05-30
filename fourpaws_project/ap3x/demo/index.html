@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="description" content="Four Paws Training & Enrichment Academy — AI-Assisted Canine Behaviour & Training Intelligence Platform"/>
 <title>Four Paws Training & Enrichment Academy</title>
-<link rel="manifest" href="/ap3x/patient-pwa/manifest.json"/>
 <meta name="theme-color" content="#3a7d44"/>
 <style>
 :root{
@@ -75,7 +74,6 @@ img{max-width:100%}
 .dc-sub{font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;position:relative;z-index:1}
 .dc-owner .dc-header{background:linear-gradient(135deg,#d4891a,#f4a435)}
 .dc-trainer .dc-header{background:linear-gradient(135deg,#1a3d22,#3a7d44)}
-.dc-pwa .dc-header{background:linear-gradient(135deg,#0d3320,#3a7d44)}
 .dc-body{padding:20px 22px;background:var(--surface);flex:1}
 .dc-features{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:18px}
 .dc-features li{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:8px}
@@ -85,8 +83,6 @@ img{max-width:100%}
 .dc-open-btn.owner-btn:hover{background:var(--accent-d)}
 .dc-open-btn.trainer-btn{background:var(--primary);color:#fff}
 .dc-open-btn.trainer-btn:hover{background:var(--primary-d)}
-.dc-open-btn.pwa-btn{background:var(--primary);color:#fff}
-.dc-open-btn.pwa-btn:hover{background:var(--primary-d)}
 .btn-arr{transition:transform var(--t)}
 .dc-open-btn:hover .btn-arr{transform:translateX(4px)}
 
@@ -239,7 +235,6 @@ footer strong{color:var(--text)}
     <div class="hero-cta">
       <a href="trainer-demo.html" class="cta-btn primary">🎓 Trainer Intelligence OS <span class="btn-arr">→</span></a>
       <a href="owner-demo.html" class="cta-btn accent">🐾 Owner Portal <span class="btn-arr">→</span></a>
-      <a href="/pwa" class="cta-btn outline">🐕 Dog Owner App</a>
     </div>
     <p class="hero-note">All demos run live in your browser · No account required · Powered by behavioural AI</p>
   </div>
@@ -271,7 +266,7 @@ footer strong{color:var(--text)}
 <section class="demo-section" id="demo">
   <div class="section-eyebrow">Live Platform Demos</div>
   <h2 class="section-title-lg">Three Intelligent Portals.<br>One Cohesive Ecosystem.</h2>
-  <p class="section-sub-lg">Experience the full platform — trainer intelligence OS, owner companion app, and installable PWA. All running live with real data.</p>
+  <p class="section-sub-lg">Experience the full platform — Trainer Intelligence OS and Owner Portal. Both running live with real data.</p>
 
   <div class="demo-grid">
     <!-- Owner Portal -->
@@ -313,26 +308,6 @@ footer strong{color:var(--text)}
         <div class="dc-open-btn trainer-btn">Open Trainer OS <span class="btn-arr">→</span></div>
       </div>
     </a>
-
-    <!-- PWA -->
-    <a href="/pwa" class="demo-card dc-pwa">
-      <div class="dc-header">
-        <div class="dc-icon">🐕</div>
-        <div class="dc-title">Dog Owner Companion App</div>
-        <div class="dc-sub">Personalised training portal for your dog · installable</div>
-      </div>
-      <div class="dc-body">
-        <ul class="dc-features">
-          <li>Dog profile setup — name, breed, age &amp; training goals</li>
-          <li>Personalised daily training plan &amp; lesson tracking</li>
-          <li>Session log with behaviour score &amp; mood check</li>
-          <li>5-module Puppy Masterclass with 25 guided lessons</li>
-          <li>AI Training Coach — ask anything about your dog</li>
-          <li>Enrichment activities with live guided timers</li>
-        </ul>
-        <div class="dc-open-btn pwa-btn">Open Companion App <span class="btn-arr">→</span></div>
-      </div>
-    </a>
   </div>
 </section>
 
@@ -347,7 +322,6 @@ footer strong{color:var(--text)}
     <div class="feature-grid">
       <div class="feature-item"><div class="feature-icon">🤖</div><div class="feature-name">AI Guidance Engine</div><div class="feature-desc">Behavioural intelligence that detects regression, stalled progress and disengaged owners in real time</div></div>
       <div class="feature-item"><div class="feature-icon">📊</div><div class="feature-name">Behaviour Analytics</div><div class="feature-desc">Population-level insights across recall, confidence, socialisation and enrichment engagement</div></div>
-      <div class="feature-item"><div class="feature-icon">📱</div><div class="feature-name">Offline-Ready PWA</div><div class="feature-desc">Installable training companion with full offline support — works without internet in the park</div></div>
       <div class="feature-item"><div class="feature-icon">🧩</div><div class="feature-name">Enrichment Intelligence</div><div class="feature-desc">Structured enrichment planner with activity timers, completion tracking and breed recommendations</div></div>
       <div class="feature-item"><div class="feature-icon">🎓</div><div class="feature-name">Puppy Masterclass LMS</div><div class="feature-desc">5-module structured curriculum with lesson tracking, module progression and milestone unlocks</div></div>
       <div class="feature-item"><div class="feature-icon">🏅</div><div class="feature-name">Certification Engine</div><div class="feature-desc">Digital credentials awarded at module completion — shareable, verifiable, motivation-driving</div></div>
@@ -433,8 +407,8 @@ footer strong{color:var(--text)}
       <div class="tech-card">
         <div class="tc-icon">⚡</div>
         <div class="tc-title">Frontend Architecture</div>
-        <div class="tc-desc">Vanilla JS + modular ES components — zero framework lock-in, maximum performance. PWA-ready with service worker caching and offline data persistence.</div>
-        <div class="tech-tags"><span class="tech-tag">Vanilla JS</span><span class="tech-tag">PWA</span><span class="tech-tag">Service Worker</span><span class="tech-tag">IndexedDB</span></div>
+        <div class="tc-desc">Vanilla JS + modular ES components — zero framework lock-in, maximum performance.</div>
+        <div class="tech-tags"><span class="tech-tag">Vanilla JS</span><span class="tech-tag">IndexedDB</span></div>
       </div>
       <div class="tech-card">
         <div class="tc-icon">🧠</div>
@@ -456,23 +430,12 @@ footer strong{color:var(--text)}
       </div>
       <div class="tech-card">
         <div class="tc-icon">📱</div>
-        <div class="tc-title">Offline-First PWA</div>
-        <div class="tc-desc">Full offline support via service worker cache. Session data persists locally and syncs when connectivity is restored — critical for in-park and in-field training.</div>
-        <div class="tech-tags"><span class="tech-tag">Offline-First</span><span class="tech-tag">Background Sync</span><span class="tech-tag">Push Notifications</span></div>
-      </div>
-      <div class="tech-card">
-        <div class="tc-icon">🚀</div>
-        <div class="tc-title">Deployment & Hosting</div>
-        <div class="tc-desc">Static-first deployment on Vercel with CDN edge distribution globally. Netlify-compatible. Zero server management — scales to millions of users automatically.</div>
-        <div class="tech-tags"><span class="tech-tag">Vercel</span><span class="tech-tag">Edge CDN</span><span class="tech-tag">Static Deploy</span></div>
-      </div>
-    </div>
+        
 
     <div class="arch-diagram">
       <div style="font-size:13px;font-weight:700;opacity:.7;margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">System Architecture</div>
       <div class="arch-row">
         <span class="arch-label">User Layer</span>
-        <span class="arch-layer">📱 PWA (Owner)</span>
         <span class="arch-arrow">←→</span>
         <span class="arch-layer">🖥️ Owner Portal</span>
         <span class="arch-arrow">←→</span>
@@ -569,8 +532,8 @@ footer strong{color:var(--text)}
       <div class="roadmap-item active">
         <div class="ri-phase">Phase 1 — NOW LIVE <span class="ri-badge">✓ Complete</span></div>
         <div class="ri-title">Puppy Training Academy MVP</div>
-        <div class="ri-desc">Full-stack academy platform: Trainer Intelligence OS, Owner Portal, offline-ready PWA. 5-module Puppy Masterclass curriculum. AI Guidance Centre with behavioural chat assistant. Revenue dashboard and certification engine.</div>
-        <div class="ri-tags"><span class="ri-tag">Trainer OS</span><span class="ri-tag">Owner Portal</span><span class="ri-tag">PWA</span><span class="ri-tag">AI Coach</span><span class="ri-tag">Analytics</span></div>
+        <div class="ri-desc">Full-stack academy platform: Trainer Intelligence OS, Owner Portal, 5-module Puppy Masterclass curriculum. AI Guidance Centre with behavioural chat assistant. Revenue dashboard and certification engine.</div>
+        <div class="ri-tags"><span class="ri-tag">Trainer OS</span><span class="ri-tag">Owner Portal</span><span class="ri-tag">AI Coach</span><span class="ri-tag">Analytics</span></div>
       </div>
 
       <div class="roadmap-item">
@@ -613,7 +576,6 @@ footer strong{color:var(--text)}
     <div class="ic-btns">
       <a href="trainer-demo.html" class="ic-btn primary">🎓 View Full Platform Demo</a>
       <a href="owner-demo.html" class="ic-btn ghost">🐾 Owner Portal Demo</a>
-      <a href="/pwa" class="ic-btn ghost">🐕 Open Companion App</a>
     </div>
     <div class="ic-stats">
       <div>
@@ -636,7 +598,7 @@ footer strong{color:var(--text)}
 <footer>
   <strong>🐾 Four Paws Training &amp; Enrichment Academy</strong><br>
   Powered by Intelligent Personalised AI Coach · AI-Assisted Canine Behaviour &amp; Training Intelligence Platform<br>
-  <span style="opacity:.6">Trainer OS · Owner Portal · Training Companion PWA · Behaviour Outcome Engine · Innovation Roadmap</span><br>
+  <span style="opacity:.6">Trainer OS · Owner Portal · Behaviour Outcome Engine · Innovation Roadmap</span><br>
   <span style="opacity:.4">© 2026 Four Paws Academy · All rights reserved · Built for grant &amp; investor presentation</span>
 </footer>
 
