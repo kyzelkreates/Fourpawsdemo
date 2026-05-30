@@ -239,3 +239,149 @@ const FP_AI = (function () {
 })();
 
 if (typeof window !== 'undefined') window.FP_AI = FP_AI;
+
+
+/* ═══════════════════════════════════════════════════════════════
+   FP_SYNC — AI Sync Payload Generator
+   Generates the structured JSON schema payload for Trainer Dashboard.
+
+   RULES:
+   - Does NOT store data (storage is handled by caller via FP_STORE)
+   - Call generatePayload() after any significant owner event
+   - Caller must call FP_STORE.addSyncPayload(payload) to persist
+═══════════════════════════════════════════════════════════════ */
+
+const FP_SYNC = (function () {
+
+  /* ─────────────────────────────────────────────────────────
+     Build the exact v1.0 schema payload.
+     storageData: {
+       sessions, completedLessons, streak, goals, journal,
+       dogProfile, trainer, enrichDone
+     }
+     courseModules: FP_STORE.getModules() (passed in to avoid circular dep)
+  ─────────────────────────────────────────────────────────── */
+  function generatePayload(storageData, courseModules) {
+    const sessions         = storageData.sessions         || [];
+    const completedLessons = storageData.completedLessons || [];
+    const streak           = storageData.streak           || 0;
+    const dogProfile       = storageData.dogProfile       || {};
+    const trainer          = storageData.trainer          || {};
+
+    // ── Course progress ─────────────────────────────────────
+    const totalLessons = courseModules.reduce((s, m) => s + m.lessons.length, 0);
+    const overallPct   = totalLessons > 0 ? Math.round(completedLessons.length / totalLessons * 100) : 0;
+
+    const modulesPayload = courseModules.map(function (mod) {
+      const modDone  = mod.lessons.filter(function (l) { return completedLessons.includes(l.id); }).length;
+      const modTotal = mod.lessons.length;
+      const modPct   = modTotal > 0 ? Math.round(modDone / modTotal * 100) : 0;
+
+      return {
+        moduleId:    mod.id,
+        moduleTitle: mod.name,
+        progress:    modPct,
+        lessons: mod.lessons.map(function (l) {
+          var done  = completedLessons.includes(l.id);
+          var index = completedLessons.indexOf(l.id);
+          return {
+            lessonId:       l.id,
+            lessonTitle:    l.name,
+            status:         done ? 'completed' : 'not_started',
+            completionTime: done ? (storageData.lessonTimes && storageData.lessonTimes[l.id]) || null : null,
+            attempts:       done ? 1 : 0,
+          };
+        }),
+      };
+    });
+
+    // ── AI insights via FP_AI ───────────────────────────────
+    var aiInsightResult = { riskLevel: 'LOW', engagementScore: 0, struggles: [], dropOff: null, trendSummary: 'No data yet.', suggestedActions: [] };
+    if (typeof FP_AI !== 'undefined') {
+      aiInsightResult = FP_AI.analyse({ sessions: sessions, completedLessons: completedLessons, streak: streak });
+    }
+
+    // ── Behavioural signals ─────────────────────────────────
+    const engagementScore    = aiInsightResult.engagementScore;
+    const consistencyScore   = streak >= 7 ? 90 : streak >= 3 ? 65 : Math.min(streak * 15, 100);
+    const frustrationScore   = aiInsightResult.struggles.length > 0 ? Math.min(aiInsightResult.struggles.length * 20, 100) : 0;
+    const dropOffRisk        = aiInsightResult.riskLevel === 'HIGH' ? 80 : aiInsightResult.riskLevel === 'MEDIUM' ? 45 : 10;
+
+    // ── Risk flags ─────────────────────────────────────────
+    var riskFlags = [];
+    if (aiInsightResult.dropOff) {
+      riskFlags.push({ type: aiInsightResult.dropOff.risk.toLowerCase(), reason: aiInsightResult.dropOff.msg });
+    }
+    aiInsightResult.struggles.forEach(function (s) {
+      riskFlags.push({ type: 'medium', reason: s.msg });
+    });
+
+    // ── Session data ────────────────────────────────────────
+    const lastActiveTs = sessions.length > 0 ? sessions[0].ts : null;
+
+    // ── Client identity ────────────────────────────────────
+    var clientId  = dogProfile.clientId  || 'client_' + (dogProfile.name || 'unknown').replace(/\s+/g, '_').toLowerCase();
+    var deviceId  = storageData.deviceId || 'device_' + (typeof navigator !== 'undefined' ? navigator.userAgent.slice(0, 20).replace(/\W/g, '') : 'unknown');
+
+    return {
+      syncVersion: '1.0',
+      timestamp:   new Date().toISOString(),
+
+      client: {
+        clientId:    clientId,
+        displayName: (dogProfile.name || 'Unknown Dog') + ' — ' + (dogProfile.breed || ''),
+        deviceId:    deviceId,
+      },
+
+      courseProgress: {
+        courseId:        'puppy-masterclass',
+        courseTitle:     'Puppy Masterclass',
+        overallProgress: overallPct,
+        modules:         modulesPayload,
+      },
+
+      behaviouralSignals: {
+        engagementScore:        engagementScore,
+        consistencyScore:       consistencyScore,
+        frustrationIndicators:  frustrationScore,
+        dropOffRisk:            dropOffRisk,
+      },
+
+      aiInsights: {
+        summary:            aiInsightResult.trendSummary,
+        keyObservations:    aiInsightResult.struggles.map(function (s) { return s.msg; }),
+        recommendedActions: aiInsightResult.suggestedActions,
+        riskFlags:          riskFlags,
+      },
+
+      sessionData: {
+        sessionCount:          sessions.length,
+        lastActive:            lastActiveTs ? new Date(lastActiveTs).toISOString() : null,
+        totalTimeSpentMinutes: sessions.reduce(function (s, x) { return s + (x.duration || 0); }, 0),
+      },
+    };
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     Trigger sync — call this from owner PWA after events.
+     Generates payload and persists via FP_STORE.
+     trigger: 'lesson_complete' | 'session_end' | 'engagement_drop' | 'risk_detected' | 'manual'
+  ─────────────────────────────────────────────────────────── */
+  function triggerSync(trigger, storageData, courseModules) {
+    if (typeof FP_STORE === 'undefined') {
+      console.warn('[FP_SYNC] FP_STORE not available — sync skipped');
+      return null;
+    }
+    var payload = generatePayload(storageData, courseModules);
+    payload._trigger = trigger;
+    FP_STORE.addSyncPayload(payload);
+    FP_STORE.setLastSyncTs(payload.timestamp);
+    return payload;
+  }
+
+  return { generatePayload, triggerSync };
+
+})();
+
+if (typeof window !== 'undefined') window.FP_SYNC = FP_SYNC;
+

@@ -4,7 +4,184 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Four Paws Academy — Trainer Intelligence OS</title>
-<script src="./storage.js"></script>
+<script src="./storage.js">
+
+// ══════════════════════════════════════════════════════════
+//  CLIENT SYNC INTELLIGENCE — Trainer OS
+//  READ-ONLY: consumes AI payloads from FP_STORE
+// ══════════════════════════════════════════════════════════
+function renderClientSync() {
+  var payloads = typeof FP_STORE !== 'undefined' ? FP_STORE.getSyncPayloads() : [];
+
+  var emptyEl  = document.getElementById('sync-empty-state');
+  var listEl   = document.getElementById('sync-client-list');
+  var bannerEl = document.getElementById('sync-aggregate-banner');
+  if (!listEl) return;
+
+  if (!payloads.length) {
+    if (emptyEl)  emptyEl.style.display = 'block';
+    if (bannerEl) bannerEl.style.display = 'none';
+    listEl.innerHTML = '';
+    return;
+  }
+
+  if (emptyEl)  emptyEl.style.display = 'none';
+  if (bannerEl) bannerEl.style.display = 'block';
+
+  // ── De-duplicate: latest payload per client ────────────────
+  var clientMap = {};
+  payloads.forEach(function (p) {
+    var cid = p.client && p.client.clientId ? p.client.clientId : 'unknown';
+    if (!clientMap[cid]) clientMap[cid] = p;
+  });
+  var clients = Object.values(clientMap);
+
+  // ── Aggregate banner ────────────────────────────────────────
+  var totalClients = clients.length;
+  var avgEng = totalClients > 0
+    ? Math.round(clients.reduce(function (s, p) { return s + (p.behaviouralSignals ? p.behaviouralSignals.engagementScore : 0); }, 0) / totalClients)
+    : 0;
+  var highRisk = clients.filter(function (p) {
+    return p.behaviouralSignals && p.behaviouralSignals.dropOffRisk >= 70;
+  }).length;
+  var lastSync = payloads[0] ? timeAgo(new Date(payloads[0].timestamp).getTime()) : '–';
+
+  var aggC = document.getElementById('sync-agg-clients'); if (aggC) aggC.textContent = totalClients;
+  var aggE = document.getElementById('sync-agg-eng');     if (aggE) aggE.textContent = avgEng + '%';
+  var aggR = document.getElementById('sync-agg-risk');    if (aggR) aggR.textContent = highRisk;
+  var aggL = document.getElementById('sync-agg-last');    if (aggL) aggL.textContent = lastSync;
+
+  // ── Update sync badge ────────────────────────────────────────
+  var badge = document.getElementById('syncBadge');
+  if (badge) { badge.style.display = highRisk > 0 ? 'inline-flex' : 'none'; badge.textContent = highRisk + ' RISK'; }
+
+  // ── Render client cards ──────────────────────────────────────
+  var AVATARS = ['#3a7d44','#f4a435','#3b82f6','#ef4444','#6366f1','#10b981','#f59e0b','#ec4899'];
+
+  listEl.innerHTML = clients.map(function (p, idx) {
+    var sigs     = p.behaviouralSignals  || {};
+    var insights = p.aiInsights          || {};
+    var course   = p.courseProgress      || {};
+    var sess     = p.sessionData         || {};
+    var client   = p.client              || {};
+
+    var riskPct  = sigs.dropOffRisk || 0;
+    var riskCls  = riskPct >= 70 ? 'srp-high' : riskPct >= 40 ? 'srp-medium' : 'srp-low';
+    var riskLbl  = riskPct >= 70 ? '🔴 High Risk' : riskPct >= 40 ? '⚠️ Watch' : '✅ On Track';
+
+    var initials = (client.displayName || '?').split(/[\s—]+/).slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase().slice(0, 2);
+    var color    = AVATARS[idx % AVATARS.length];
+
+    var modulesHtml = (course.modules || []).map(function (mod) {
+      var pct = mod.progress || 0;
+      return '<div class="sync-module-row">'
+        + '<div class="sync-mod-header"><span class="sync-mod-name">' + (mod.moduleTitle || mod.moduleId) + '</span><span class="sync-mod-pct">' + pct + '%</span></div>'
+        + '<div class="prog-track"><div class="prog-fill pf-g" style="width:' + pct + '%"></div></div>'
+        + '</div>';
+    }).join('');
+
+    var obsHtml = (insights.keyObservations || []).length
+      ? (insights.keyObservations || []).map(function (o) {
+          return '<div class="sync-obs-item"><span>•</span><span>' + o + '</span></div>';
+        }).join('')
+      : '<div style="font-size:12px;color:var(--muted)">No observations flagged</div>';
+
+    var actionsHtml = (insights.recommendedActions || []).length
+      ? (insights.recommendedActions || []).map(function (a) {
+          return '<div class="sync-action-item">' + a + '</div>';
+        }).join('')
+      : '<div style="font-size:12px;color:var(--muted)">No actions recommended</div>';
+
+    var riskFlagsHtml = (insights.riskFlags || []).length
+      ? (insights.riskFlags || []).map(function (f) {
+          var cls = f.type === 'high' ? 'badge-red' : f.type === 'medium' ? 'badge-amber' : 'badge-green';
+          return '<span class="badge ' + cls + '" style="margin-right:4px;margin-bottom:4px">' + f.type.toUpperCase() + ': ' + f.reason + '</span>';
+        }).join('')
+      : '';
+
+    return '<div class="sync-client-card" id="sync-card-' + idx + '">'
+      + '<div class="sync-card-header" onclick="toggleSyncCard(' + idx + ')">'
+        + '<div class="sync-client-av" style="background:' + color + '">' + initials + '</div>'
+        + '<div class="sync-client-info">'
+          + '<div class="sync-client-name">' + (client.displayName || 'Unknown') + '</div>'
+          + '<div class="sync-client-meta">Sessions: ' + (sess.sessionCount || 0) + ' · Course: ' + (course.overallProgress || 0) + '% · Last active: ' + (sess.lastActive ? timeAgo(new Date(sess.lastActive).getTime()) : '–') + '</div>'
+        + '</div>'
+        + '<span class="sync-risk-pill ' + riskCls + '">' + riskLbl + '</span>'
+      + '</div>'
+      + '<div class="sync-card-body">'
+        + '<div class="sync-section-title">Behavioural Signals</div>'
+        + '<div class="sync-signals">'
+          + '<div class="sync-sig"><div class="sync-sig-val">' + (sigs.engagementScore || 0) + '%</div><div class="sync-sig-lbl">Engagement</div></div>'
+          + '<div class="sync-sig"><div class="sync-sig-val">' + (sigs.consistencyScore || 0) + '%</div><div class="sync-sig-lbl">Consistency</div></div>'
+          + '<div class="sync-sig"><div class="sync-sig-val">' + (sigs.frustrationIndicators || 0) + '%</div><div class="sync-sig-lbl">Frustration</div></div>'
+          + '<div class="sync-sig"><div class="sync-sig-val">' + (sigs.dropOffRisk || 0) + '%</div><div class="sync-sig-lbl">Drop-off Risk</div></div>'
+        + '</div>'
+        + '<div class="sync-section-title">AI Summary</div>'
+        + '<div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px">' + (insights.summary || 'No summary available') + '</div>'
+        + (riskFlagsHtml ? '<div style="margin-bottom:10px">' + riskFlagsHtml + '</div>' : '')
+        + '<div class="sync-section-title">Course Progress</div>'
+        + (modulesHtml || '<div style="font-size:12px;color:var(--muted)">No lesson data yet</div>')
+        + '<div class="sync-section-title">Key Observations</div>'
+        + '<div class="sync-observations">' + obsHtml + '</div>'
+        + '<div class="sync-section-title">Recommended Trainer Actions</div>'
+        + '<div class="sync-actions">' + actionsHtml + '</div>'
+        + '<div class="sync-ts">Sync version: ' + (p.syncVersion || '–') + ' · Payload received: ' + (p.timestamp ? timeAgo(new Date(p.timestamp).getTime()) : '–') + (p._trigger ? ' · Trigger: ' + p._trigger : '') + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function toggleSyncCard(idx) {
+  var card = document.getElementById('sync-card-' + idx);
+  if (card) card.classList.toggle('open');
+}
+
+// ── Demo seed: generates realistic sync payload for trainer preview ──────────
+function seedDemoSyncData() {
+  if (typeof FP_STORE === 'undefined') { showToast('⚠️ FP_STORE not loaded'); return; }
+  if (typeof FP_SYNC === 'undefined')  { showToast('⚠️ FP_SYNC not loaded');  return; }
+
+  var mods = typeof FP_STORE !== 'undefined' ? FP_STORE.getModules() : [];
+  if (!mods.length) { showToast('⚠️ No modules in storage'); return; }
+
+  var demoClients = [
+    { name:'Luna — German Shepherd', id:'client_luna',    donePct:0.3, streak:2, sessCount:4,  risk:'high'   },
+    { name:'Pepper — Border Collie', id:'client_pepper',  donePct:0.7, streak:18,sessCount:22, risk:'low'    },
+    { name:'Milo — Golden Retriever',id:'client_milo',    donePct:0.5, streak:9, sessCount:12, risk:'medium' },
+    { name:'Ruby — Cockapoo',        id:'client_ruby',    donePct:0.9, streak:22,sessCount:28, risk:'low'    },
+  ];
+
+  demoClients.forEach(function (dc) {
+    var allLessons = mods.flatMap(function (m) { return m.lessons; });
+    var totalLessons = allLessons.length;
+    var doneCount = Math.round(totalLessons * dc.donePct);
+    var doneLessonIds = allLessons.slice(0, doneCount).map(function (l) { return l.id; });
+
+    var now = Date.now();
+    var DAY = 86400000;
+    var sessions = Array.from({ length: dc.sessCount }, function (_, i) {
+      return { ts: now - i * (DAY * 1.2), score: 5 + Math.floor(Math.random() * 5), duration: 15 + Math.floor(Math.random() * 20) };
+    });
+
+    var storageData = {
+      sessions: sessions,
+      completedLessons: doneLessonIds,
+      streak: dc.streak,
+      dogProfile: { name: dc.name.split(' — ')[0], breed: dc.name.split(' — ')[1] || '', clientId: dc.id },
+      trainer: { name: 'Alex Rivera · Four Paws Academy' },
+      enrichDone: [],
+    };
+
+    var payload = FP_SYNC.generatePayload(storageData, mods);
+    payload._trigger = 'demo_seed';
+    FP_STORE.addSyncPayload(payload);
+  });
+
+  showToast('✅ Demo sync data loaded — ' + demoClients.length + ' clients');
+  renderClientSync();
+}
+
+</script>
 <script src="./ai-layer.js"></script>
 <script src="./dataProvider.js"></script>
 <script>
@@ -638,6 +815,60 @@ canvas{display:block}
   white-space: nowrap; max-width: 90vw; text-overflow: ellipsis; overflow: hidden; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+
+/* ─── Client Sync View ─── */
+.sync-client-card {
+  background: var(--surface); border-radius: var(--r);
+  box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden;
+}
+.sync-card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none;
+}
+.sync-card-header:hover { background: var(--surface2); }
+.sync-client-av {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.sync-client-info { flex: 1; min-width: 0; }
+.sync-client-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sync-client-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.sync-risk-pill {
+  font-size: 11px; font-weight: 700; padding: 3px 10px;
+  border-radius: 99px; flex-shrink: 0; white-space: nowrap;
+}
+.srp-low    { background: #d1fae5; color: #065f46; }
+.srp-medium { background: #fef3c7; color: #92400e; }
+.srp-high   { background: #fee2e2; color: #991b1b; }
+.sync-card-body { padding: 14px 16px; display: none; }
+.sync-client-card.open .sync-card-body { display: block; }
+.sync-signals {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px; margin-bottom: 14px;
+}
+.sync-sig {
+  background: var(--surface2); border-radius: var(--rs);
+  padding: 10px; text-align: center;
+}
+.sync-sig-val { font-size: 20px; font-weight: 900; color: var(--primary); letter-spacing: -1px; }
+.sync-sig-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; margin-top: 2px; }
+.sync-module-row { margin-bottom: 10px; }
+.sync-mod-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.sync-mod-name { font-size: 12px; font-weight: 700; }
+.sync-mod-pct  { font-size: 12px; font-weight: 700; color: var(--primary); }
+.sync-observations { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.sync-obs-item { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; line-height: 1.5; }
+.sync-actions { display: flex; flex-direction: column; gap: 6px; }
+.sync-action-item {
+  background: var(--surface2); border-left: 3px solid var(--primary);
+  border-radius: 0 var(--rs) var(--rs) 0;
+  padding: 7px 10px; font-size: 12px; line-height: 1.5; color: var(--text);
+}
+.sync-ts { font-size: 10px; color: var(--muted); text-align: right; margin-top: 8px; }
+.sync-section-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 12px 0 8px; }
+
 </style>
 </head>
 <body>
@@ -662,7 +893,8 @@ canvas{display:block}
     <button class="nav-item" id="nav-sessions" onclick="showView('sessions')"><span class="ni-icon">📋</span><span>Session Log</span></button>
     <div class="sb-section">Intelligence</div>
     <button class="nav-item" id="nav-analytics" onclick="showView('analytics')"><span class="ni-icon">📊</span><span>Behaviour Analytics</span></button>
-    <button class="nav-item" id="nav-ai" onclick="showView('ai')"><span class="ni-icon">🤖</span><span>AI Guidance Centre</span><span class="nav-badge acc">NEW</span></button>
+    <button class="nav-item" id="nav-ai" onclick="showView('ai')"><span class="ni-icon">🤖</span><span>AI Guidance Centre</span></button>
+    <button class="nav-item" id="nav-sync" onclick="showView('sync')"><span class="ni-icon">📡</span><span>Client Sync</span><span class="nav-badge acc" id="syncBadge" style="display:none">NEW</span></button>
     <button class="nav-item" id="nav-courses" onclick="showView('courses')"><span class="ni-icon">🎓</span><span>Courses</span></button>
     <button class="nav-item" id="nav-enrichment" onclick="showView('enrichment')"><span class="ni-icon">🧩</span><span>Enrichment Planner</span></button>
     <div class="sb-section">Academy</div>
@@ -670,7 +902,7 @@ canvas{display:block}
     <button class="nav-item" id="nav-certs" onclick="showView('certs')"><span class="ni-icon">🏅</span><span>Certifications</span></button>
     <button class="nav-item" id="nav-revenue" onclick="showView('revenue')"><span class="ni-icon">💰</span><span>Revenue Analytics</span></button>
     <button class="nav-item" id="nav-settings" onclick="showView('settings')"><span class="ni-icon">⚙️</span><span>Settings</span></button>
-    <button class="nav-item" id="nav-deploy" onclick="showView('deploy')"><span class="ni-icon">🚀</span><span>Deploy Portal</span><span class="nav-badge acc">NEW</span></button>
+    <button class="nav-item" id="nav-deploy" onclick="showView('deploy')"><span class="ni-icon">👤</span><span>Client Onboarding</span></button>
     <button class="nav-item" id="nav-pwa" onclick="showView('pwa')"><span class="ni-icon">📲</span><span>PWA Metrics</span><span class="nav-badge acc" id="pwaBadge" style="display:none">LIVE</span></button>
   </nav>
   <div class="sb-footer">
@@ -948,7 +1180,7 @@ canvas{display:block}
   <!-- VIEW: DEPLOY OWNER PORTAL -->
   <div class="view hidden" id="view-deploy">
     <div class="view-header">
-      <div><div class="view-title">🚀 Deploy Owner Portal</div><div class="view-sub">Generate client access, install links and QR codes for the Owner Training Portal PWA</div></div>
+      <div><div class="view-title">👤 Client Onboarding</div><div class="view-sub">Generate client access codes and onboarding links — send to owners to activate their training portal</div></div>
       <div class="view-actions">
         <button class="btn-sm" onclick="showView('dogs')">🐕 All Dogs</button>
       </div>
@@ -1007,29 +1239,21 @@ canvas{display:block}
       </div>
     </div>
 
-    <!-- Step 3: Install instructions -->
+    <!-- Step 3: Onboarding summary (trainer-facing only) -->
     <div class="deploy-step" id="dep-step-3" style="display:none">
       <div class="deploy-step-num">
         <div class="ds-circle">3</div>
-        <div><div class="ds-title">Owner Install Instructions</div><div class="ds-sub">Send these to the owner alongside their access code</div></div>
+        <div><div class="ds-title">Onboarding Ready</div><div class="ds-sub">Access code generated — email owner to complete activation</div></div>
       </div>
       <div class="install-instructions" id="dep-instructions">
-        <strong>How to install your Four Paws Training Portal:</strong><br><br>
-        <strong>📱 On iPhone/iPad (Safari):</strong><br>
-        1. Open Safari and go to your install link<br>
-        2. Tap the <strong>Share</strong> button (□↑)<br>
-        3. Tap <strong>"Add to Home Screen"</strong><br>
-        4. Tap <strong>Add</strong><br><br>
-        <strong>🤖 On Android (Chrome):</strong><br>
-        1. Open Chrome and go to your install link<br>
-        2. Tap the menu (⋮) or the install banner<br>
-        3. Tap <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong><br><br>
-        <strong>🖥 On Desktop (Chrome/Edge):</strong><br>
-        1. Open Chrome or Edge and go to your install link<br>
-        2. Click the install icon (⊕) in the address bar<br>
-        3. Click <strong>Install</strong>
+        <strong>✅ What to send the owner:</strong><br><br>
+        1. Email them their <strong>access code</strong> and <strong>install link</strong> using the buttons above<br>
+        2. The owner opens their link on any device<br>
+        3. They enter their code to activate their personalised training portal<br>
+        4. Once active, their progress syncs automatically to this dashboard<br><br>
+        <strong>📡 Sync status:</strong> The owner's AI coaching data will appear under <em>Client Sync</em> once they begin their first session.
       </div>
-      <button class="btn-sm primary" style="margin-top:12px" onclick="copyInstructions()">📋 Copy Instructions</button>
+      <button class="btn-sm primary" style="margin-top:12px" onclick="copyInstructions()">📋 Copy Onboarding Summary</button>
     </div>
 
     <!-- Client roster -->
@@ -1041,6 +1265,38 @@ canvas{display:block}
       <div class="client-roster" id="dep-client-roster"></div>
       <div id="dep-roster-empty" style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No clients deployed yet — create your first above ↑</div>
     </div>
+  </div>
+
+
+  <!-- VIEW: CLIENT SYNC INTELLIGENCE -->
+  <div class="view hidden" id="view-sync">
+    <div class="view-header">
+      <div><div class="view-title">📡 Client Sync Intelligence</div><div class="view-sub">Structured AI payloads received from Owner PWA — read-only intelligence layer</div></div>
+      <div class="view-actions">
+        <button class="btn-sm" onclick="renderClientSync()">↻ Refresh</button>
+        <button class="btn-sm primary" onclick="seedDemoSyncData()">🔄 Load Demo Data</button>
+      </div>
+    </div>
+
+    <!-- Aggregate banner -->
+    <div id="sync-aggregate-banner" style="display:none;background:linear-gradient(135deg,#0d3320,#1a4d28);color:#fff;border-radius:var(--r);padding:16px 20px;margin-bottom:16px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px">
+        <div style="text-align:center"><div style="font-size:26px;font-weight:900" id="sync-agg-clients">–</div><div style="font-size:11px;opacity:.7">Synced Clients</div></div>
+        <div style="text-align:center"><div style="font-size:26px;font-weight:900;color:#4ade80" id="sync-agg-eng">–</div><div style="font-size:11px;opacity:.7">Avg Engagement</div></div>
+        <div style="text-align:center"><div style="font-size:26px;font-weight:900;color:#f87171" id="sync-agg-risk">–</div><div style="font-size:11px;opacity:.7">High Risk</div></div>
+        <div style="text-align:center"><div style="font-size:26px;font-weight:900;color:#fbbf24" id="sync-agg-last">–</div><div style="font-size:11px;opacity:.7">Last Sync</div></div>
+      </div>
+    </div>
+
+    <!-- No data state -->
+    <div id="sync-empty-state" style="text-align:center;padding:48px 20px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow)">
+      <div style="font-size:48px;margin-bottom:12px">📡</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:6px">No sync data received</div>
+      <div style="font-size:13px;color:var(--muted);max-width:360px;margin:0 auto;line-height:1.6">Owner PWA sends AI payloads automatically after each session, lesson completion, or risk detection. Data will appear here once an owner completes their first interaction.</div>
+    </div>
+
+    <!-- Client sync cards -->
+    <div id="sync-client-list"></div>
   </div>
 
 </div><!-- end main-area -->
@@ -1210,9 +1466,9 @@ function showView(v){
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   const vEl=document.getElementById('view-'+v);if(vEl)vEl.classList.remove('hidden');
   const nEl=document.getElementById('nav-'+v);if(nEl)nEl.classList.add('active');
-  const T={overview:'Overview',pwa:'PWA Metrics',deploy:'Deploy Portal',alerts:'Behaviour Alerts',dogs:'All Dogs',stalled:'Needs Attention',sessions:'Session Log',analytics:'Behaviour Analytics',ai:'AI Guidance Centre',courses:'Courses',enrichment:'Enrichment Planner',progress:'Progress Tracking',certs:'Certifications',revenue:'Revenue Analytics',settings:'Settings'};
+  const T={overview:'Overview',pwa:'PWA Metrics',deploy:'Client Onboarding',sync:'Client Sync',alerts:'Behaviour Alerts',dogs:'All Dogs',stalled:'Needs Attention',sessions:'Session Log',analytics:'Behaviour Analytics',ai:'AI Guidance Centre',courses:'Courses',enrichment:'Enrichment Planner',progress:'Progress Tracking',certs:'Certifications',revenue:'Revenue Analytics',settings:'Settings'};
   document.getElementById('topbarTitle').textContent=T[v]||v;
-  const renders={overview:()=>{renderStats();setTimeout(()=>{renderOverviewChart('all');renderDonut();},60);renderUrgentGrid();renderAIInsightsMini();renderRecentSessions();},alerts:renderAlerts,dogs:()=>renderDogsTable(currentFilter),stalled:renderStalledList,sessions:renderSessions,analytics:()=>{renderAnalyticsStats();setTimeout(renderAnalyticsCharts,60);},ai:()=>{renderAIFull();renderAIActions();initAIChat();renderAIPredictions();},courses:renderCourses,enrichment:renderEnrichmentPlanner,progress:renderProgress,certs:renderCerts,revenue:renderRevenue,pwa:renderPWAMetrics,deploy:renderDeploy};
+  const renders={overview:()=>{renderStats();setTimeout(()=>{renderOverviewChart('all');renderDonut();},60);renderUrgentGrid();renderAIInsightsMini();renderRecentSessions();},alerts:renderAlerts,dogs:()=>renderDogsTable(currentFilter),stalled:renderStalledList,sessions:renderSessions,analytics:()=>{renderAnalyticsStats();setTimeout(renderAnalyticsCharts,60);},ai:()=>{renderAIFull();renderAIActions();initAIChat();renderAIPredictions();},courses:renderCourses,enrichment:renderEnrichmentPlanner,progress:renderProgress,certs:renderCerts,revenue:renderRevenue,pwa:renderPWAMetrics,deploy:renderDeploy,sync:renderClientSync};
   if(renders[v])renders[v]();
 }
 
@@ -1449,6 +1705,7 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 
 // Init
 showView('overview');
+setTimeout(renderClientSync, 200); // update sync badge on load
 
 
 // ══════════════════════════════════════════════════════

@@ -220,6 +220,28 @@ const FP_STORE = {
   isTourDone: ()           => _store.get('tour_done', false),
   setTourDone: ()          => _store.set('tour_done', true),
 
+
+  // ── AI Sync Payloads (Owner PWA writes, Trainer reads) ───────
+  // Schema: v1.0 structured payload per AI_SYNC_SCHEMA
+  getSyncPayloads: ()       => _store.get('sync_payloads', []),
+  getLatestSync: ()         => {
+    const p = _store.get('sync_payloads', []);
+    return p.length ? p[0] : null;
+  },
+  addSyncPayload: (payload) => {
+    // Keep latest 50 payloads per client — trainer reads these
+    const all = _store.get('sync_payloads', []);
+    all.unshift(payload);
+    if (all.length > 50) all.length = 50;
+    _store.set('sync_payloads', all);
+  },
+  getSyncPayloadsByClient: (clientId) => {
+    return _store.get('sync_payloads', []).filter(p => p.client && p.client.clientId === clientId);
+  },
+  clearSyncPayloads: ()     => _store.remove('sync_payloads'),
+  getLastSyncTs: ()         => _store.get('last_sync_ts', null),
+  setLastSyncTs: (ts)       => _store.set('last_sync_ts', ts),
+
   // ── Raw escape hatch ────────────────────────────────────────
   _raw: _store,
 };

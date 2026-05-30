@@ -107,6 +107,7 @@ function toggleLesson(id, locked){
   saveCompletedLessons(done);
   renderLessonsTab();
   renderGoals(); // refresh achievements
+  _triggerSync('lesson_complete');
 }
 
 // ── Trainer strip ──────────────────────────────────────────────────────────
@@ -119,6 +120,28 @@ function updateTrainerStrip(){
   if(sub) sub.textContent = nextLesson ? 'Next: ' + nextLesson.name : 'All lessons complete! 🎉';
   var name = document.getElementById('trainer-strip-name');
   if(name) name.textContent = (typeof FP_STORE !== 'undefined' ? FP_STORE.getTrainer().name : null) || localStorage.getItem('fp_trainer_name') || 'Four Paws Academy';
+}
+
+
+// ── FP_SYNC helper — builds storageData snapshot ─────────────────────────
+function _buildSyncData() {
+  if (typeof FP_STORE === 'undefined') return null;
+  return {
+    sessions:         FP_STORE.getSessions(),
+    completedLessons: FP_STORE.getCompletedLessons(),
+    streak:           FP_STORE.getStreak(),
+    dogProfile:       FP_STORE.getDogProfile(),
+    trainer:          FP_STORE.getTrainer(),
+    enrichDone:       FP_STORE.getEnrichDone(),
+  };
+}
+function _triggerSync(trigger) {
+  if (typeof FP_SYNC === 'undefined' || typeof FP_STORE === 'undefined') return;
+  var mods = FP_STORE.getModules();
+  if (!mods || !mods.length) return;
+  var data = _buildSyncData();
+  if (!data) return;
+  FP_SYNC.triggerSync(trigger, data, mods);
 }
 
 // ── Override goTab to render lessons on demand ─────────────────────────────
@@ -1368,6 +1391,7 @@ function submitCheckin(){
       note:        latestCheckin ? latestCheckin.note : '',
     });
     FP_STORE.updateStreak();
+    _triggerSync('session_end');
   }
   S.xp += 50;
   S.streak += 1;
@@ -1592,7 +1616,7 @@ function markExerciseDone(id){
   if(S.exercisesCompleted.indexOf(id) === -1){
     S.exercisesCompleted.push(id);
     localStorage.setItem('ex_done', JSON.stringify(S.exercisesCompleted));
-  if(typeof FP_STORE !== 'undefined' && id) FP_STORE.markEnrichDone(id);
+  if(typeof FP_STORE !== 'undefined' && id) { FP_STORE.markEnrichDone(id); _triggerSync('session_end'); }
   }
 }
 
