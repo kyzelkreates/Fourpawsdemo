@@ -1,9 +1,7 @@
-/* Four Paws Training Academy — Service Worker v3 */
-var CACHE = 'fp-v3';
+/* Four Paws Training Academy — Owner Portal Service Worker v4 */
+var CACHE = 'fp-owner-v4';
 var ASSETS = [
-  '/',
   '/owner',
-  '/trainer',
   '/storage.js',
   '/dataProvider.js',
   '/ai-layer.js',
@@ -22,7 +20,10 @@ self.addEventListener('install', function(e) {
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
-      return Promise.all(keys.filter(function(k) { return k !== CACHE; }).map(function(k) { return caches.delete(k); }));
+      return Promise.all(
+        keys.filter(function(k) { return k !== CACHE; })
+            .map(function(k) { return caches.delete(k); })
+      );
     })
   );
   self.clients.claim();
@@ -30,6 +31,11 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
+
+  /* Block trainer route from PWA context entirely */
+  var url = new URL(e.request.url);
+  if (url.pathname === '/trainer' || url.pathname.startsWith('/trainer')) return;
+
   e.respondWith(
     fetch(e.request).then(function(res) {
       var clone = res.clone();
