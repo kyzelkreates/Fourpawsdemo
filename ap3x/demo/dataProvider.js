@@ -1,188 +1,120 @@
-/* ═══════════════════════════════════════════════════════════════
-   FOUR PAWS ACADEMY — dataProvider.js
-   Abstraction layer: localStorage now, Supabase-ready later.
+/*─────────────────────────────────────────────────────
+  FOUR PAWS — Data Provider
+  Local-first. Swap SUPABASE_CONFIG to enable cloud sync.
+  Architecture: Owner PWA writes → Trainer OS reads.
+─────────────────────────────────────────────────────*/
 
-   ALL reads and writes across both apps MUST go through here.
-   To migrate to Supabase: set MODE = 'supabase' and fill
-   SUPABASE_URL / SUPABASE_KEY — nothing else changes.
-═══════════════════════════════════════════════════════════════ */
+/* ── Supabase config (fill in when ready) ── */
+var SUPABASE_CONFIG = {
+  enabled: false,
+  url: '',
+  anonKey: ''
+};
 
-const FP_DATA = (function () {
+/* ── PWA metrics store (Supabase-ready) ── */
+var FP_PWA = {
+  NS: 'fp_pwa_',
+  _get: function(k, fb) { try { var v = localStorage.getItem(this.NS + k); return v !== null ? JSON.parse(v) : fb; } catch(_) { return fb; } },
+  _set: function(k, v) { try { localStorage.setItem(this.NS + k, JSON.stringify(v)); } catch(_) {} },
 
-  // ── Config ──────────────────────────────────────────────────
-  const MODE         = 'local';          // 'local' | 'supabase'
-  const SUPABASE_URL = '';               // paste when ready
-  const SUPABASE_KEY = '';               // paste when ready
+  trackEvent: function(type, meta) {
+    var event = {
+      id: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+      type: type,
+      device: this._detectDevice(),
+      platform: this._detectPlatform(),
+      ts: new Date().toISOString(),
+      meta: meta || {}
+    };
+    var events = this._get('events', []);
+    events.unshift(event);
+    if (events.length > 200) events.length = 200;
+    this._set('events', events);
 
-  // ── Namespace prefix — avoids key collisions ────────────────
-  const NS = 'fp_';
+    // Update counters
+    var counters = this._get('counters', {});
+    counters[type] = (counters[type] || 0) + 1;
+    this._set('counters', counters);
 
-  // ══════════════════════════════════════════════════════════
-  //  LOCAL STORAGE ADAPTER
-  // ══════════════════════════════════════════════════════════
-  const local = {
-    get(key, fallback) {
-      try {
-        const v = localStorage.getItem(NS + key);
-        return v !== null ? JSON.parse(v) : fallback;
-      } catch (_) { return fallback; }
-    },
-    set(key, value) {
-      try { localStorage.setItem(NS + key, JSON.stringify(value)); } catch (_) {}
-    },
-    remove(key) {
-      try { localStorage.removeItem(NS + key); } catch (_) {}
-    },
-    append(key, item, maxLen) {
-      const arr = local.get(key, []);
-      arr.unshift(item);
-      if (maxLen && arr.length > maxLen) arr.length = maxLen;
-      local.set(key, arr);
-    },
-  };
+    // Future: sync to Supabase
+    if (SUPABASE_CONFIG.enabled) this._syncToSupabase(event);
+    return event;
+  },
 
-  // ══════════════════════════════════════════════════════════
-  //  SUPABASE ADAPTER (wired, not active)
-  //  Activate: set MODE='supabase', fill SUPABASE_URL/KEY above,
-  //  then uncomment the import line below and the method bodies.
-  // ══════════════════════════════════════════════════════════
-  // import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-  // const _sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+  getEvents:   function() { return this._get('events', []); },
+  getCounters: function() { return this._get('counters', {}); },
+  getInstallCount: function() { return (this._get('counters', {}))['pwa_installed'] || 0; },
+  getSessionCount: function() { return (this._get('counters', {}))['pwa_session_start'] || 0; },
 
-  const supabase = {
-    async get(table, query) {
-      // const { data } = await _sb.from(table).select('*').match(query || {}).single()
-      // return data
-      return null;
-    },
-    async set(table, record) {
-      // await _sb.from(table).upsert(record, { onConflict: 'id' })
-    },
-    async list(table, query) {
-      // const { data } = await _sb.from(table).select('*').match(query || {})
-      // return data || []
-      return [];
-    },
-    async append(table, record) {
-      // await _sb.from(table).insert(record)
-    },
-  };
+  getDeviceBreakdown: function() {
+    var events = this._get('events', []).filter(function(e) { return e.type === 'pwa_installed'; });
+    var breakdown = {};
+    events.forEach(function(e) { breakdown[e.device] = (breakdown[e.device] || 0) + 1; });
+    return breakdown;
+  },
 
-  // ── Active adapter ──────────────────────────────────────────
-  const isLocal = MODE === 'local';
+  clearEvents: function() { this._set('events', []); this._set('counters', {}); },
 
-  // ══════════════════════════════════════════════════════════
-  //  PUBLIC API
-  //  All keys are semantic — not raw localStorage keys.
-  //  Map each to both adapters for easy future switch.
-  // ══════════════════════════════════════════════════════════
+  _detectDevice: function() {
+    var ua = navigator.userAgent;
+    if (/iPad|tablet/i.test(ua)) return 'Tablet';
+    if (/iPhone|Android.*Mobile/i.test(ua)) return 'Mobile';
+    return 'Desktop';
+  },
 
-  return {
+  _detectPlatform: function() {
+    var ua = navigator.userAgent;
+    if (/iPhone|iPad/.test(ua)) return 'iOS';
+    if (/Android/.test(ua)) return 'Android';
+    if (/Windows/.test(ua)) return 'Windows';
+    if (/Mac/.test(ua)) return 'macOS';
+    return 'Other';
+  },
 
-    // ── Mode ─────────────────────────────────────────────────
-    mode: MODE,
-    isSupabaseReady: () => !!(SUPABASE_URL && SUPABASE_KEY),
+  /* ── Supabase sync stub (wire up when ready) ── */
+  _syncToSupabase: function(event) {
+    if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) return;
+    fetch(SUPABASE_CONFIG.url + '/rest/v1/pwa_events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': 'Bearer ' + SUPABASE_CONFIG.anonKey
+      },
+      body: JSON.stringify({
+        event_type: event.type,
+        device: event.device,
+        platform: event.platform,
+        session_id: event.id,
+        meta: event.meta
+      })
+    }).catch(function() {});
+  },
 
-    // ── Trainer profile ───────────────────────────────────────
-    getTrainer: ()         => local.get('trainer', { name:'Alex Rivera', academy:'Four Paws Training & Enrichment Academy' }),
-    setTrainer: (data)     => local.set('trainer', data),
+  /* ── Supabase SQL (run once to set up) ── */
+  SETUP_SQL: `
+CREATE TABLE IF NOT EXISTS pwa_events (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  event_type text NOT NULL,
+  device text,
+  platform text,
+  session_id text,
+  timestamp timestamptz DEFAULT now(),
+  meta jsonb
+);
+CREATE INDEX ON pwa_events (event_type);
+CREATE INDEX ON pwa_events (timestamp DESC);
+  `
+};
 
-    // ── Client / dog roster (Trainer OS writes) ───────────────
-    getClients:  ()        => local.get('clients', []),
-    setClients:  (list)    => local.set('clients', list),
-    addClient:   (client)  => {
-      const list = local.get('clients', []);
-      list.push(client);
-      local.set('clients', list);
-    },
-    getClient: (id)        => local.get('clients', []).find(c => c.id === id) || null,
-    updateClient: (id, patch) => {
-      const list = local.get('clients', []);
-      const i = list.findIndex(c => c.id === id);
-      if (i > -1) { list[i] = { ...list[i], ...patch }; local.set('clients', list); }
-    },
+/* ── Auto-track session start ── */
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', function() {
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (isStandalone) FP_PWA.trackEvent('pwa_session_start', { standalone: true });
+  });
 
-    // ── Dog profiles ──────────────────────────────────────────
-    getDogs:  ()           => local.get('dogs', []),
-    setDogs:  (list)       => local.set('dogs', list),
-    getDog:   (id)         => local.get('dogs', []).find(d => d.id === id) || null,
-    addDog:   (dog)        => {
-      const list = local.get('dogs', []);
-      list.push(dog);
-      local.set('dogs', list);
-    },
-    updateDog: (id, patch) => {
-      const list = local.get('dogs', []);
-      const i = list.findIndex(d => d.id === id);
-      if (i > -1) { list[i] = { ...list[i], ...patch }; local.set('dogs', list); }
-    },
-
-    // ── Assigned lessons (Trainer writes, Owner reads) ────────
-    getAssignedLessons:  (dogId) => local.get('lessons_' + dogId, []),
-    setAssignedLessons:  (dogId, lessons) => local.set('lessons_' + dogId, lessons),
-
-    // ── Owner session logs (Owner writes, Trainer reads) ──────
-    getSessions:  (dogId)  => local.get('sessions_' + dogId, []),
-    addSession:   (dogId, session) => local.append('sessions_' + dogId, session, 500),
-
-    // ── Owner progress / milestones ───────────────────────────
-    getProgress:  (dogId)  => local.get('progress_' + dogId, {}),
-    setProgress:  (dogId, data) => local.set('progress_' + dogId, data),
-
-    // ── Owner goals ───────────────────────────────────────────
-    getGoals:  (dogId)     => local.get('goals_' + dogId, []),
-    setGoals:  (dogId, goals) => local.set('goals_' + dogId, goals),
-
-    // ── Owner journal ─────────────────────────────────────────
-    getJournal:  (dogId)   => local.get('journal_' + dogId, []),
-    addJournal:  (dogId, entry) => local.append('journal_' + dogId, entry, 200),
-
-    // ── Enrichment completions ────────────────────────────────
-    getEnrichDone: (dogId) => local.get('enrich_' + dogId, []),
-    addEnrichDone: (dogId, actId) => {
-      const list = local.get('enrich_' + dogId, []);
-      if (!list.includes(actId)) { list.push(actId); local.set('enrich_' + dogId, list); }
-    },
-
-    // ── Trainer notes ─────────────────────────────────────────
-    getNotes:  (dogId)     => local.get('notes_' + dogId, []),
-    addNote:   (dogId, note) => local.append('notes_' + dogId, note, 100),
-
-    // ── PWA events (install analytics) ───────────────────────
-    getPWAEvents:  ()      => local.get('pwa_events', []),
-    addPWAEvent:   (evt)   => local.append('pwa_events', evt, 500),
-    clearPWAEvents: ()     => local.remove('pwa_events'),
-
-    // ── Trainer theme ─────────────────────────────────────────
-    getTrainerTheme: ()    => local.get('trainer_theme', ''),
-    setTrainerTheme: (v)   => local.set('trainer_theme', v),
-
-    // ── Owner theme ───────────────────────────────────────────
-    getOwnerTheme: ()      => local.get('owner_theme', ''),
-    setOwnerTheme: (v)     => local.set('owner_theme', v),
-
-    // ── Active dog (Owner portal current dog) ─────────────────
-    getActiveDogId: ()     => local.get('active_dog', null),
-    setActiveDogId: (id)   => local.set('active_dog', id),
-
-    // ── Client access codes (Trainer generates) ───────────────
-    getAccessCodes: ()     => local.get('access_codes', []),
-    addAccessCode:  (code) => local.append('access_codes', code, 100),
-    validateCode:   (code) => {
-      const codes = local.get('access_codes', []);
-      return codes.find(c => c.code === code) || null;
-    },
-
-    // ── Tour completion ───────────────────────────────────────
-    isTourDone: ()         => local.get('tour_done', false),
-    setTourDone: ()        => local.set('tour_done', true),
-
-    // ── Raw access (escape hatch — use sparingly) ─────────────
-    _raw: local,
-
-  };
-
-})();
-
-// Make globally available
-if (typeof window !== 'undefined') window.FP_DATA = FP_DATA;
+  window.addEventListener('appinstalled', function() {
+    FP_PWA.trackEvent('pwa_installed', { source: 'browser_prompt' });
+  });
+}

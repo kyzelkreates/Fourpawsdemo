@@ -1,54 +1,44 @@
-/* ═══════════════════════════════════════════════════════
-   FOUR PAWS ACADEMY — Service Worker
-   Cache-first for static assets, network-first for pages
-════════════════════════════════════════════════════════ */
-const CACHE = 'fp-v1';
-const STATIC = [
+/* Four Paws Training Academy — Service Worker v3 */
+var CACHE = 'fp-v3';
+var ASSETS = [
   '/',
   '/owner',
   '/trainer',
-  '/ap3x/demo/index.html',
-  '/ap3x/demo/owner-demo.html',
-  '/ap3x/demo/trainer-demo.html',
-  '/ap3x/demo/manifest.json',
-  '/ap3x/demo/sw.js',
+  '/storage.js',
+  '/dataProvider.js',
+  '/ai-layer.js',
+  '/manifest.json'
 ];
 
-self.addEventListener('install', e => {
+self.addEventListener('install', function(e) {
+  e.waitUntil(
+    caches.open(CACHE).then(function(c) {
+      return c.addAll(ASSETS).catch(function() {});
+    })
+  );
   self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(STATIC).catch(() => {}))
-  );
 });
 
-self.addEventListener('activate', e => {
+self.addEventListener('activate', function(e) {
   e.waitUntil(
-    caches.keys().then(ks =>
-      Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys().then(function(keys) {
+      return Promise.all(keys.filter(function(k) { return k !== CACHE; }).map(function(k) { return caches.delete(k); }));
+    })
   );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', e => {
-  const { request } = e;
-  const url = new URL(request.url);
-  // Only handle same-origin requests
-  if (url.origin !== location.origin) return;
-  // Navigation: network-first, fallback to cache
-  if (request.mode === 'navigate') {
-    e.respondWith(
-      fetch(request)
-        .then(r => { const c = r.clone(); caches.open(CACHE).then(ca => ca.put(request, c)); return r; })
-        .catch(() => caches.match(request).then(r => r || caches.match('/')))
-    );
-    return;
-  }
-  // Static assets: cache-first
+self.addEventListener('fetch', function(e) {
+  if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(request).then(r => r || fetch(request).then(nr => {
-      const c = nr.clone();
-      caches.open(CACHE).then(ca => ca.put(request, c));
-      return nr;
-    }))
+    fetch(e.request).then(function(res) {
+      var clone = res.clone();
+      caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
+      return res;
+    }).catch(function() {
+      return caches.match(e.request).then(function(cached) {
+        return cached || caches.match('/owner');
+      });
+    })
   );
 });
