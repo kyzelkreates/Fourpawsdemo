@@ -140,6 +140,52 @@ input,select,textarea{font-family:inherit}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(11,18,32,.92);color:#fff;padding:9px 18px;border-radius:99px;font-size:12px;font-weight:600;z-index:999;opacity:0;transition:all .22s;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(max-width:768px){.sidebar{display:none}.stats-row{grid-template-columns:1fr 1fr}.two-col,.three-col{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.form-row.three{grid-template-columns:1fr}.view{padding:14px 12px}.dog-grid{grid-template-columns:1fr 1fr}}
+
+/* ── PWA Delivery Hub Buttons ── */
+.dep-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 10px 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+  min-height: 90px;
+}
+.dep-btn:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 6px 18px rgba(58,125,68,.18); }
+.dep-btn:active { transform: scale(.96); }
+.dep-icon  { font-size: 26px; line-height: 1; }
+.dep-label { font-size: 13px; font-weight: 800; color: var(--text); }
+.dep-sub   { font-size: 11px; color: var(--muted); }
+.dep-wa    { background: #f0fff4; border-color: #25D366; }
+.dep-wa:hover { background: #25D366; color: #fff; }
+.dep-wa:hover .dep-label, .dep-wa:hover .dep-sub { color: #fff; }
+.dep-email { background: #eff6ff; border-color: #4a90d9; }
+.dep-email:hover { background: #4a90d9; }
+.dep-email:hover .dep-label, .dep-email:hover .dep-sub { color: #fff; }
+.dep-sms   { background: #f0f9ff; border-color: #0ea5e9; }
+.dep-sms:hover { background: #0ea5e9; }
+.dep-sms:hover .dep-label, .dep-sms:hover .dep-sub { color: #fff; }
+.dep-qr    { background: #fafaf0; border-color: var(--primary); }
+.dep-qr:hover { background: var(--primary); }
+.dep-qr:hover .dep-label, .dep-qr:hover .dep-sub { color: #fff; }
+.dep-nfc   { background: #f5f0ff; border-color: #7b4f9e; }
+.dep-nfc:hover { background: #7b4f9e; }
+.dep-nfc:hover .dep-label, .dep-nfc:hover .dep-sub { color: #fff; }
+.dep-bt    { background: #f0f4ff; border-color: #0d6efd; }
+.dep-bt:hover { background: #0d6efd; }
+.dep-bt:hover .dep-label, .dep-bt:hover .dep-sub { color: #fff; }
+.dep-wifi  { background: #f0faff; border-color: #0891b2; }
+.dep-wifi:hover { background: #0891b2; }
+.dep-wifi:hover .dep-label, .dep-wifi:hover .dep-sub { color: #fff; }
+.dep-copy  { background: var(--surface); border-color: var(--border); }
+.dep-copy:hover { background: var(--primary); }
+.dep-copy:hover .dep-label, .dep-copy:hover .dep-sub { color: #fff; }
 </style>
 </head>
 <body>
@@ -351,6 +397,29 @@ input,select,textarea{font-family:inherit}
           <button class="btn-sm primary" id="nfc-write-btn" onclick="deployHub_writeNFC()">📡 Write to NFC Tag</button>
           <button class="btn-sm" id="nfc-beam-btn" onclick="deployHub_beamNFC()">📲 Beam to Phone</button>
           <span id="nfc-support-badge" style="font-size:11px;padding:4px 10px;border-radius:99px;background:var(--surface);color:var(--muted);align-self:center;border:1px solid var(--border)">Checking NFC…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- BLUETOOTH PANEL -->
+  <div class="card" id="bt-card" style="display:none;margin-top:0">
+    <div class="card-header">
+      <div class="card-title">&#x1F9B7; Bluetooth — Direct Device Transfer</div>
+      <div style="font-size:12px;color:var(--muted)">Web Bluetooth + System Share fallback</div>
+    </div>
+    <div class="card-body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div id="bt-status-circle" style="width:80px;height:80px;border-radius:50%;background:var(--surface);border:3px solid #0d6efd;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0">&#x1F9B7;</div>
+      <div style="flex:1">
+        <div id="bt-status-text" style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">Ready to Pair</div>
+        <div id="bt-sub-text" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Scan for nearby client devices. Once paired, the PWA bundle and install link are shared directly. Falls back to system share sheet if needed.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-sm primary" onclick="deployHub_bluetoothShare()" style="background:#0d6efd;border-color:#0d6efd">&#x1F9B7; Scan &amp; Pair Device</button>
+          <button class="btn-sm" onclick="deployHub_shareBundle()">&#x1F4E4; Share Bundle File</button>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:8px 12px;border-radius:6px">
+          <strong>How it works:</strong> Requires Chrome on Android or desktop. Web Bluetooth opens a device picker. After pairing, the PWA install link and pre-configured client bundle transfer directly. iOS uses the system share sheet.
         </div>
       </div>
     </div>
@@ -715,135 +784,143 @@ function renderDeploy(){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   FOUR PAWS — CLIENT PWA DEPLOYMENT HUB
-   Sync layer: localStorage → IndexedDB → Supabase (future)
+   FOUR PAWS — CLIENT PWA DEPLOYMENT HUB v2
+   Full PWA bundle transfer: WhatsApp · Email · SMS · Bluetooth
+   NFC · WiFi Direct · QR
+   Sync: localStorage → IndexedDB → Supabase
 ═══════════════════════════════════════════════════════════ */
 
-/* ── SYNC LAYER ──────────────────────────────────────────── */
+/* ── SYNC LAYER ─────────────────────────────────────────── */
 var FP_SYNC = {
-  _dbName: 'fourpaws_trainer',
-  _dbVer: 1,
   _db: null,
-  _sbUrl: null,
-  _sbKey: null,
-
-  /* Open IndexedDB */
   openDB: function() {
     return new Promise(function(resolve, reject) {
       if (FP_SYNC._db) { resolve(FP_SYNC._db); return; }
-      var req = indexedDB.open(FP_SYNC._dbName, FP_SYNC._dbVer);
+      var req = indexedDB.open('fourpaws_trainer', 2);
       req.onupgradeneeded = function(e) {
         var db = e.target.result;
-        if (!db.objectStoreNames.contains('deployments')) {
+        if (!db.objectStoreNames.contains('deployments'))
           db.createObjectStore('deployments', { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains('sync_queue')) {
-          db.createObjectStore('sync_queue', { keyPath: 'id', autoIncrement: true });
-        }
+        if (!db.objectStoreNames.contains('client_data'))
+          db.createObjectStore('client_data', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('session_log'))
+          db.createObjectStore('session_log', { keyPath: 'id', autoIncrement: true });
       };
       req.onsuccess = function(e) { FP_SYNC._db = e.target.result; resolve(FP_SYNC._db); };
       req.onerror   = function(e) { reject(e); };
     });
   },
-
-  /* Save deployment to localStorage + IndexedDB */
-  saveDeployment: function(record) {
-    /* 1. localStorage (instant, always works) */
-    var all = FP_SYNC.getLocalDeployments();
-    all.unshift(record);
+  saveDeployment: function(rec) {
+    var all = FP_SYNC.getAll();
+    var idx = all.findIndex(function(x) { return x.id === rec.id; });
+    if (idx >= 0) all[idx] = rec; else all.unshift(rec);
     localStorage.setItem('fp_deployments', JSON.stringify(all));
-
-    /* 2. IndexedDB (async, more durable) */
     FP_SYNC.openDB().then(function(db) {
-      var tx = db.transaction('deployments', 'readwrite');
-      tx.objectStore('deployments').put(record);
-    }).catch(function(e) { console.warn('[FP_SYNC] IndexedDB write failed:', e); });
-
-    /* 3. Supabase (if configured) */
-    FP_SYNC.pushToSupabase(record);
-
-    return record;
+      db.transaction('deployments','readwrite').objectStore('deployments').put(rec);
+    }).catch(function(){});
+    FP_SYNC.pushSupabase(rec);
   },
-
-  getLocalDeployments: function() {
+  saveClientData: function(clientId, data) {
+    var key = 'fp_cd_' + clientId;
+    localStorage.setItem(key, JSON.stringify(data));
+    FP_SYNC.openDB().then(function(db) {
+      db.transaction('client_data','readwrite').objectStore('client_data').put(Object.assign({id: clientId}, data));
+    }).catch(function(){});
+  },
+  getClientData: function(clientId) {
+    try { return JSON.parse(localStorage.getItem('fp_cd_' + clientId) || 'null'); } catch(e) { return null; }
+  },
+  getAll: function() {
     try { return JSON.parse(localStorage.getItem('fp_deployments') || '[]'); } catch(e) { return []; }
   },
-
-  /* Push to Supabase REST API */
-  pushToSupabase: function(record) {
-    var url = FP_SYNC._sbUrl || localStorage.getItem('fp_sb_url');
-    var key = FP_SYNC._sbKey || localStorage.getItem('fp_sb_key');
-    if (!url || !key) return Promise.resolve(null);
-    return fetch(url + '/rest/v1/deployments', {
+  pushSupabase: function(rec) {
+    var url = localStorage.getItem('fp_sb_url');
+    var key = localStorage.getItem('fp_sb_key');
+    if (!url || !key) return;
+    fetch(url + '/rest/v1/deployments', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': key,
-        'Authorization': 'Bearer ' + key,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify(record)
+      headers: { 'Content-Type': 'application/json', 'apikey': key, 'Authorization': 'Bearer ' + key, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(rec)
     }).then(function(r) {
-      if (r.ok) {
-        document.getElementById('sb-status').textContent = 'Connected ✓';
-        document.getElementById('sb-status').style.color = '#3a7d44';
-      }
-      return r;
-    }).catch(function(e) { console.warn('[FP_SYNC] Supabase push failed:', e); });
+      if (r.ok) { deployHub_setSbStatus('Connected \u2713', '#3a7d44'); }
+    }).catch(function(){});
   },
-
-  /* Configure Supabase */
-  configure: function(url, key) {
-    FP_SYNC._sbUrl = url;
-    FP_SYNC._sbKey = key;
+  syncPending: function() {
+    var list = FP_SYNC.getAll().filter(function(d){ return !d.synced; });
+    list.forEach(function(d){ FP_SYNC.pushSupabase(d); });
+    return list.length;
+  },
+  configSupabase: function(url, key) {
     localStorage.setItem('fp_sb_url', url);
     localStorage.setItem('fp_sb_key', key);
-    document.getElementById('sb-status').textContent = 'Configured — testing…';
-    document.getElementById('sb-status').style.color = '#e8a020';
-    /* Test connection */
+    deployHub_setSbStatus('Testing\u2026', '#e8a020');
     fetch(url + '/rest/v1/', { headers: { 'apikey': key } })
       .then(function() {
-        document.getElementById('sb-status').textContent = 'Connected ✓';
-        document.getElementById('sb-status').style.color = '#3a7d44';
-        document.getElementById('sync-title').textContent = 'Sync: LocalStorage + IndexedDB + Supabase';
-        document.getElementById('sync-icon').textContent = '☁️';
+        deployHub_setSbStatus('Connected \u2713', '#3a7d44');
+        deployHub_setSyncTitle('Sync: LocalStorage + IndexedDB + Supabase \u2601\uFE0F');
       })
-      .catch(function() {
-        document.getElementById('sb-status').textContent = 'Connection failed';
-        document.getElementById('sb-status').style.color = '#c0392b';
-      });
-  },
-
-  /* Sync pending localStorage records to Supabase */
-  syncPending: function() {
-    var pending = FP_SYNC.getLocalDeployments().filter(function(d) { return !d.synced; });
-    pending.forEach(function(d) { FP_SYNC.pushToSupabase(d); });
-    return pending.length;
+      .catch(function() { deployHub_setSbStatus('Connection failed', '#c0392b'); });
   }
 };
 
-/* Init: check Supabase config on load */
-(function() {
-  var sbUrl = localStorage.getItem('fp_sb_url');
-  var sbKey = localStorage.getItem('fp_sb_key');
-  if (sbUrl && sbKey) {
-    FP_SYNC._sbUrl = sbUrl;
-    FP_SYNC._sbKey = sbKey;
-    setTimeout(function() {
-      if (document.getElementById('sb-status')) {
-        document.getElementById('sb-status').textContent = 'Configured';
-        document.getElementById('sb-status').style.color = '#e8a020';
-      }
-    }, 500);
+function deployHub_setSbStatus(txt, col) {
+  var el = document.getElementById('sb-status');
+  if (el) { el.textContent = txt; el.style.color = col; }
+}
+function deployHub_setSyncTitle(txt) {
+  var el = document.getElementById('sync-title');
+  if (el) el.textContent = txt;
+}
+
+/* init Supabase if previously configured */
+(function(){
+  if (localStorage.getItem('fp_sb_url')) {
+    setTimeout(function(){
+      deployHub_setSbStatus('Configured', '#e8a020');
+    }, 400);
   }
 })();
 
 /* ── DEPLOY HUB STATE ────────────────────────────────────── */
 var _depClient = null;
 var _depLink   = '';
-var _nfcActive = false;
-var _nfcController = null;
+var _depBundle = null; /* serialised PWA bundle for direct transfer */
 
+/* Build a self-contained PWA payload object that can be transferred */
+function buildPWABundle(client) {
+  return {
+    meta: {
+      version: '2.0',
+      academy: 'Four Paws Training & Enrichment Academy',
+      trainer: 'Alex Rivera',
+      generated: new Date().toISOString()
+    },
+    client: {
+      code: client.id,
+      owner: client.owner,
+      dog: client.dog,
+      breed: client.breed,
+      age: client.age,
+      notes: client.notes
+    },
+    curriculum: {
+      modules: [
+        { id:1, name:'Foundations',                lessons:3, unlocked:true  },
+        { id:2, name:'Core Obedience',             lessons:3, unlocked:false },
+        { id:3, name:'Socialisation & Confidence', lessons:3, unlocked:false },
+        { id:4, name:'Home Life Success',          lessons:3, unlocked:false },
+        { id:5, name:'Enrichment & Long Term',     lessons:3, unlocked:false }
+      ]
+    },
+    install_url: client.link,
+    sync: {
+      mode: 'localStorage',
+      supabase_ready: !!localStorage.getItem('fp_sb_url')
+    }
+  };
+}
+
+/* Main generate function */
 function deployHub_generate() {
   var owner = document.getElementById('dep-owner').value.trim();
   var dog   = document.getElementById('dep-dog').value.trim();
@@ -853,69 +930,467 @@ function deployHub_generate() {
   var phone = document.getElementById('dep-phone').value.trim();
   var notes = document.getElementById('dep-notes').value.trim();
 
-  if (!owner) { showToast('⚠️ Please enter the owner name'); return; }
-  if (!dog)   { showToast('⚠️ Please enter the dog name'); return; }
+  if (!owner) { showToast('\u26a0\uFE0F Please enter the owner name'); return; }
+  if (!dog)   { showToast('\u26a0\uFE0F Please enter the dog name'); return; }
 
-  var code = 'FP-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  var code    = 'FP-' + Math.random().toString(36).substr(2,6).toUpperCase();
   var baseUrl = window.location.origin + '/owner';
-  var params  = '?code=' + code + '&owner=' + encodeURIComponent(owner) + '&dog=' + encodeURIComponent(dog) + '&breed=' + encodeURIComponent(breed) + '&age=' + encodeURIComponent(age);
+  var params  = '?code=' + code
+    + '&owner=' + encodeURIComponent(owner)
+    + '&dog='   + encodeURIComponent(dog)
+    + '&breed=' + encodeURIComponent(breed)
+    + '&age='   + encodeURIComponent(age);
   _depLink = baseUrl + params;
 
-  _depClient = {
-    id: code,
-    owner: owner,
-    dog: dog,
-    breed: breed,
-    age: age,
-    email: email,
-    phone: phone,
-    notes: notes,
-    link: _depLink,
-    ts: Date.now(),
-    synced: false
-  };
+  _depClient = { id:code, owner:owner, dog:dog, breed:breed, age:age, email:email, phone:phone, notes:notes, link:_depLink, ts:Date.now(), synced:false };
 
-  /* Save to sync layer */
+  /* Build transferable PWA bundle */
+  _depBundle = buildPWABundle(_depClient);
+
+  /* Persist */
   FP_SYNC.saveDeployment(_depClient);
+  FP_SYNC.saveClientData(code, _depBundle);
 
-  /* Unlock the delivery card */
+  /* Unlock delivery panel */
   var card = document.getElementById('delivery-card');
   card.style.opacity = '1';
   card.style.pointerEvents = 'auto';
+  document.getElementById('dep-client-badge').textContent = dog + ' \u00b7 ' + owner;
 
-  document.getElementById('dep-client-badge').textContent = dog + ' · ' + owner;
+  /* Render all delivery channels */
+  deployHub_renderDelivery(_depClient);
 
-  /* Render delivery methods */
-  var m = document.getElementById('delivery-methods');
-  var wa = phone
-    ? 'https://wa.me/' + phone.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent('Hi ' + owner + '! Your Four Paws AI Coach is ready for ' + dog + '.\n\nInstall here (no App Store needed):\n' + _depLink + '\n\nYour access code: ' + code)
-    : null;
-  var mailto = 'mailto:' + email + '?subject=' + encodeURIComponent('Your Four Paws AI Coach - ' + dog + ' is ready!') + '&body=' + encodeURIComponent('Hi ' + owner + ',\n\nYour Four Paws AI Coach for ' + dog + ' is ready!\n\nInstall on your phone:\n' + _depLink + '\n\nAccess code: ' + code + '\n\nSee you at training!\nYour Trainer');
-  showToast('⚙ Supabase configured — testing connection…');
+  showToast('\u2705 ' + dog + "'s PWA bundle ready \u2014 choose a delivery channel");
+  deployHub_renderRecent();
+
+  /* Show secondary panels */
+  document.getElementById('qr-card').style.display   = 'none';
+  document.getElementById('nfc-card').style.display  = 'block';
+  document.getElementById('wifi-card').style.display = 'block';
+  document.getElementById('bt-card').style.display   = 'block';
+  deployHub_initNFC();
 }
 
-/* ── SYNC STATUS REFRESH ─────────────────────────────────── */
+/* ── RENDER DELIVERY CHANNELS ────────────────────────────── */
+function deployHub_renderDelivery(d) {
+  var m   = document.getElementById('delivery-methods');
+  var bundleJson = JSON.stringify(_depBundle);
+  var bundleB64  = btoa(unescape(encodeURIComponent(bundleJson)));
+  var dataUrl    = 'data:application/json;base64,' + bundleB64;
+
+  /* Deep-linked install URL with pre-filled client data */
+  var installUrl = d.link;
+
+  /* WhatsApp — link + install instructions */
+  var waMsg = 'Hi ' + d.owner + '! \uD83D\uDC3E Your Four Paws AI Coach for ' + d.dog + ' is ready!\n\n'
+    + '\uD83D\uDCF1 *Install in 3 taps (no App Store):*\n'
+    + installUrl + '\n\n'
+    + '1\uFE0F\u20E3 Tap the link above\n'
+    + '2\uFE0F\u20E3 Complete your dog\'s quick setup\n'
+    + '3\uFE0F\u20E3 Tap *Add to Home Screen* when prompted\n\n'
+    + '\uD83D\uDD11 Access code: *' + d.id + '*\n'
+    + 'Your training plan, AI coach & session logs will all sync with me automatically.';
+  var waUrl = d.phone
+    ? 'https://wa.me/' + d.phone.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent(waMsg)
+    : 'https://wa.me/?text=' + encodeURIComponent(waMsg);
+
+  /* Email */
+  var emailSubj = 'Your Four Paws AI Coach for ' + d.dog + ' is ready!';
+  var emailBody = 'Hi ' + d.owner + ',\n\n'
+    + 'Your personalised Four Paws AI Coach for ' + d.dog + ' is ready to install!\n\n'
+    + 'INSTALL YOUR APP (no App Store needed):\n' + installUrl + '\n\n'
+    + 'HOW TO INSTALL:\n'
+    + 'iPhone: Tap the link, then tap the Share button and choose "Add to Home Screen"\n'
+    + 'Android: Tap the link, then tap "Install App" or "Add to Home Screen" in your browser menu\n\n'
+    + 'ACCESS CODE: ' + d.id + '\n\n'
+    + 'Your app includes:\n'
+    + '- Personalised Puppy Masterclass for ' + d.dog + '\n'
+    + '- Daily training log & session scoring\n'
+    + '- AI Coach available 24/7\n'
+    + '- Live sync with your trainer dashboard\n\n'
+    + 'See you at training!\n'
+    + 'Your Trainer at Four Paws Academy';
+  var mailtoUrl = 'mailto:' + (d.email || '') + '?subject=' + encodeURIComponent(emailSubj) + '&body=' + encodeURIComponent(emailBody);
+
+  /* SMS / Text message */
+  var smsBody = 'Four Paws AI Coach for ' + d.dog + ' is ready! Install here (no App Store): ' + installUrl + ' - Code: ' + d.id;
+  var smsUrl = d.phone
+    ? 'sms:' + d.phone + '?body=' + encodeURIComponent(smsBody)
+    : 'sms:?body=' + encodeURIComponent(smsBody);
+
+  m.innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+
+    /* WhatsApp */
+    '<button class="dep-btn dep-wa" onclick="window.open(\'' + waUrl.replace(/'/g, "\\'") + '\',\'_blank\')">' +
+      '<span class="dep-icon">\uD83D\uDCAC</span>' +
+      '<span class="dep-label">WhatsApp</span>' +
+      '<span class="dep-sub">Link + install guide</span>' +
+    '</button>' +
+
+    /* Email */
+    '<button class="dep-btn dep-email" onclick="window.location.href=\'' + mailtoUrl.replace(/'/g, "\\'").replace(/\n/g, '%0A') + '\'">' +
+      '<span class="dep-icon">\uD83D\uDCE7</span>' +
+      '<span class="dep-label">Email</span>' +
+      '<span class="dep-sub">Full onboarding email</span>' +
+    '</button>' +
+
+    /* SMS */
+    '<button class="dep-btn dep-sms" onclick="window.location.href=\'' + smsUrl.replace(/'/g, "\\'") + '\'">' +
+      '<span class="dep-icon">\uD83D\uDCF1</span>' +
+      '<span class="dep-label">Text Message</span>' +
+      '<span class="dep-sub">SMS install link</span>' +
+    '</button>' +
+
+    /* QR */
+    '<button class="dep-btn dep-qr" onclick="deployHub_showQR()">' +
+      '<span class="dep-icon">\uD83D\uDD32</span>' +
+      '<span class="dep-label">QR Code</span>' +
+      '<span class="dep-sub">Scan to install</span>' +
+    '</button>' +
+
+    /* NFC */
+    '<button class="dep-btn dep-nfc" onclick="document.getElementById(\'nfc-card\').scrollIntoView({behavior:\'smooth\'})">' +
+      '<span class="dep-icon">\uD83D\uDCE1</span>' +
+      '<span class="dep-label">NFC</span>' +
+      '<span class="dep-sub">Tap to install</span>' +
+    '</button>' +
+
+    /* Bluetooth */
+    '<button class="dep-btn dep-bt" onclick="deployHub_bluetoothShare()" id="bt-share-btn">' +
+      '<span class="dep-icon">\uD83E\uDDB7</span>' +
+      '<span class="dep-icon" style="font-size:11px;margin-top:-4px">BT</span>' +
+      '<span class="dep-label">Bluetooth</span>' +
+      '<span class="dep-sub">Direct device transfer</span>' +
+    '</button>' +
+
+    /* WiFi Direct */
+    '<button class="dep-btn dep-wifi" onclick="deployHub_wifiShare()">' +
+      '<span class="dep-icon">\uD83D\uDEDC</span>' +
+      '<span class="dep-label">WiFi Direct</span>' +
+      '<span class="dep-sub">Same network share</span>' +
+    '</button>' +
+
+    /* Copy Link */
+    '<button class="dep-btn dep-copy" onclick="deployHub_copyLink()">' +
+      '<span class="dep-icon">\uD83D\uDD17</span>' +
+      '<span class="dep-label">Copy Link</span>' +
+      '<span class="dep-sub">Paste anywhere</span>' +
+    '</button>' +
+
+    '</div>';
+}
+
+/* ── QR CODE ─────────────────────────────────────────────── */
+function deployHub_showQR() {
+  if (!_depLink) return;
+  var card = document.getElementById('qr-card');
+  card.style.display = 'block';
+  document.getElementById('qr-client-label').textContent = _depClient ? _depClient.dog + ' \u00b7 ' + _depClient.owner : '';
+  var container = document.getElementById('qr-container');
+  var img = document.createElement('img');
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(_depLink) + '&margin=0&color=0d2710&bgcolor=ffffff';
+  img.alt = 'QR Code';
+  img.style.cssText = 'width:220px;height:220px;display:block;border-radius:4px';
+  container.innerHTML = '';
+  container.appendChild(img);
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function deployHub_printQR()    { window.print(); }
+function deployHub_downloadQR() {
+  if (!_depLink) return;
+  var a = document.createElement('a');
+  a.href = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(_depLink) + '&margin=10';
+  a.download = 'fourpaws-qr-' + (_depClient ? _depClient.dog.toLowerCase() : 'client') + '.png';
+  a.target = '_blank'; a.click();
+}
+function deployHub_copyLink() {
+  if (!_depLink) { showToast('Generate a client portal first'); return; }
+  navigator.clipboard.writeText(_depLink)
+    .then(function(){ showToast('\uD83D\uDD17 Install link copied!'); })
+    .catch(function(){ prompt('Copy this link:', _depLink); });
+}
+
+/* ── BLUETOOTH ───────────────────────────────────────────── */
+function deployHub_bluetoothShare() {
+  if (!_depBundle) { showToast('Generate client portal first'); return; }
+  var card = document.getElementById('bt-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+
+  var statusEl  = document.getElementById('bt-status-text');
+  var circleEl  = document.getElementById('bt-status-circle');
+  var subEl     = document.getElementById('bt-sub-text');
+
+  /* Try Web Bluetooth — if available, use it for detection */
+  if (!navigator.bluetooth) {
+    /* Web Bluetooth not available — fall back to Web Share API with file bundle */
+    statusEl.textContent  = 'Using Web Share (file transfer)';
+    circleEl.textContent  = '\uD83D\uDCE4';
+    subEl.textContent     = 'Your browser does not support direct Bluetooth. Sharing the PWA bundle file via the system share sheet instead.';
+    deployHub_shareBundle();
+    return;
+  }
+
+  statusEl.textContent  = 'Scanning for nearby devices\u2026';
+  circleEl.textContent  = '\uD83D\uDD0D';
+  subEl.textContent     = 'Select your client\'s device from the list that appears.';
+  circleEl.style.animation = 'pulse 1s infinite';
+
+  navigator.bluetooth.requestDevice({
+    acceptAllDevices: true,
+    optionalServices: []
+  }).then(function(device) {
+    circleEl.style.animation = '';
+    statusEl.textContent = 'Found: ' + device.name;
+    circleEl.textContent = '\uD83D\uDFE2';
+    subEl.textContent = 'Device selected. Transferring PWA bundle via Web Share\u2026';
+    /* Bluetooth GATT file transfer requires custom server — fall back to share bundle */
+    deployHub_shareBundle();
+    showToast('\uD83E\uDDB7 Bluetooth device found \u2014 sending via system share');
+  }).catch(function(e) {
+    circleEl.style.animation = '';
+    if (e.name === 'NotFoundError') {
+      statusEl.textContent  = 'No device selected';
+      circleEl.textContent  = '\u23F8\uFE0F';
+      subEl.textContent     = 'No device was chosen. Try again or use another channel.';
+    } else if (e.name === 'SecurityError' || e.name === 'NotAllowedError') {
+      statusEl.textContent  = 'Permission denied';
+      circleEl.textContent  = '\uD83D\uDEAB';
+      subEl.textContent     = 'Bluetooth permission was denied. Please allow Bluetooth access and try again.';
+    } else {
+      statusEl.textContent  = 'Bluetooth error';
+      circleEl.textContent  = '\u274C';
+      subEl.textContent     = e.message + '. Falling back to Web Share.';
+      deployHub_shareBundle();
+    }
+  });
+}
+
+/* Share PWA bundle as a downloadable file via Web Share API */
+function deployHub_shareBundle() {
+  if (!_depBundle) { showToast('Generate client portal first'); return; }
+  var json = JSON.stringify(_depBundle, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var file = new File([blob], 'fourpaws-' + (_depClient ? _depClient.dog.toLowerCase() : 'client') + '-pwa.json', { type: 'application/json' });
+
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({
+      title: 'Four Paws AI Coach \u2014 ' + (_depClient ? _depClient.dog : 'Client'),
+      text: 'Install the Four Paws AI Coach: ' + _depLink,
+      files: [file],
+      url: _depLink
+    }).then(function(){ showToast('\uD83D\uDCE4 Shared!'); })
+      .catch(function(e){ if (e.name !== 'AbortError') deployHub_copyLink(); });
+  } else if (navigator.share) {
+    /* Share without file (iOS < 15 etc.) */
+    navigator.share({ title: 'Four Paws AI Coach', text: 'Install here: ' + _depLink, url: _depLink })
+      .then(function(){ showToast('\uD83D\uDCE4 Shared via system sheet!'); })
+      .catch(function(){});
+  } else {
+    /* No share API — download the bundle file */
+    var url = URL.createObjectURL(blob);
+    var a   = document.createElement('a');
+    a.href = url; a.download = file.name; a.click();
+    URL.revokeObjectURL(url);
+    showToast('\uD83D\uDCE5 Bundle downloaded \u2014 transfer to client device');
+  }
+}
+
+/* ── NFC ─────────────────────────────────────────────────── */
+function deployHub_initNFC() {
+  var badge = document.getElementById('nfc-support-badge');
+  if (!badge) return;
+  if ('NDEFReader' in window) {
+    badge.textContent = 'NFC Supported \u2713';
+    badge.style.color = '#3a7d44';
+  } else {
+    badge.textContent = 'NFC: use Android + Chrome';
+    badge.style.color = '#c0392b';
+    var wb = document.getElementById('nfc-write-btn');
+    var bb = document.getElementById('nfc-beam-btn');
+    if (wb) wb.disabled = true;
+    if (bb) bb.disabled = true;
+    document.getElementById('nfc-status-text').textContent = 'NFC not available here';
+    document.getElementById('nfc-sub-text').textContent    = 'NFC writing requires Android with Chrome. On this device, use QR, WhatsApp or Email instead.';
+    document.getElementById('nfc-status-circle').textContent = '\uD83D\uDEAB';
+  }
+}
+
+function deployHub_writeNFC() {
+  if (!_depLink) { showToast('Generate client portal first'); return; }
+  if (!('NDEFReader' in window)) { showToast('NFC not supported on this device'); return; }
+  document.getElementById('nfc-status-text').textContent   = 'Hold NFC tag to back of device\u2026';
+  document.getElementById('nfc-status-circle').textContent = '\u23F3';
+  document.getElementById('nfc-sub-text').textContent      = 'Keep the NFC tag flat against the back of your device. The install link will be written automatically.';
+  var ndef = new NDEFReader();
+  ndef.write({ records: [{ recordType:'url', data:_depLink }] })
+    .then(function() {
+      document.getElementById('nfc-status-text').textContent   = 'Tag written! \u2713';
+      document.getElementById('nfc-status-circle').textContent = '\u2705';
+      document.getElementById('nfc-sub-text').textContent      = 'Client taps their phone to the NFC tag \u2014 the app opens and installs automatically.';
+      showToast('\uD83D\uDCE1 NFC tag written \u2014 client can tap to install');
+    })
+    .catch(function(e) {
+      document.getElementById('nfc-status-text').textContent   = 'Write failed';
+      document.getElementById('nfc-status-circle').textContent = '\u274C';
+      document.getElementById('nfc-sub-text').textContent      = 'Error: ' + e.message + '. Hold tag flatter and try again.';
+    });
+}
+
+function deployHub_beamNFC() {
+  if (!_depLink) { showToast('Generate client portal first'); return; }
+  if (!('NDEFReader' in window)) { showToast('NFC not supported on this device'); return; }
+  document.getElementById('nfc-status-text').textContent   = 'Hold phones back-to-back\u2026';
+  document.getElementById('nfc-status-circle').textContent = '\uD83D\uDCF2';
+  var ndef = new NDEFReader();
+  ndef.write({ records: [{ recordType:'url', data:_depLink }] })
+    .then(function() {
+      document.getElementById('nfc-status-text').textContent   = 'Sent! \u2713';
+      document.getElementById('nfc-status-circle').textContent = '\u2705';
+      showToast('\uD83D\uDCE1 Install link sent via NFC');
+    })
+    .catch(function(e) {
+      document.getElementById('nfc-status-text').textContent   = 'Beam failed';
+      document.getElementById('nfc-status-circle').textContent = '\u274C';
+      showToast('\u274C NFC beam failed: ' + e.message);
+    });
+}
+
+/* ── WIFI DIRECT / LOCAL SHARE ───────────────────────────── */
+function deployHub_wifiShare() {
+  if (!_depLink) { showToast('Generate client portal first'); return; }
+  var card = document.getElementById('wifi-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+
+  deployHub_getLocalIP().then(function(ip) {
+    var port    = window.location.port || '80';
+    var local   = ip ? _depLink.replace(window.location.origin, 'http://' + ip + ':' + port) : _depLink;
+    window._wifiLocalLink = local;
+    var el = document.getElementById('wifi-local-url');
+    el.textContent = local;
+    el.style.display = 'block';
+    document.getElementById('wifi-status-text').textContent   = ip ? 'Local link ready \u2713' : 'Using public URL';
+    document.getElementById('wifi-status-circle').textContent = '\u2705';
+    document.getElementById('wifi-sub-text').textContent      = ip
+      ? 'Share this URL on the same WiFi. Client opens it in their browser and taps Add to Home Screen \u2014 no mobile data needed.'
+      : 'Could not detect local IP. Use the public link above \u2014 share via system share sheet.';
+    /* Web Share if available */
+    if (navigator.share) {
+      navigator.share({ title:'Four Paws AI Coach', url: local })
+        .then(function(){ showToast('\uD83D\uDEDC Shared via system sheet!'); })
+        .catch(function(){});
+    } else {
+      navigator.clipboard.writeText(local).then(function(){ showToast('\uD83D\uDD17 Local URL copied!'); }).catch(function(){});
+    }
+  });
+}
+
+function deployHub_getLocalIP() {
+  return new Promise(function(resolve) {
+    try {
+      var pc = new RTCPeerConnection({ iceServers:[] });
+      pc.createDataChannel('');
+      pc.createOffer().then(function(o){ pc.setLocalDescription(o); });
+      pc.onicecandidate = function(e) {
+        if (!e || !e.candidate) { resolve(null); return; }
+        var m = e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
+        if (m && !m[1].startsWith('127.')) { pc.close(); resolve(m[1]); }
+      };
+      setTimeout(function(){ resolve(null); }, 3000);
+    } catch(e) { resolve(null); }
+  });
+}
+
+function deployHub_copyLocalLink() {
+  var link = window._wifiLocalLink || _depLink;
+  navigator.clipboard.writeText(link)
+    .then(function(){ showToast('\uD83D\uDD17 Local link copied!'); })
+    .catch(function(){ prompt('Copy this link:', link); });
+}
+
+/* ── SUPABASE CONFIG ─────────────────────────────────────── */
+function deployHub_configSupabase() {
+  var url = prompt('Supabase Project URL:\n(e.g. https://yourproject.supabase.co)', localStorage.getItem('fp_sb_url') || '');
+  if (!url) return;
+  var key = prompt('Supabase Anon Key:\n(Settings \u2192 API \u2192 anon public)', localStorage.getItem('fp_sb_key') || '');
+  if (!key) return;
+  FP_SYNC.configSupabase(url.trim(), key.trim());
+  showToast('\u2699\uFE0F Supabase configured \u2014 testing connection\u2026');
+}
+
 function deployHub_resetSync() {
-  var count = FP_SYNC.syncPending();
-  showToast('🔄 Sync attempted — ' + count + ' record(s) pushed');
+  var n = FP_SYNC.syncPending();
+  showToast('\uD83D\uDD04 Sync: ' + n + ' record(s) pushed');
   deployHub_renderRecent();
 }
 
-/* Init recent deployments list on view open */
-var _origShowView = typeof showView === 'function' ? showView : null;
+/* ── RECENT DEPLOYMENTS ──────────────────────────────────── */
+function deployHub_renderRecent() {
+  var list  = FP_SYNC.getAll();
+  var el    = document.getElementById('recentOnboardings');
+  var badge = document.getElementById('deploy-count-badge');
+  if (badge) badge.textContent = list.length + ' client' + (list.length !== 1 ? 's' : '') + ' enrolled';
+  if (!el) return;
+  if (!list.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No deployments yet \u2014 enrol your first client above</div>';
+    return;
+  }
+  el.innerHTML = list.slice(0,10).map(function(d) {
+    var ago = Math.round((Date.now() - d.ts) / 60000);
+    var agoStr = ago < 2 ? 'just now' : ago < 60 ? ago + ' min ago' : Math.round(ago/60) + 'h ago';
+    return '<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)">'
+      + '<div style="width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">\uD83D\uDC3E</div>'
+      + '<div style="flex:1;min-width:0">'
+        + '<div style="font-weight:700;font-size:14px">' + d.dog + ' \u00b7 ' + d.owner + '</div>'
+        + '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + d.breed + ' \u00b7 ' + d.age + ' \u00b7 Code: <strong>' + d.id + '</strong></div>'
+      + '</div>'
+      + '<div style="text-align:right;flex-shrink:0">'
+        + '<div style="font-size:11px;color:var(--muted)">' + agoStr + '</div>'
+        + '<div style="display:flex;gap:6px;margin-top:4px">'
+          + '<button class="btn-sm" style="padding:3px 8px;font-size:11px" onclick="deployHub_reshare(\'' + d.id + '\')">Reshare</button>'
+          + '<button class="btn-sm" style="padding:3px 8px;font-size:11px" onclick="deployHub_viewSync(\'' + d.id + '\')">\uD83D\uDD04 Sync</button>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function deployHub_reshare(id) {
+  var d = FP_SYNC.getAll().find(function(x){ return x.id === id; });
+  if (!d) return;
+  _depClient = d;
+  _depLink   = d.link;
+  _depBundle = buildPWABundle(d);
+  document.getElementById('dep-owner').value = d.owner || '';
+  document.getElementById('dep-dog').value   = d.dog   || '';
+  document.getElementById('dep-breed').value = d.breed || '';
+  document.getElementById('dep-email').value = d.email || '';
+  document.getElementById('dep-phone').value = d.phone || '';
+  var card = document.getElementById('delivery-card');
+  card.style.opacity = '1'; card.style.pointerEvents = 'auto';
+  document.getElementById('dep-client-badge').textContent = d.dog + ' \u00b7 ' + d.owner;
+  deployHub_renderDelivery(d);
+  showToast('\uD83D\uDD01 Resharing ' + d.dog + "'s portal");
+}
+
+function deployHub_viewSync(id) {
+  var data = FP_SYNC.getClientData(id);
+  if (!data) { showToast('No sync data found locally'); return; }
+  showToast('\uD83D\uDCBE Sync data found \u2014 ' + Object.keys(data).length + ' fields. Supabase push on next sync.');
+}
+
+/* ── INIT ────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function() {
-  /* patch showView to init deploy hub */
   if (typeof showView === 'function') {
-    var orig = showView;
+    var _origSV = showView;
     showView = function(v) {
-      orig(v);
-      if (v === 'deploy') { setTimeout(deployHub_renderRecent, 50); }
+      _origSV(v);
+      if (v === 'deploy') { setTimeout(function(){ deployHub_renderRecent(); deployHub_initNFC(); }, 60); }
     };
   }
-  /* Also init if deploy is default view */
-  if (!document.querySelector('.view:not(.hidden)')) { deployHub_renderRecent(); }
 });
-
 
 /* ══════════ REVIEWS ══════════ */
 function renderReviews(){
