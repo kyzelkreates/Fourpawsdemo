@@ -32,24 +32,38 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .screen-inner{max-width:var(--content-max);margin:0 auto;padding:16px 16px 24px}
 
 /* ── Onboarding ── */
-#screen-onboard{background:linear-gradient(160deg,#0d3320 0%,#1a4d28 50%,#2d6235 100%);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-.ob-card{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:32px 24px;max-width:420px;width:100%;text-align:center;color:#fff}
-.ob-logo{font-size:48px;margin-bottom:12px}
-.ob-title{font-size:26px;font-weight:900;margin-bottom:6px;letter-spacing:-.5px}
-.ob-sub{font-size:14px;opacity:.75;margin-bottom:28px;line-height:1.6}
+#screen-onboard{background:linear-gradient(160deg,#0a2818 0%,#1a4d28 60%,#2d6235 100%);display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:20px 16px 60px;overflow-y:auto}
+.ob-wrap{max-width:440px;width:100%;padding-top:12px}
+.ob-header{text-align:center;color:#fff;margin-bottom:22px}
+.ob-logo{font-size:44px;margin-bottom:8px}
+.ob-title{font-size:23px;font-weight:900;letter-spacing:-.4px;margin-bottom:5px}
+.ob-sub{font-size:13px;opacity:.7;line-height:1.6}
+.ob-progress-track{height:4px;background:rgba(255,255,255,.15);border-radius:99px;margin-bottom:5px;overflow:hidden}
+.ob-progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .35s ease}
+.ob-step-label{font-size:11px;color:rgba(255,255,255,.45);text-align:right;margin-bottom:18px;font-weight:600;letter-spacing:.03em}
 .ob-step{display:none}.ob-step.active{display:block}
-.ob-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:6px;text-align:left}
-.ob-input{width:100%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:var(--rs);padding:12px 14px;color:#fff;font-size:15px;margin-bottom:14px;outline:none;transition:border var(--t)}
-.ob-input::placeholder{opacity:.5}
-.ob-input:focus{border-color:var(--accent)}
-.ob-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border-radius:var(--rs);font-size:15px;font-weight:700;margin-top:8px;transition:background var(--t)}
+.ob-q{font-size:17px;font-weight:800;color:#fff;margin-bottom:5px;line-height:1.4}
+.ob-q-sub{font-size:13px;color:rgba(255,255,255,.58);margin-bottom:14px;line-height:1.55}
+.ob-input{width:100%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:var(--rs);padding:13px 14px;color:#fff;font-size:15px;margin-bottom:11px;outline:none;transition:border var(--t)}
+.ob-input::placeholder{opacity:.4}
+.ob-input:focus{border-color:var(--accent);background:rgba(255,255,255,.14)}
+.ob-choices{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.ob-choice{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.14);border-radius:var(--rs);padding:12px 14px;color:#fff;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;gap:10px;text-align:left}
+.ob-choice:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.3)}
+.ob-choice.selected{background:rgba(244,164,53,.2);border-color:var(--accent)}
+.ob-choice-icon{font-size:20px;flex-shrink:0;width:26px;text-align:center}
+.ob-choice-label{font-size:14px;font-weight:700;line-height:1.3}
+.ob-choice-desc{font-size:11px;opacity:.6;margin-top:2px}
+.ob-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.ob-chip{background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.18);border-radius:99px;padding:8px 13px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s ease}
+.ob-chip:hover{background:rgba(255,255,255,.17)}
+.ob-chip.selected{background:rgba(244,164,53,.22);border-color:var(--accent)}
+.ob-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border-radius:var(--rs);font-size:15px;font-weight:800;margin-top:4px;transition:background var(--t)}
 .ob-btn:hover{background:var(--accent-d)}
-.ob-btn.secondary{background:rgba(255,255,255,.15);margin-top:8px}
-.ob-progress{display:flex;gap:6px;justify-content:center;margin-bottom:24px}
-.ob-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:background var(--t)}
-.ob-dot.active{background:var(--accent)}
-.ob-select{width:100%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:var(--rs);padding:12px 14px;color:#fff;font-size:15px;margin-bottom:14px;outline:none;-webkit-appearance:none}
-.ob-select option{background:#1a4d28;color:#fff}
+.ob-btn.secondary{background:rgba(255,255,255,.1);color:rgba(255,255,255,.65);margin-top:8px;font-weight:600}
+.ob-btn.secondary:hover{background:rgba(255,255,255,.18)}
+.ob-ai-msg{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--rs);padding:13px 15px;color:rgba(255,255,255,.82);font-size:13px;line-height:1.65;margin-bottom:14px;text-align:left}
+.ob-ai-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:5px}
 
 /* ── Top bar ── */
 .topbar{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;height:52px;gap:10px}
@@ -246,65 +260,106 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 <!-- ═══════════════ ONBOARDING ═══════════════ -->
 <div id="screen-onboard" class="screen active">
-<div class="ob-card">
-  <div class="ob-logo">🐾</div>
-  <div class="ob-title">Four Paws Academy</div>
-  <div class="ob-sub">Your AI-powered dog training companion. Let's get you and your dog set up.</div>
-  <div class="ob-progress" id="ob-progress"></div>
+<div class="ob-wrap">
 
-  <!-- Step 1: Owner -->
+  <div class="ob-header">
+    <div class="ob-logo">🐾</div>
+    <div class="ob-title">Four Paws Academy</div>
+    <div class="ob-sub">Your AI coach will personalise your training plan once we know a bit about you and your dog.</div>
+  </div>
+
+  <div class="ob-progress-track"><div class="ob-progress-fill" id="ob-fill" style="width:20%"></div></div>
+  <div class="ob-step-label" id="ob-step-label">Step 1 of 5</div>
+
+  <!-- ── Step 1: Owner ── -->
   <div class="ob-step active" id="ob-step-1">
-    <div class="ob-label">Your name</div>
-    <input class="ob-input" id="ob-owner-name" type="text" placeholder="e.g. Sarah" autocomplete="name"/>
-    <div class="ob-label">Email address</div>
-    <input class="ob-input" id="ob-owner-email" type="email" placeholder="your@email.com"/>
+    <div class="ob-q">First, let's start with you 👋</div>
+    <div class="ob-q-sub">Your name helps your AI coach speak to you personally throughout training.</div>
+    <input class="ob-input" id="ob-owner-name" type="text" placeholder="Your first name" autocomplete="given-name"/>
+    <input class="ob-input" id="ob-owner-email" type="email" placeholder="Email address (optional)" autocomplete="email"/>
     <button class="ob-btn" onclick="obNext(1)">Continue →</button>
   </div>
 
-  <!-- Step 2: Dog -->
+  <!-- ── Step 2: Dog basics ── -->
   <div class="ob-step" id="ob-step-2">
-    <div class="ob-label">Your dog's name</div>
-    <input class="ob-input" id="ob-dog-name" type="text" placeholder="e.g. Buddy"/>
-    <div class="ob-label">Breed (or mix)</div>
-    <input class="ob-input" id="ob-dog-breed" type="text" placeholder="e.g. Labrador, Mixed breed"/>
-    <div class="ob-label">Age</div>
-    <select class="ob-select" id="ob-dog-age">
-      <option value="">Select age</option>
-      <option>Under 12 weeks</option><option>3–6 months</option><option>6–12 months</option>
-      <option>1–2 years</option><option>2+ years</option>
-    </select>
+    <div class="ob-q">Tell me about your dog 🐕</div>
+    <div class="ob-q-sub">This helps your AI coach understand your dog's developmental stage and breed tendencies.</div>
+    <input class="ob-input" id="ob-dog-name" type="text" placeholder="Your dog's name" autocomplete="off"/>
+    <input class="ob-input" id="ob-dog-breed" type="text" placeholder="Breed or mix (e.g. Labrador, Cockapoo)" autocomplete="off"/>
+    <div class="ob-q-sub" style="margin-top:4px;margin-bottom:8px">How old is your dog?</div>
+    <div class="ob-choices" id="ob-age-choices">
+      <div class="ob-choice" onclick="obSelect('ob-age-choices',this,'Under 12 weeks')"><span class="ob-choice-icon">🍼</span><div><div class="ob-choice-label">Under 12 weeks</div><div class="ob-choice-desc">Early socialisation window — critical period</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-age-choices',this,'3–6 months')"><span class="ob-choice-icon">🌱</span><div><div class="ob-choice-label">3–6 months</div><div class="ob-choice-desc">Rapid learning phase — excellent timing</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-age-choices',this,'6–12 months')"><span class="ob-choice-icon">🐾</span><div><div class="ob-choice-label">6–12 months</div><div class="ob-choice-desc">Adolescence — consistency is key</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-age-choices',this,'1–2 years')"><span class="ob-choice-icon">🏃</span><div><div class="ob-choice-label">1–2 years</div><div class="ob-choice-desc">Building on foundations</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-age-choices',this,'2+ years')"><span class="ob-choice-icon">🧠</span><div><div class="ob-choice-label">2+ years</div><div class="ob-choice-desc">Adult dog — can still learn new habits</div></div></div>
+    </div>
     <button class="ob-btn" onclick="obNext(2)">Continue →</button>
-    <button class="ob-btn secondary" onclick="obBack(2)">← Back</button>
+    <button class="ob-btn secondary" onclick="obGoTo(1)">← Back</button>
   </div>
 
-  <!-- Step 3: Experience -->
+  <!-- ── Step 3: Experience ── -->
   <div class="ob-step" id="ob-step-3">
-    <div class="ob-label">Training experience</div>
-    <select class="ob-select" id="ob-experience">
-      <option value="">Select experience level</option>
-      <option>First-time dog owner</option><option>Some experience</option>
-      <option>Experienced trainer</option><option>Professional background</option>
-    </select>
-    <div class="ob-label">Main training goal</div>
-    <select class="ob-select" id="ob-goal">
-      <option value="">Select your main goal</option>
-      <option>Basic obedience and manners</option><option>Recall and off-lead confidence</option>
-      <option>Reducing problem behaviours</option><option>Socialisation</option>
-      <option>Competition preparation</option><option>General enrichment</option>
-    </select>
-    <div class="ob-label">How often can you train?</div>
-    <select class="ob-select" id="ob-frequency">
-      <option value="">Select frequency</option>
-      <option>Daily (10+ mins)</option><option>4–5 times per week</option>
-      <option>2–3 times per week</option><option>Once a week</option>
-    </select>
-    <button class="ob-btn" onclick="obComplete()">Start Training 🎉</button>
-    <button class="ob-btn secondary" onclick="obBack(3)">← Back</button>
+    <div class="ob-q">What's your training experience? 📚</div>
+    <div class="ob-q-sub">Your AI coach will adjust the language, depth of explanation, and pace of your programme based on your background.</div>
+    <div class="ob-choices" id="ob-exp-choices">
+      <div class="ob-choice" onclick="obSelect('ob-exp-choices',this,'First-time dog owner')"><span class="ob-choice-icon">🌟</span><div><div class="ob-choice-label">First-time dog owner</div><div class="ob-choice-desc">New to this — I want to learn everything</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-exp-choices',this,'Some experience')"><span class="ob-choice-icon">📖</span><div><div class="ob-choice-label">Some experience</div><div class="ob-choice-desc">I've trained dogs before but want to improve</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-exp-choices',this,'Confident trainer')"><span class="ob-choice-icon">🎓</span><div><div class="ob-choice-label">Confident trainer</div><div class="ob-choice-desc">I know the basics — looking to level up</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-exp-choices',this,'Professional background')"><span class="ob-choice-icon">🏅</span><div><div class="ob-choice-label">Professional background</div><div class="ob-choice-desc">I work with dogs professionally</div></div></div>
+    </div>
+    <button class="ob-btn" onclick="obNext(3)">Continue →</button>
+    <button class="ob-btn secondary" onclick="obGoTo(2)">← Back</button>
   </div>
-</div>
-</div>
 
-<!-- ═══════════════ LESSON READER ═══════════════ -->
+  <!-- ── Step 4: Goals & challenges ── -->
+  <div class="ob-step" id="ob-step-4">
+    <div class="ob-q">What's your main goal right now? 🎯</div>
+    <div class="ob-q-sub">Select your primary focus. Your AI coach will tailor every lesson recommendation to this goal.</div>
+    <div class="ob-choices" id="ob-goal-choices">
+      <div class="ob-choice" onclick="obSelect('ob-goal-choices',this,'Basic obedience & manners')"><span class="ob-choice-icon">🐾</span><div><div class="ob-choice-label">Basic obedience & manners</div><div class="ob-choice-desc">Sit, down, stay, loose lead, recall</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-goal-choices',this,'Recall & off-lead confidence')"><span class="ob-choice-icon">🏃</span><div><div class="ob-choice-label">Recall & off-lead confidence</div><div class="ob-choice-desc">Reliable recall in all environments</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-goal-choices',this,'Reducing problem behaviours')"><span class="ob-choice-icon">🧩</span><div><div class="ob-choice-label">Reducing problem behaviours</div><div class="ob-choice-desc">Barking, jumping, pulling, reactivity</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-goal-choices',this,'Socialisation & confidence')"><span class="ob-choice-icon">🌍</span><div><div class="ob-choice-label">Socialisation & confidence</div><div class="ob-choice-desc">Calm and relaxed in all environments</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-goal-choices',this,'General enrichment & bond')"><span class="ob-choice-icon">💚</span><div><div class="ob-choice-label">General enrichment & bond</div><div class="ob-choice-desc">Deepen connection and keep learning fun</div></div></div>
+    </div>
+    <div class="ob-q-sub" style="margin-top:4px;margin-bottom:8px">Any specific challenges? <span style="opacity:.6">(pick all that apply)</span></div>
+    <div class="ob-chips" id="ob-challenges">
+      <div class="ob-chip" onclick="obToggleChip(this)">Pulling on lead</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Jumping up</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Mouthing / biting</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Recall</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Barking</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Reactivity</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Separation anxiety</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Not listening</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Over-excitement</div>
+      <div class="ob-chip" onclick="obToggleChip(this)">Fear / anxiety</div>
+    </div>
+    <button class="ob-btn" onclick="obNext(4)">Continue →</button>
+    <button class="ob-btn secondary" onclick="obGoTo(3)">← Back</button>
+  </div>
+
+  <!-- ── Step 5: Commitment & AI intro ── -->
+  <div class="ob-step" id="ob-step-5">
+    <div class="ob-q">How often can you train? ⏱</div>
+    <div class="ob-q-sub">Short, consistent sessions work better than long infrequent ones. Your AI coach will set realistic expectations based on your availability.</div>
+    <div class="ob-choices" id="ob-freq-choices">
+      <div class="ob-choice" onclick="obSelect('ob-freq-choices',this,'Daily (10+ mins)')"><span class="ob-choice-icon">🔥</span><div><div class="ob-choice-label">Daily (10+ mins)</div><div class="ob-choice-desc">Best results — maximum progress speed</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-freq-choices',this,'4–5 times per week')"><span class="ob-choice-icon">⚡</span><div><div class="ob-choice-label">4–5 times per week</div><div class="ob-choice-desc">Excellent consistency — great outcomes</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-freq-choices',this,'2–3 times per week')"><span class="ob-choice-icon">📅</span><div><div class="ob-choice-label">2–3 times per week</div><div class="ob-choice-desc">Steady progress with commitment</div></div></div>
+      <div class="ob-choice" onclick="obSelect('ob-freq-choices',this,'Once a week')"><span class="ob-choice-icon">🌱</span><div><div class="ob-choice-label">Once a week or less</div><div class="ob-choice-desc">We'll keep sessions short and effective</div></div></div>
+    </div>
+    <div class="ob-ai-msg" id="ob-ai-preview">
+      <div class="ob-ai-label">🤖 AP3X AI — Your personalised plan</div>
+      <div id="ob-ai-preview-text">Complete the quiz to see your personalised training plan…</div>
+    </div>
+    <button class="ob-btn" id="ob-launch-btn" onclick="obComplete()">Start Training 🎉</button>
+    <button class="ob-btn secondary" onclick="obGoTo(4)">← Back</button>
+  </div>
+
+</div>
+</div><!-- ═══════════════ LESSON READER ═══════════════ -->
 <div id="screen-lesson">
 <div class="topbar">
   <button class="topbar-back" onclick="closeLesson()">←</button>
@@ -524,54 +579,120 @@ function openInstall(){ document.getElementById('pwa-install-card').classList.ad
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(function(){}); }
 
 /* ── Onboarding ── */
-var _obStep = 1; var _obSteps = 3;
+var _obStep = 1;
+var _obTotalSteps = 5;
+var _obData = {};
+
 (function initOnboarding(){
-  var prog = document.getElementById('ob-progress');
-  for(var i=0;i<_obSteps;i++){
-    var d = document.createElement('div');
-    d.className = 'ob-dot' + (i===0?' active':'');
-    d.id = 'ob-dot-'+i;
-    prog.appendChild(d);
-  }
-  // Check if already set up
-  if(FP_STORE.getOwnerProfile() && FP_STORE.getDogProfile()){ launchApp(); }
+  updateObProgress();
+  if(FP_STORE.getOwnerProfile() && FP_STORE.getDogProfile() && FP_STORE.getOwnerProfile().onboarded){ launchApp(); }
 })();
 
-function obNext(step){
-  if(step===1){
-    var name = document.getElementById('ob-owner-name').value.trim();
-    var email = document.getElementById('ob-owner-email').value.trim();
-    if(!name){ showOBError('Please enter your name'); return; }
-    FP_STORE.setOwnerProfile({ name: name, email: email });
-  } else if(step===2){
-    var dname = document.getElementById('ob-dog-name').value.trim();
-    var dbreed = document.getElementById('ob-dog-breed').value.trim();
-    var dage = document.getElementById('ob-dog-age').value;
-    if(!dname){ showOBError('Please enter your dog\'s name'); return; }
-    FP_STORE.setDogProfile({ name: dname, breed: dbreed||'Mixed', age: dage||'Unknown' });
-  }
-  _obStep++;
-  document.querySelectorAll('.ob-step').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById('ob-step-'+_obStep).classList.add('active');
-  document.querySelectorAll('.ob-dot').forEach(function(d,i){ d.classList.toggle('active', i < _obStep); });
+function updateObProgress(){
+  var pct = Math.round((_obStep / _obTotalSteps) * 100);
+  var fill = document.getElementById('ob-fill');
+  var lbl  = document.getElementById('ob-step-label');
+  if(fill) fill.style.width = pct + '%';
+  if(lbl)  lbl.textContent  = 'Step ' + _obStep + ' of ' + _obTotalSteps;
 }
-function obBack(step){ _obStep = step-1; document.querySelectorAll('.ob-step').forEach(function(s){ s.classList.remove('active'); }); document.getElementById('ob-step-'+_obStep).classList.add('active'); }
+
+function obGoTo(step){
+  document.querySelectorAll('.ob-step').forEach(function(s){ s.classList.remove('active'); });
+  _obStep = step;
+  var el = document.getElementById('ob-step-' + step);
+  if(el) el.classList.add('active');
+  updateObProgress();
+  window.scrollTo(0, 0);
+}
+
+function obSelect(groupId, el, value){
+  document.querySelectorAll('#' + groupId + ' .ob-choice').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  _obData[groupId] = value;
+  // Show AI preview when freq is picked
+  if(groupId === 'ob-freq-choices') obBuildAIPreview(value);
+}
+
+function obToggleChip(el){
+  el.classList.toggle('selected');
+}
+
+function obBuildAIPreview(freq){
+  var name    = _obData['ob-owner-name']   || 'you';
+  var dog     = _obData['ob-dog-name']     || 'your dog';
+  var age     = _obData['ob-age-choices']  || '';
+  var exp     = _obData['ob-exp-choices']  || 'First-time dog owner';
+  var goal    = _obData['ob-goal-choices'] || 'Basic obedience & manners';
+  var chips   = Array.from(document.querySelectorAll('#ob-challenges .ob-chip.selected')).map(function(c){ return c.textContent; });
+  var isNew   = exp.indexOf('First-time') !== -1;
+  var isPup   = age.indexOf('12 weeks') !== -1 || age.indexOf('3–6') !== -1;
+
+  var msg = 'Hi ' + name + '! I've built a personalised plan for ' + dog + '. ';
+  if(isPup) msg += 'As a puppy, ' + dog + ' is in the perfect learning window — we'll make the most of it. ';
+  if(isNew) msg += 'I'll explain every concept clearly, with no jargon. ';
+  msg += 'Your focus on <strong>' + goal + '</strong> will shape every lesson recommendation. ';
+  if(chips.length) msg += 'I've noted your challenges with <strong>' + chips.slice(0,3).join(', ') + '</strong> — we'll address these directly. ';
+  msg += 'Based on your ' + freq.toLowerCase() + ' commitment, expect to see real results within 3–4 weeks.';
+
+  var preview = document.getElementById('ob-ai-preview-text');
+  if(preview) preview.innerHTML = msg;
+}
+
+function obNext(step){
+  if(step === 1){
+    var name = document.getElementById('ob-owner-name').value.trim();
+    if(!name){ showToast('⚠️ Please enter your name'); return; }
+    _obData['ob-owner-name'] = name;
+    _obData['ob-owner-email'] = document.getElementById('ob-owner-email').value.trim();
+  } else if(step === 2){
+    var dname = document.getElementById('ob-dog-name').value.trim();
+    if(!dname){ showToast('⚠️ Please enter your dog's name'); return; }
+    if(!_obData['ob-age-choices']){ showToast('⚠️ Please select your dog's age'); return; }
+    _obData['ob-dog-name']  = dname;
+    _obData['ob-dog-breed'] = document.getElementById('ob-dog-breed').value.trim() || 'Mixed';
+  } else if(step === 3){
+    if(!_obData['ob-exp-choices']){ showToast('⚠️ Please select your experience level'); return; }
+  } else if(step === 4){
+    if(!_obData['ob-goal-choices']){ showToast('⚠️ Please select your main goal'); return; }
+  }
+  obGoTo(step + 1);
+}
+
 function obComplete(){
-  var exp = document.getElementById('ob-experience').value;
-  var goal = document.getElementById('ob-goal').value;
-  var freq = document.getElementById('ob-frequency').value;
-  var p = FP_STORE.getOwnerProfile() || {};
-  FP_STORE.setOwnerProfile(Object.assign(p, { experience: exp, goal: goal, frequency: freq }));
-  FP_STORE.updateAIData({ experience: exp, primaryGoal: goal, trainingFrequency: freq, onboardedAt: new Date().toISOString() });
+  if(!_obData['ob-freq-choices']){ showToast('⚠️ Please select your training frequency'); return; }
+  var challenges = Array.from(document.querySelectorAll('#ob-challenges .ob-chip.selected')).map(function(c){ return c.textContent; });
+  var ownerProfile = {
+    name:        _obData['ob-owner-name'],
+    email:       _obData['ob-owner-email'] || '',
+    experience:  _obData['ob-exp-choices'],
+    goal:        _obData['ob-goal-choices'],
+    frequency:   _obData['ob-freq-choices'],
+    challenges:  challenges,
+    onboarded:   true,
+    onboardedAt: new Date().toISOString()
+  };
+  var dogProfile = {
+    name:  _obData['ob-dog-name'],
+    breed: _obData['ob-dog-breed'] || 'Mixed',
+    age:   _obData['ob-age-choices']
+  };
+  FP_STORE.setOwnerProfile(ownerProfile);
+  FP_STORE.setDogProfile(dogProfile);
+  FP_STORE.updateAIData({
+    experience:       ownerProfile.experience,
+    primaryGoal:      ownerProfile.goal,
+    trainingFrequency:ownerProfile.frequency,
+    challenges:       challenges,
+    onboardedAt:      ownerProfile.onboardedAt
+  });
   launchApp();
 }
-function showOBError(msg){ showToast('⚠️ ' + msg); }
+
 function launchApp(){
   document.getElementById('screen-onboard').style.display = 'none';
   document.getElementById('bottom-nav').style.display = 'flex';
   goTab('home');
 }
-
 /* ── Navigation ── */
 function goTab(tab){
   _currentTab = tab;
@@ -815,9 +936,21 @@ function renderCoach(){
   var dog = (FP_STORE.getDogProfile() || {}).name || 'your dog';
   document.getElementById('coach-dog-name').textContent = dog;
   if(_aiContext.length === 0){
-    var owner = FP_STORE.getOwnerProfile() || {};
-    var prog  = FP_STORE.getProgress();
-    addAIMessage('Hi ' + (owner.name||'there') + '! I\'m your AP3X AI Coach. I can see ' + dog + ' is on the Puppy Masterclass — ' + prog.pct + '% complete so far. What would you like help with today?');
+    var owner    = FP_STORE.getOwnerProfile() || {};
+    var aiData   = FP_STORE.getAIData() || {};
+    var prog     = FP_STORE.getProgress();
+    var n        = owner.name || 'there';
+    var goal     = aiData.primaryGoal || owner.goal || '';
+    var challenges = (aiData.challenges && aiData.challenges.length) ? aiData.challenges : [];
+    var exp      = aiData.experience || owner.experience || '';
+    var isNew    = !exp || exp.indexOf('First-time') !== -1;
+    var msg = 'Hi ' + n + '! I\'m your AP3X AI Coach. ';
+    if(goal) msg += 'I know your main focus is <strong>' + goal + '</strong>';
+    if(challenges.length) msg += ' and you flagged <strong>' + challenges.slice(0,2).join('</strong> and <strong>') + '</strong> as challenges';
+    if(goal || challenges.length) msg += '. ';
+    if(isNew) msg += 'As a first-time owner I\'ll keep things practical — no jargon. ';
+    msg += dog + ' is ' + prog.pct + '% through the Puppy Masterclass. Ask me anything about training, behaviour, or what to tackle next.';
+    addAIMessage(msg);
   }
   renderAISummary();
   renderGoals();
