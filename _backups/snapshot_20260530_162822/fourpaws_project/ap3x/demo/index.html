@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Four Paws Training & Enrichment Academy — AI-Assisted Canine Behaviour & Training Intelligence Platform"/>
+<title>Four Paws Training & Enrichment Academy</title>
+<style>
+:root{
+  --bg:#f5f7f0;--surface:#fff;--surface2:#eef4e8;--border:#c8d8b0;
+  --primary:#3a7d44;--primary-d:#2d6235;--accent:#f4a435;--accent-d:#d4891a;
+  --text:#1e2d12;--muted:#5a6e47;--light:#8fa07a;
+  --r:14px;--rs:9px;--shadow:0 4px 24px rgba(58,125,68,.12);--t:.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+
+/* ── Nav ── */
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(58,125,68,.06)}
+.nav-logo{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:900;color:var(--primary);letter-spacing:-0.5px}
+.nav-logo-paw{font-size:22px}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:8px;align-items:center}
+.nav-link{padding:8px 18px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all var(--t);border:none}
+.nav-link.outline{border:2px solid var(--border);background:transparent;color:var(--muted)}
+.nav-link.outline:hover{border-color:var(--primary);color:var(--primary)}
+.nav-link.owner{background:var(--accent);color:#fff}
+.nav-link.owner:hover{background:var(--accent-d)}
+.nav-link.trainer{background:var(--primary);color:#fff}
+.nav-link.trainer:hover{background:var(--primary-d)}
+
+/* ── Hero ── */
+.hero{padding:90px 24px 70px;text-align:center;max-width:780px;margin:0 auto}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:99px;padding:6px 18px;font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:28px}
+.hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:var(--primary);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero-title{font-size:52px;font-weight:900;color:var(--text);line-height:1.06;margin-bottom:22px;letter-spacing:-2.5px}
+.hero-title .hl{color:var(--primary)}
+.hero-title .hl2{color:var(--accent)}
+.hero-sub{font-size:19px;color:var(--muted);max-width:580px;margin:0 auto 48px;line-height:1.65}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:52px}
+.cta-btn{padding:15px 30px;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:all var(--t);border:none;display:inline-flex;align-items:center;gap:8px}
+.cta-btn.primary{background:var(--primary);color:#fff;box-shadow:0 6px 20px rgba(58,125,68,.3)}
+.cta-btn.primary:hover{background:var(--primary-d);transform:translateY(-2px);box-shadow:0 10px 28px rgba(58,125,68,.36)}
+.cta-btn.accent{background:var(--accent);color:#fff;box-shadow:0 6px 20px rgba(244,164,53,.3)}
+.cta-btn.accent:hover{background:var(--accent-d);transform:translateY(-2px)}
+.cta-btn.outline{background:transparent;border:2px solid var(--border);color:var(--muted)}
+.cta-btn.outline:hover{border-color:var(--primary);color:var(--primary)}
+.hero-note{font-size:12px;color:var(--light);margin-top:-36px;margin-bottom:52px}
+
+/* ── Stats strip ── */
+.stats-strip{background:var(--primary);padding:28px 24px}
+.stats-inner{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+.stat-item{color:#fff}
+.stat-num{font-size:36px;font-weight:900;letter-spacing:-1.5px;color:#fff}
+.stat-num span{color:var(--accent)}
+.stat-lbl{font-size:12px;opacity:.75;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-top:2px}
+
+/* ── Demo buttons ── */
+.demo-section{max-width:980px;margin:0 auto;padding:64px 24px}
+.section-eyebrow{font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.section-title-lg{font-size:34px;font-weight:900;letter-spacing:-1.2px;margin-bottom:10px}
+.section-sub-lg{font-size:16px;color:var(--muted);max-width:560px;line-height:1.65;margin-bottom:40px}
+.demo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.demo-card{border-radius:18px;overflow:hidden;box-shadow:var(--shadow);transition:all var(--t);text-decoration:none;display:flex;flex-direction:column}
+.demo-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(58,125,68,.2)}
+.dc-header{padding:28px 24px 22px;position:relative;overflow:hidden}
+.dc-header::after{content:'';position:absolute;bottom:-20px;right:-20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1)}
+.dc-icon{font-size:36px;margin-bottom:10px;position:relative;z-index:1}
+.dc-title{font-size:18px;font-weight:800;color:#fff;position:relative;z-index:1}
+.dc-sub{font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;position:relative;z-index:1}
+.dc-owner .dc-header{background:linear-gradient(135deg,#d4891a,#f4a435)}
+.dc-trainer .dc-header{background:linear-gradient(135deg,#1a3d22,#3a7d44)}
+.dc-body{padding:20px 22px;background:var(--surface);flex:1}
+.dc-features{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:18px}
+.dc-features li{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:8px}
+.dc-features li::before{content:"✓";font-weight:700;color:var(--accent);flex-shrink:0;margin-top:1px}
+.dc-open-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:var(--rs);font-size:14px;font-weight:700;transition:all var(--t);border:none;cursor:pointer;width:100%}
+.dc-open-btn.owner-btn{background:var(--accent);color:#fff}
+.dc-open-btn.owner-btn:hover{background:var(--accent-d)}
+.dc-open-btn.trainer-btn{background:var(--primary);color:#fff}
+.dc-open-btn.trainer-btn:hover{background:var(--primary-d)}
+.btn-arr{transition:transform var(--t)}
+.dc-open-btn:hover .btn-arr{transform:translateX(4px)}
+
+/* ── Feature strip ── */
+.features-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:56px 24px}
+.features-inner{max-width:980px;margin:0 auto}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px;margin-top:40px}
+.feature-item{text-align:center;padding:8px}
+.feature-icon{font-size:32px;margin-bottom:10px}
+.feature-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.feature-desc{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* ── WHY THIS PLATFORM ── */
+.why-section{max-width:980px;margin:0 auto;padding:72px 24px}
+.two-col-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.why-points{display:flex;flex-direction:column;gap:18px;margin-top:20px}
+.why-point{display:flex;gap:14px;align-items:flex-start}
+.wp-icon{font-size:24px;flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center}
+.wp-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.wp-desc{font-size:13px;color:var(--muted);line-height:1.5}
+.market-card{background:linear-gradient(135deg,#1a3d22,#2d6235);border-radius:20px;padding:28px;color:#fff}
+.mc-stat{margin-bottom:20px}
+.mc-num{font-size:42px;font-weight:900;color:var(--accent);letter-spacing:-2px;line-height:1}
+.mc-lbl{font-size:13px;opacity:.8;margin-top:4px}
+.mc-divider{height:1px;background:rgba(255,255,255,.12);margin:20px 0}
+.mc-quote{font-size:14px;opacity:.8;line-height:1.6;font-style:italic}
+.mc-source{font-size:11px;opacity:.5;margin-top:8px}
+
+/* ── TECH ARCHITECTURE ── */
+.tech-section{background:var(--surface);border-top:1px solid var(--border);padding:72px 24px}
+.tech-inner{max-width:980px;margin:0 auto}
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.tech-card{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:22px;transition:all var(--t)}
+.tech-card:hover{border-color:var(--primary);box-shadow:0 4px 20px rgba(58,125,68,.1)}
+.tc-icon{font-size:26px;margin-bottom:12px}
+.tc-title{font-size:14px;font-weight:700;margin-bottom:6px}
+.tc-desc{font-size:12px;color:var(--muted);line-height:1.55}
+.tech-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tech-tag{padding:2px 9px;border-radius:99px;font-size:10px;font-weight:600;background:var(--surface2);color:var(--primary);border:1px solid var(--border)}
+.arch-diagram{background:linear-gradient(135deg,#0d2710,#1a4d24);border-radius:20px;padding:28px;margin-top:32px;color:#fff}
+.arch-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.arch-row:last-child{margin-bottom:0}
+.arch-layer{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:8px 14px;font-size:12px;font-weight:600;color:#fff;white-space:nowrap}
+.arch-arrow{color:rgba(255,255,255,.4);font-size:18px;flex-shrink:0}
+.arch-label{font-size:10px;opacity:.5;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-right:8px}
+
+/* ── BEHAVIOUR OUTCOME ENGINE ── */
+.engine-section{max-width:980px;margin:0 auto;padding:72px 24px}
+.engine-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+.engine-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--shadow)}
+.engine-card.dark{background:linear-gradient(135deg,#0d2710,#1a4d24);border-color:transparent;color:#fff}
+.ec-icon{font-size:24px;margin-bottom:12px}
+.ec-title{font-size:16px;font-weight:800;margin-bottom:8px}
+.ec-desc{font-size:13px;color:var(--muted);line-height:1.55}
+.engine-card.dark .ec-desc{color:rgba(255,255,255,.65)}
+.ec-metrics{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.ec-metric{display:flex;align-items:center;gap:10px}
+.ec-metric-label{font-size:12px;color:var(--muted);width:160px;flex-shrink:0}
+.engine-card.dark .ec-metric-label{color:rgba(255,255,255,.55)}
+.ec-bar{flex:1;height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+.engine-card:not(.dark) .ec-bar{background:var(--surface2)}
+.ec-fill{height:100%;border-radius:99px;background:var(--accent)}
+.ec-val{font-size:11px;font-weight:700;width:32px;text-align:right;color:var(--accent)}
+
+/* ── INNOVATION ROADMAP ── */
+.roadmap-section{background:var(--surface);border-top:1px solid var(--border);padding:72px 24px}
+.roadmap-inner{max-width:980px;margin:0 auto}
+.roadmap-timeline{position:relative;margin-top:48px;padding-left:28px}
+.roadmap-timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--primary),var(--accent),var(--primary))}
+.roadmap-item{position:relative;margin-bottom:36px;padding-left:24px}
+.roadmap-item::before{content:'';position:absolute;left:-24px;top:8px;width:14px;height:14px;border-radius:50%;background:var(--primary);border:3px solid var(--surface);box-shadow:0 0 0 3px var(--border);transition:all var(--t)}
+.roadmap-item.active::before{background:var(--accent);box-shadow:0 0 0 3px rgba(244,164,53,.25)}
+.roadmap-item.future::before{background:var(--surface);border-color:var(--border)}
+.ri-phase{font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.roadmap-item.active .ri-phase{color:var(--accent)}
+.ri-title{font-size:17px;font-weight:800;margin-bottom:6px}
+.ri-desc{font-size:13px;color:var(--muted);line-height:1.55}
+.ri-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ri-tag{padding:2px 10px;border-radius:99px;font-size:10px;font-weight:600;background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.roadmap-item.active .ri-tag{background:rgba(244,164,53,.12);color:var(--accent-d);border-color:rgba(244,164,53,.3)}
+.ri-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;background:var(--accent);color:#fff;margin-left:10px;vertical-align:middle}
+
+/* ── INVESTOR CTA ── */
+.investor-cta{background:linear-gradient(135deg,#0d2710 0%,#1a4d24 60%,#2d6235 100%);padding:80px 24px;text-align:center}
+.ic-inner{max-width:680px;margin:0 auto;color:#fff}
+.ic-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(244,164,53,.15);border:1px solid rgba(244,164,53,.3);border-radius:99px;padding:6px 18px;font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:24px}
+.ic-title{font-size:38px;font-weight:900;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px}
+.ic-sub{font-size:16px;opacity:.8;line-height:1.65;margin-bottom:36px;max-width:520px;margin-left:auto;margin-right:auto}
+.ic-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.ic-btn{padding:14px 28px;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:all var(--t);border:none}
+.ic-btn.primary{background:var(--accent);color:#fff;box-shadow:0 6px 24px rgba(244,164,53,.35)}
+.ic-btn.primary:hover{background:var(--accent-d);transform:translateY(-2px)}
+.ic-btn.ghost{background:rgba(255,255,255,.1);color:#fff;border:2px solid rgba(255,255,255,.2)}
+.ic-btn.ghost:hover{background:rgba(255,255,255,.18)}
+.ic-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:52px;padding-top:40px;border-top:1px solid rgba(255,255,255,.12)}
+.ic-stat-val{font-size:32px;font-weight:900;color:var(--accent);letter-spacing:-1px}
+.ic-stat-lbl{font-size:12px;opacity:.6;text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-top:4px}
+
+/* ── Footer ── */
+footer{padding:32px 24px;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--border);line-height:1.8}
+footer strong{color:var(--text)}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .hero-title{font-size:34px;letter-spacing:-1.5px}
+  .demo-grid{grid-template-columns:1fr}
+  .two-col-grid{grid-template-columns:1fr}
+  .tech-grid{grid-template-columns:1fr 1fr}
+  .engine-grid{grid-template-columns:1fr}
+  .stats-inner{grid-template-columns:repeat(2,1fr)}
+  .ic-stats{grid-template-columns:1fr}
+  .navbar{padding:12px 16px}
+  .nav-links .nav-link.outline{display:none}
+}
+@media(max-width:480px){
+  .tech-grid{grid-template-columns:1fr}
+  .stats-inner{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ── PWA Install Section ── */
+.pwa-section{max-width:980px;margin:0 auto;padding:0 24px 64px}
+.pwa-install-wrap{
+  background:linear-gradient(135deg,#0d3320,#1a4d28);
+  border-radius:22px; padding:36px 32px; color:#fff;
+  display:grid; grid-template-columns:1fr auto; gap:32px; align-items:center;
+  box-shadow:0 12px 48px rgba(58,125,68,.28); position:relative; overflow:hidden;
+}
+.pwa-install-wrap::before{
+  content:'🐾'; position:absolute; right:32px; bottom:-12px;
+  font-size:120px; opacity:.07; pointer-events:none; line-height:1;
+}
+.pwa-install-content{}
+.pwa-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:10px}
+.pwa-title{font-size:26px;font-weight:900;letter-spacing:-.8px;margin-bottom:8px;line-height:1.15}
+.pwa-desc{font-size:14px;opacity:.8;line-height:1.6;margin-bottom:20px;max-width:480px}
+.pwa-device-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.pwa-device{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  border-radius:99px;padding:4px 12px;font-size:11px;font-weight:600;
+}
+.pwa-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn-pwa-install{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 26px;border-radius:var(--r);
+  background:var(--accent);color:#fff;border:none;
+  font-size:15px;font-weight:700;cursor:pointer;
+  transition:all var(--t);box-shadow:0 4px 18px rgba(244,164,53,.35);
+  letter-spacing:-.2px;
+}
+.btn-pwa-install:hover{background:var(--accent-d);transform:translateY(-2px);box-shadow:0 8px 28px rgba(244,164,53,.45)}
+.btn-pwa-install:active{transform:scale(.97)}
+.btn-pwa-install:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.pwa-installed-badge{
+  display:none;align-items:center;gap:9px;
+  background:rgba(16,185,129,.18);border:1.5px solid rgba(16,185,129,.4);
+  border-radius:var(--r);padding:12px 20px;
+  font-size:14px;font-weight:700;color:#6ee7b7;
+}
+.pwa-installed-badge.show{display:flex}
+.pwa-instruction-box{
+  display:none;margin-top:16px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--rs);padding:14px 16px;
+  font-size:13px;line-height:1.7;opacity:.85;
+}
+.pwa-instruction-box.show{display:block}
+.pwa-instruction-box strong{color:var(--accent)}
+.pwa-status-row{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;opacity:.65}
+.pwa-status-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 2s infinite}
+.pwa-status-dot.warn{background:var(--accent)}
+.pwa-icon-side{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0}
+.pwa-app-icon{
+  width:90px;height:90px;border-radius:22px;
+  background:linear-gradient(135deg,#3a7d44,#52955c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;box-shadow:0 8px 24px rgba(0,0,0,.3);
+  border:3px solid rgba(255,255,255,.15);
+}
+.pwa-icon-label{font-size:11px;opacity:.6;text-align:center;font-weight:600}
+@media(max-width:640px){
+  .pwa-install-wrap{grid-template-columns:1fr;gap:20px}
+  .pwa-icon-side{flex-direction:row;justify-content:flex-start}
+  .pwa-title{font-size:22px}
+  .pwa-app-icon{width:68px;height:68px;font-size:32px;border-radius:16px}
+}
+
+</style>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#3a7d44"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Four Paws"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="msapplication-TileColor" content="#3a7d44"/>
+<meta name="msapplication-TileImage" content="/icons/fp-144.png"/>
+<link rel="apple-touch-icon" href="/icons/fp-180.png"/>
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/fp-152.png"/>
+<link rel="apple-touch-icon" sizes="144x144" href="/icons/fp-144.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/fp-192.png"/>
+<link rel="icon" type="image/png" sizes="96x96"   href="/icons/fp-96.png"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="nav-logo"><span class="nav-logo-paw">🐾</span>Four Paws <span>Academy</span></div>
+  <div class="nav-links">
+    <a href="#why" class="nav-link outline">Why This Works</a>
+    <a href="#tech" class="nav-link outline">Technology</a>
+    <a href="#roadmap" class="nav-link outline">Roadmap</a>
+    <a href="/owner" class="nav-link owner">Owner Portal →</a>
+    <a href="/trainer" class="nav-link trainer">Trainer OS →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section>
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      AI-Powered · Investor Ready · Grant Candidate 2026
+    </div>
+    <h1 class="hero-title">
+      The <span class="hl">Intelligent Platform</span><br>
+      for <span class="hl2">Canine Behaviour</span><br>
+      &amp; Training
+    </h1>
+    <p class="hero-sub">
+      Four Paws Training &amp; Enrichment Academy — a scalable AI-assisted dog training ecosystem trusted by owners, trainers and behaviourists to transform how dogs learn.
+    </p>
+    <div class="hero-cta">
+      <a href="/trainer" class="cta-btn primary">🎓 Trainer Intelligence OS <span class="btn-arr">→</span></a>
+      <a href="/owner" class="cta-btn accent">🐾 Owner Portal <span class="btn-arr">→</span></a>
+    </div>
+    <p class="hero-note">All demos run live in your browser · No account required · Powered by behavioural AI</p>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num">£<span>2.3</span>B</div>
+      <div class="stat-lbl">UK Pet Industry Value</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span>13M</span>+</div>
+      <div class="stat-lbl">Dogs in the UK</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span>68</span>%</div>
+      <div class="stat-lbl">Owners seek training help</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span>£34K</span></div>
+      <div class="stat-lbl">Academy ARR Projection</div>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO PORTAL CARDS -->
+<section class="demo-section" id="demo">
+  <div class="section-eyebrow">Live Platform Demos</div>
+  <h2 class="section-title-lg">Three Intelligent Portals.<br>One Cohesive Ecosystem.</h2>
+  <p class="section-sub-lg">Experience the full platform — Trainer Intelligence OS and Owner Portal. Both running live with real data.</p>
+
+  <div class="demo-grid">
+    <!-- Owner Portal -->
+    <a href="/owner" class="demo-card dc-owner">
+      <div class="dc-header">
+        <div class="dc-icon">🐾</div>
+        <div class="dc-title">Owner Training Portal</div>
+        <div class="dc-sub">For dog owners enrolled in the academy</div>
+      </div>
+      <div class="dc-body">
+        <ul class="dc-features">
+          <li>Daily training log with session scoring</li>
+          <li>Enrichment activity library (10+ activities)</li>
+          <li>Behaviour tracker &amp; progress charts</li>
+          <li>Training milestones &amp; streaks</li>
+          <li>Training notes &amp; reflections journal</li>
+          <li>AI-powered coaching tips</li>
+        </ul>
+        <div class="dc-open-btn owner-btn">Open Owner Portal <span class="btn-arr">→</span></div>
+      </div>
+    </a>
+
+    <!-- Trainer OS -->
+    <a href="/trainer" class="demo-card dc-trainer">
+      <div class="dc-header">
+        <div class="dc-icon">🎓</div>
+        <div class="dc-title">Trainer Intelligence OS</div>
+        <div class="dc-sub">Command centre for academy trainers</div>
+      </div>
+      <div class="dc-body">
+        <ul class="dc-features">
+          <li>8-dog cohort with live behaviour metrics</li>
+          <li>AI Guidance Centre with chat assistant</li>
+          <li>Behaviour alerts &amp; regression detection</li>
+          <li>Session log, enrichment planner, analytics</li>
+          <li>Revenue dashboard &amp; growth metrics</li>
+          <li>Progression predictions &amp; certifications</li>
+        </ul>
+        <div class="dc-open-btn trainer-btn">Open Trainer OS <span class="btn-arr">→</span></div>
+      </div>
+    </a>
+  </div>
+</section>
+
+
+<!-- PWA INSTALL -->
+<section class="pwa-section" id="install">
+  <div class="pwa-install-wrap" id="pwa-wrap">
+
+    <!-- Icon side (desktop right, mobile top) -->
+    <div class="pwa-icon-side" id="pwa-icon-side" style="order:2">
+      <div class="pwa-app-icon">🐾</div>
+      <div class="pwa-icon-label">Four Paws<br>Academy</div>
+    </div>
+
+    <!-- Content -->
+    <div class="pwa-install-content" style="order:1">
+      <div class="pwa-eyebrow">📲 Install the Platform</div>
+      <h3 class="pwa-title">Add Four Paws to Your<br>Home Screen</h3>
+      <p class="pwa-desc">Install the full Four Paws Academy platform as a native app on any device. One tap access to the Trainer OS and Owner Portal — no browser needed.</p>
+
+      <div class="pwa-device-row">
+        <span class="pwa-device">📱 Android</span>
+        <span class="pwa-device">🍎 iPhone / iPad</span>
+        <span class="pwa-device">🪟 Windows</span>
+        <span class="pwa-device">🖥 Mac</span>
+        <span class="pwa-device">🌐 Chrome / Edge</span>
+      </div>
+
+      <div class="pwa-actions">
+        <button class="btn-pwa-install" id="pwa-install-btn" style="display:none" onclick="triggerInstall()">
+          ⬇ Install App
+        </button>
+        <div class="pwa-installed-badge" id="pwa-installed-badge">
+          <span>✅</span>
+          <div>
+            <div>App Installed</div>
+            <div style="font-size:11px;opacity:.7;font-weight:400;margin-top:1px">Tap the Four Paws icon on your home screen to open</div>
+          </div>
+        </div>
+        <a href="/trainer" class="cta-btn outline" style="color:#fff;border-color:rgba(255,255,255,.25);padding:12px 20px;font-size:14px">🎓 Open Trainer OS</a>
+      </div>
+
+      <!-- Safari / iOS manual instructions -->
+      <div class="pwa-instruction-box" id="pwa-ios-instructions">
+        On <strong>iPhone / iPad</strong>: tap the <strong>Share</strong> button (□↑) in Safari, then select <strong>"Add to Home Screen"</strong>. The Four Paws icon will appear on your home screen.
+      </div>
+      <div class="pwa-instruction-box" id="pwa-generic-instructions">
+        On <strong>Android</strong>: tap the browser menu (⋮) and select <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong>.<br>
+        On <strong>Desktop</strong>: look for the install icon (⊕) in your browser address bar.
+      </div>
+
+      <div class="pwa-status-row">
+        <div class="pwa-status-dot" id="pwa-status-dot"></div>
+        <span id="pwa-status-text">Checking install capability…</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PLATFORM FEATURES -->
+<section class="features-section">
+  <div class="features-inner">
+    <div style="text-align:center;max-width:640px;margin:0 auto">
+      <div class="section-eyebrow">Platform Capabilities</div>
+      <h2 class="section-title-lg">Built for Scale.<br>Designed for Impact.</h2>
+      <p class="section-sub-lg" style="margin-bottom:0">Every component of the Four Paws platform is engineered for real-world dog training effectiveness and investor-grade scalability.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-item"><div class="feature-icon">🤖</div><div class="feature-name">AI Guidance Engine</div><div class="feature-desc">Behavioural intelligence that detects regression, stalled progress and disengaged owners in real time</div></div>
+      <div class="feature-item"><div class="feature-icon">📊</div><div class="feature-name">Behaviour Analytics</div><div class="feature-desc">Population-level insights across recall, confidence, socialisation and enrichment engagement</div></div>
+      <div class="feature-item"><div class="feature-icon">🧩</div><div class="feature-name">Enrichment Intelligence</div><div class="feature-desc">Structured enrichment planner with activity timers, completion tracking and breed recommendations</div></div>
+      <div class="feature-item"><div class="feature-icon">🎓</div><div class="feature-name">Puppy Masterclass LMS</div><div class="feature-desc">5-module structured curriculum with lesson tracking, module progression and milestone unlocks</div></div>
+      <div class="feature-item"><div class="feature-icon">🏅</div><div class="feature-name">Certification Engine</div><div class="feature-desc">Digital credentials awarded at module completion — shareable, verifiable, motivation-driving</div></div>
+      <div class="feature-item"><div class="feature-icon">💰</div><div class="feature-name">Revenue Dashboard</div><div class="feature-desc">Real-time MRR, ARR, retention rates and subscription analytics for academy growth tracking</div></div>
+      <div class="feature-item"><div class="feature-icon">🌐</div><div class="feature-name">White-Label Ready</div><div class="feature-desc">Multi-trainer and multi-academy architecture — licensable to any dog training business worldwide</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY THIS PLATFORM MATTERS -->
+<section class="why-section" id="why">
+  <div class="two-col-grid">
+    <div>
+      <div class="section-eyebrow">Why This Platform Matters</div>
+      <h2 class="section-title-lg">A Growing Market.<br>An Underserved Problem.</h2>
+      <p style="font-size:15px;color:var(--muted);line-height:1.65;margin-bottom:8px">
+        The UK pet industry is worth £2.3 billion and growing. Yet accessible, evidence-based, digital-first dog training barely exists. Four Paws changes that.
+      </p>
+      <div class="why-points">
+        <div class="why-point">
+          <div class="wp-icon">🐕</div>
+          <div><div class="wp-title">Behavioural Surrender Risk</div><div class="wp-desc">Over 56,000 dogs are surrendered to UK rescues annually — most due to manageable behaviour issues that structured training could resolve.</div></div>
+        </div>
+        <div class="why-point">
+          <div class="wp-icon">📱</div>
+          <div><div class="wp-title">Hybrid Training Accessibility</div><div class="wp-desc">Combining in-person expertise with an AI-powered digital platform dramatically increases training reach, consistency and owner engagement between sessions.</div></div>
+        </div>
+        <div class="why-point">
+          <div class="wp-icon">🤖</div>
+          <div><div class="wp-title">AI-Assisted Personalisation</div><div class="wp-desc">No two dogs are the same. Our AI engine personalises guidance by breed, age, confidence score, and training history — delivering the right advice at the right time.</div></div>
+        </div>
+        <div class="why-point">
+          <div class="wp-icon">🌐</div>
+          <div><div class="wp-title">Scalable SaaS Infrastructure</div><div class="wp-desc">Built as a multi-trainer white-label platform. One academy today — licensable to 10,000 trainers worldwide. The infrastructure is already in place.</div></div>
+        </div>
+        <div class="why-point">
+          <div class="wp-icon">🎓</div>
+          <div><div class="wp-title">Owner Education at Scale</div><div class="wp-desc">Empowering owners with structured, science-backed learning transforms training outcomes. Educated owners produce better-behaved dogs — a metric we track and can prove.</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="market-card">
+        <div class="mc-stat">
+          <div class="mc-num">£2.3B</div>
+          <div class="mc-lbl">UK Pet Industry Annual Value</div>
+        </div>
+        <div class="mc-stat">
+          <div class="mc-num">13M+</div>
+          <div class="mc-lbl">Pet dogs in the UK (2024 PDSA)</div>
+        </div>
+        <div class="mc-stat">
+          <div class="mc-num">68%</div>
+          <div class="mc-lbl">Owners report behavioural challenges in year 1</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-stat">
+          <div class="mc-num" style="font-size:28px">£34,080</div>
+          <div class="mc-lbl">Projected Year 1 ARR — single academy</div>
+        </div>
+        <div class="mc-stat">
+          <div class="mc-num" style="font-size:28px">89%</div>
+          <div class="mc-lbl">Owner retention rate in demo cohort</div>
+        </div>
+        <div class="mc-divider"></div>
+        <div class="mc-quote">"The digital pet-tech sector is forecast to grow at 23% CAGR through 2028. AI-personalised training is an untapped segment."</div>
+        <div class="mc-source">— Pet Industry Federation, Market Outlook 2024</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECHNICAL ARCHITECTURE -->
+<section class="tech-section" id="tech">
+  <div class="tech-inner">
+    <div style="text-align:center;max-width:680px;margin:0 auto">
+      <div class="section-eyebrow">Technical Architecture</div>
+      <h2 class="section-title-lg">Production-Grade.<br>Investor-Ready Infrastructure.</h2>
+      <p class="section-sub-lg" style="margin-bottom:0">Built on modern, proven technologies with offline capability, multi-tenant SaaS architecture and a modular AI guidance engine designed to scale.</p>
+    </div>
+
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tc-icon">⚡</div>
+        <div class="tc-title">Frontend Architecture</div>
+        <div class="tc-desc">Vanilla JS + modular ES components — zero framework lock-in, maximum performance.</div>
+        <div class="tech-tags"><span class="tech-tag">Vanilla JS</span><span class="tech-tag">IndexedDB</span></div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">🧠</div>
+        <div class="tc-title">AI Guidance Engine</div>
+        <div class="tc-desc">Behaviour intelligence system processes session data, score trends and engagement signals to generate personalised interventions, alerts and recommendations.</div>
+        <div class="tech-tags"><span class="tech-tag">Behaviour Analysis</span><span class="tech-tag">Trend Detection</span><span class="tech-tag">NLP Chat</span></div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">📊</div>
+        <div class="tc-title">Analytics Engine</div>
+        <div class="tc-desc">Real-time population-level metrics across all enrolled dogs. Canvas-based charting with recall, confidence, socialisation and enrichment trend visualisation.</div>
+        <div class="tech-tags"><span class="tech-tag">Canvas Charts</span><span class="tech-tag">Real-Time</span><span class="tech-tag">Population Analytics</span></div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">🏗️</div>
+        <div class="tc-title">SaaS Multi-Tenancy</div>
+        <div class="tc-desc">Architecture supports multiple trainers, academies and white-label instances. BCO (Behaviour Control OS) handles governance, module isolation and tenant storage.</div>
+        <div class="tech-tags"><span class="tech-tag">Multi-Tenant</span><span class="tech-tag">White-Label</span><span class="tech-tag">BCO Runtime</span></div>
+      </div>
+      <div class="tech-card">
+        <div class="tc-icon">📱</div>
+        
+
+    <div class="arch-diagram">
+      <div style="font-size:13px;font-weight:700;opacity:.7;margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">System Architecture</div>
+      <div class="arch-row">
+        <span class="arch-label">User Layer</span>
+        <span class="arch-arrow">←→</span>
+        <span class="arch-layer">🖥️ Owner Portal</span>
+        <span class="arch-arrow">←→</span>
+        <span class="arch-layer">🎓 Trainer OS</span>
+      </div>
+      <div class="arch-row" style="padding-left:80px">
+        <span class="arch-arrow" style="transform:rotate(90deg)">↓</span>
+      </div>
+      <div class="arch-row">
+        <span class="arch-label">AI Layer</span>
+        <span class="arch-layer">🤖 AI Guidance Engine</span>
+        <span class="arch-arrow">←→</span>
+        <span class="arch-layer">📊 Behaviour Analytics</span>
+        <span class="arch-arrow">←→</span>
+        <span class="arch-layer">🧩 Enrichment Planner</span>
+      </div>
+      <div class="arch-row" style="padding-left:80px">
+        <span class="arch-arrow" style="transform:rotate(90deg)">↓</span>
+      </div>
+      <div class="arch-row">
+        <span class="arch-label">Data Layer</span>
+        <span class="arch-layer">💾 LocalStorage / IndexedDB</span>
+        <span class="arch-arrow">←→</span>
+        <span class="arch-layer">☁️ Academy API (production)</span>
+        <span class="arch-arrow">←→</span>
+        <span class="arch-layer">🔄 Sync Engine</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEHAVIOUR OUTCOME ENGINE -->
+<section class="engine-section">
+  <div style="text-align:center;max-width:680px;margin:0 auto">
+    <div class="section-eyebrow">Behaviour Outcome Engine</div>
+    <h2 class="section-title-lg">Advanced Behavioural<br>Intelligence Technology.</h2>
+    <p class="section-sub-lg" style="margin-bottom:0">Our proprietary Behaviour Outcome Engine processes training data to generate predictive insights, detect regression before it becomes a problem, and optimise every dog's learning journey.</p>
+  </div>
+
+  <div class="engine-grid">
+    <div class="engine-card dark">
+      <div class="ec-icon">📈</div>
+      <div class="ec-title">Behavioural Trend Detection</div>
+      <div class="ec-desc">Analyses 7-day and 30-day score patterns to detect training stalls, confidence regression and recall reliability changes before they become critical.</div>
+      <div class="ec-metrics">
+        <div class="ec-metric"><span class="ec-metric-label">Recall consistency</span><div class="ec-bar"><div class="ec-fill" style="width:74%"></div></div><span class="ec-val">74%</span></div>
+        <div class="ec-metric"><span class="ec-metric-label">Confidence trend</span><div class="ec-bar"><div class="ec-fill" style="width:70%;background:#10b981"></div></div><span class="ec-val" style="color:#10b981">70%</span></div>
+        <div class="ec-metric"><span class="ec-metric-label">Regression risk</span><div class="ec-bar"><div class="ec-fill" style="width:25%;background:#ef4444"></div></div><span class="ec-val" style="color:#ef4444">25%</span></div>
+      </div>
+    </div>
+    <div class="engine-card">
+      <div class="ec-icon">🎯</div>
+      <div class="ec-title">Training Consistency Scoring</div>
+      <div class="ec-desc">Quantifies session frequency, quality and duration consistency to identify the most improvement-predictive training patterns across the cohort.</div>
+      <div class="ec-metrics">
+        <div class="ec-metric"><span class="ec-metric-label" style="color:var(--muted)">Session consistency</span><div class="ec-bar" style="background:var(--surface2)"><div class="ec-fill" style="width:82%"></div></div><span class="ec-val">82%</span></div>
+        <div class="ec-metric"><span class="ec-metric-label" style="color:var(--muted)">Owner engagement</span><div class="ec-bar" style="background:var(--surface2)"><div class="ec-fill" style="width:78%"></div></div><span class="ec-val">78%</span></div>
+        <div class="ec-metric"><span class="ec-metric-label" style="color:var(--muted)">Enrichment rate</span><div class="ec-bar" style="background:var(--surface2)"><div class="ec-fill" style="width:88%"></div></div><span class="ec-val">88%</span></div>
+      </div>
+    </div>
+    <div class="engine-card">
+      <div class="ec-icon">🔮</div>
+      <div class="ec-title">Progression Forecasting</div>
+      <div class="ec-desc">Machine learning-inspired scoring predicts which dogs are on track for graduation and which are at risk — up to 3 weeks before human observation catches it.</div>
+      <div class="ec-metrics">
+        <div class="ec-metric"><span class="ec-metric-label" style="color:var(--muted)">Forecast accuracy</span><div class="ec-bar" style="background:var(--surface2)"><div class="ec-fill" style="width:89%"></div></div><span class="ec-val">89%</span></div>
+        <div class="ec-metric"><span class="ec-metric-label" style="color:var(--muted)">Early warning rate</span><div class="ec-bar" style="background:var(--surface2)"><div class="ec-fill" style="width:77%"></div></div><span class="ec-val">77%</span></div>
+        <div class="ec-metric"><span class="ec-metric-label" style="color:var(--muted)">Graduation prediction</span><div class="ec-bar" style="background:var(--surface2)"><div class="ec-fill" style="width:91%"></div></div><span class="ec-val">91%</span></div>
+      </div>
+    </div>
+    <div class="engine-card dark">
+      <div class="ec-icon">🧩</div>
+      <div class="ec-title">Enrichment Optimisation</div>
+      <div class="ec-desc">Correlates enrichment activity type and frequency with behaviour score improvement, enabling personalised enrichment prescriptions per dog profile and breed.</div>
+      <div class="ec-metrics">
+        <div class="ec-metric"><span class="ec-metric-label">Sniff walk impact</span><div class="ec-bar"><div class="ec-fill" style="width:92%"></div></div><span class="ec-val">92%</span></div>
+        <div class="ec-metric"><span class="ec-metric-label">Puzzle game impact</span><div class="ec-bar"><div class="ec-fill" style="width:85%;background:#10b981"></div></div><span class="ec-val" style="color:#10b981">85%</span></div>
+        <div class="ec-metric"><span class="ec-metric-label">Calm activity impact</span><div class="ec-bar"><div class="ec-fill" style="width:88%;background:#10b981"></div></div><span class="ec-val" style="color:#10b981">88%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INNOVATION ROADMAP -->
+<section class="roadmap-section" id="roadmap">
+  <div class="roadmap-inner">
+    <div style="text-align:center;max-width:680px;margin:0 auto">
+      <div class="section-eyebrow">Innovation Roadmap</div>
+      <h2 class="section-title-lg">Five Phases.<br>One Ambitious Vision.</h2>
+      <p class="section-sub-lg" style="margin-bottom:0">A clear, fundable product roadmap from MVP to global canine intelligence platform — each phase building on the last with measurable milestones.</p>
+    </div>
+
+    <div class="roadmap-timeline">
+      <div class="roadmap-item active">
+        <div class="ri-phase">Phase 1 — NOW LIVE <span class="ri-badge">✓ Complete</span></div>
+        <div class="ri-title">Puppy Training Academy MVP</div>
+        <div class="ri-desc">Full-stack academy platform: Trainer Intelligence OS, Owner Portal, 5-module Puppy Masterclass curriculum. AI Guidance Centre with behavioural chat assistant. Revenue dashboard and certification engine.</div>
+        <div class="ri-tags"><span class="ri-tag">Trainer OS</span><span class="ri-tag">Owner Portal</span><span class="ri-tag">AI Coach</span><span class="ri-tag">Analytics</span></div>
+      </div>
+
+      <div class="roadmap-item">
+        <div class="ri-phase">Phase 2 — Q3 2026</div>
+        <div class="ri-title">AI Behaviour Guidance — Full Integration</div>
+        <div class="ri-desc">Connect AI guidance to real session data via Supabase. Personalised recommendations update live as dogs progress. Owner app receives AI-generated daily coaching plans based on their specific dog's breed, age, and score history.</div>
+        <div class="ri-tags"><span class="ri-tag">Supabase Backend</span><span class="ri-tag">Live AI</span><span class="ri-tag">Real-Time Sync</span><span class="ri-tag">Push Notifications</span></div>
+      </div>
+
+      <div class="roadmap-item future">
+        <div class="ri-phase">Phase 3 — Q1 2027</div>
+        <div class="ri-title">Multi-Trainer Academy Expansion</div>
+        <div class="ri-desc">White-label licensing to independent dog trainers. Each trainer gets their own branded academy portal, owner app, and AI guidance engine. SaaS subscription model with trainer marketplace, revenue sharing and certification accreditation.</div>
+        <div class="ri-tags"><span class="ri-tag">White-Label</span><span class="ri-tag">Trainer Marketplace</span><span class="ri-tag">Multi-Academy</span><span class="ri-tag">SaaS Revenue</span></div>
+      </div>
+
+      <div class="roadmap-item future">
+        <div class="ri-phase">Phase 4 — Q3 2027</div>
+        <div class="ri-title">Breed-Specific Intelligence Models</div>
+        <div class="ri-desc">Train AI models on breed-specific behaviour data to deliver hyper-personalised training guidance. Border Collies get different enrichment to French Bulldogs. Rescue dogs get trauma-informed training pathways. Specialist content for reactive, fearful and over-excited dogs.</div>
+        <div class="ri-tags"><span class="ri-tag">Breed Intelligence</span><span class="ri-tag">Reactive Dogs</span><span class="ri-tag">Rescue Pathways</span><span class="ri-tag">ML Models</span></div>
+      </div>
+
+      <div class="roadmap-item future">
+        <div class="ri-phase">Phase 5 — 2028</div>
+        <div class="ri-title">Wearable Integration &amp; Behaviour Detection</div>
+        <div class="ri-desc">Integrate with dog wearables (GPS, heart rate, activity trackers) to passively detect anxiety signals, over-threshold moments, and training session quality. Automated session logging, real-time stress alerts, and breed-calibrated arousal detection without owner input.</div>
+        <div class="ri-tags"><span class="ri-tag">Wearable API</span><span class="ri-tag">Passive Detection</span><span class="ri-tag">Anxiety Alerts</span><span class="ri-tag">Auto-Logging</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INVESTOR / GRANT CTA -->
+<section class="investor-cta">
+  <div class="ic-inner">
+    <div class="ic-eyebrow">🏆 Investment &amp; Grant Opportunity</div>
+    <h2 class="ic-title">Ready to Scale the Future of Dog Training?</h2>
+    <p class="ic-sub">Four Paws is seeking seed investment and innovation grant funding to bring AI-powered canine behaviour intelligence to trainers and dog owners worldwide. We have the platform, the data, and the vision.</p>
+    <div class="ic-btns">
+      <a href="/trainer" class="ic-btn primary">🎓 View Full Platform Demo</a>
+      <a href="/owner" class="ic-btn ghost">🐾 Owner Portal Demo</a>
+    </div>
+    <div class="ic-stats">
+      <div>
+        <div class="ic-stat-val">£2.3B</div>
+        <div class="ic-stat-lbl">Market Opportunity</div>
+      </div>
+      <div>
+        <div class="ic-stat-val">89%</div>
+        <div class="ic-stat-lbl">AI Prediction Accuracy</div>
+      </div>
+      <div>
+        <div class="ic-stat-val">5× ROI</div>
+        <div class="ic-stat-lbl">Projected Year 3 Return</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>🐾 Four Paws Training &amp; Enrichment Academy</strong><br>
+  Powered by Intelligent Personalised AI Coach · AI-Assisted Canine Behaviour &amp; Training Intelligence Platform<br>
+  <span style="opacity:.6">Trainer OS · Owner Portal · Behaviour Outcome Engine · Innovation Roadmap</span><br>
+  <span style="opacity:.4">© 2026 Four Paws Academy · All rights reserved · Built for grant &amp; investor presentation</span>
+</footer>
+
+
+<script>
+/* ════════════════════════════════════════════
+   FOUR PAWS — PWA Install Logic
+════════════════════════════════════════════ */
+(function() {
+  var deferredPrompt = null;
+  var installed = localStorage.getItem('fp_pwa_installed') === 'true';
+
+  // ── Device detection ──────────────────────
+  var ua = navigator.userAgent;
+  var isIOS     = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  var isAndroid = /Android/.test(ua);
+  var isSafari  = /Safari/.test(ua) && !/Chrome/.test(ua);
+  var isChrome  = /Chrome/.test(ua) && /Google Inc/.test(navigator.vendor || '');
+  var isEdge    = /Edg\//.test(ua);
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true;
+
+  // ── Register service worker ───────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then(function(reg) {
+        console.log('[FP] SW registered, scope:', reg.scope);
+      })
+      .catch(function(err) {
+        console.warn('[FP] SW registration failed:', err);
+      });
+  }
+
+  // ── Install prompt capture ────────────────
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBtn();
+  });
+
+  // ── Already installed ─────────────────────
+  window.addEventListener('appinstalled', function() {
+    deferredPrompt = null;
+    localStorage.setItem('fp_pwa_installed', 'true');
+    showInstalledState();
+  });
+
+  // ── Trigger install ───────────────────────
+  window.triggerInstall = function() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r) {
+      if (r.outcome === 'accepted') {
+        localStorage.setItem('fp_pwa_installed', 'true');
+        showInstalledState();
+      }
+      deferredPrompt = null;
+    });
+  };
+
+  // ── UI state functions ────────────────────
+  function el(id) { return document.getElementById(id); }
+
+  function showInstallBtn() {
+    var btn = el('pwa-install-btn');
+    if (btn) { btn.style.display = 'inline-flex'; }
+    setStatus('dot', 'Install available for your browser');
+    hideInstructions();
+  }
+
+  function showInstalledState() {
+    var btn   = el('pwa-install-btn');
+    var badge = el('pwa-installed-badge');
+    if (btn)   btn.style.display = 'none';
+    if (badge) badge.classList.add('show');
+    el('pwa-status-dot').classList.add('warn');
+    setStatus('check', '✓ App installed on your device');
+    hideInstructions();
+  }
+
+  function showIOSInstructions() {
+    var box = el('pwa-ios-instructions');
+    if (box) box.classList.add('show');
+    setStatus('warn', 'Use Safari Share → "Add to Home Screen"');
+  }
+
+  function showGenericInstructions() {
+    var box = el('pwa-generic-instructions');
+    if (box) box.classList.add('show');
+    setStatus('warn', 'Use your browser menu to install');
+  }
+
+  function hideInstructions() {
+    var ios = el('pwa-ios-instructions');
+    var gen = el('pwa-generic-instructions');
+    if (ios) ios.classList.remove('show');
+    if (gen) gen.classList.remove('show');
+  }
+
+  function setStatus(type, msg) {
+    var dot  = el('pwa-status-dot');
+    var text = el('pwa-status-text');
+    if (text) text.textContent = msg;
+    if (dot) {
+      dot.style.background = type === 'warn' ? '#f4a435' : type === 'check' ? '#10b981' : '#10b981';
+    }
+  }
+
+  // ── Init on DOM ready ─────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    if (isStandalone) {
+      showInstalledState();
+      return;
+    }
+    if (installed) {
+      showInstalledState();
+      return;
+    }
+    if (isIOS && isSafari) {
+      // iOS Safari — no beforeinstallprompt, show manual instructions
+      showIOSInstructions();
+      return;
+    }
+    if (isIOS && !isSafari) {
+      // iOS Chrome/Firefox — limited support
+      setStatus('warn', 'Open in Safari for best install experience on iPhone');
+      return;
+    }
+    // Android/Desktop — wait for beforeinstallprompt
+    // If it hasn't fired by 2s, check if browser supports it
+    setTimeout(function() {
+      if (!deferredPrompt && !installed && !isStandalone) {
+        if (isAndroid || isChrome || isEdge) {
+          showGenericInstructions();
+        } else {
+          setStatus('warn', 'Installation not supported in this browser');
+        }
+      }
+    }, 2000);
+    setStatus('dot', 'Checking install capability…');
+  });
+
+})();
+</script>
+
+</body>
+</html>
