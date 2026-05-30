@@ -1,10 +1,7 @@
-/* Four Paws Training Academy — Owner Portal Service Worker v4 */
-var CACHE = 'fp-owner-v4';
+/* Four Paws Training Academy — Owner Portal Service Worker v5 */
+var CACHE = 'fp-owner-v5';
 var ASSETS = [
   '/owner',
-  '/storage.js',
-  '/dataProvider.js',
-  '/ai-layer.js',
   '/manifest.json'
 ];
 
@@ -36,10 +33,13 @@ self.addEventListener('fetch', function(e) {
   var url = new URL(e.request.url);
   if (url.pathname === '/trainer' || url.pathname.startsWith('/trainer')) return;
 
+  /* Network-first: always try to get fresh content, fall back to cache */
   e.respondWith(
-    fetch(e.request).then(function(res) {
-      var clone = res.clone();
-      caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
+    fetch(e.request, { cache: 'no-cache' }).then(function(res) {
+      if (res && res.status === 200) {
+        var clone = res.clone();
+        caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
+      }
       return res;
     }).catch(function() {
       return caches.match(e.request).then(function(cached) {
