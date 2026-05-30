@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="description" content="Four Paws Training & Enrichment Academy — AI-Assisted Canine Behaviour & Training Intelligence Platform"/>
 <title>Four Paws Training & Enrichment Academy</title>
-<meta name="theme-color" content="#3a7d44"/>
 <style>
 :root{
   --bg:#f5f7f0;--surface:#fff;--surface2:#eef4e8;--border:#c8d8b0;
@@ -201,7 +200,89 @@ footer strong{color:var(--text)}
   .tech-grid{grid-template-columns:1fr}
   .stats-inner{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ── PWA Install Section ── */
+.pwa-section{max-width:980px;margin:0 auto;padding:0 24px 64px}
+.pwa-install-wrap{
+  background:linear-gradient(135deg,#0d3320,#1a4d28);
+  border-radius:22px; padding:36px 32px; color:#fff;
+  display:grid; grid-template-columns:1fr auto; gap:32px; align-items:center;
+  box-shadow:0 12px 48px rgba(58,125,68,.28); position:relative; overflow:hidden;
+}
+.pwa-install-wrap::before{
+  content:'🐾'; position:absolute; right:32px; bottom:-12px;
+  font-size:120px; opacity:.07; pointer-events:none; line-height:1;
+}
+.pwa-install-content{}
+.pwa-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:10px}
+.pwa-title{font-size:26px;font-weight:900;letter-spacing:-.8px;margin-bottom:8px;line-height:1.15}
+.pwa-desc{font-size:14px;opacity:.8;line-height:1.6;margin-bottom:20px;max-width:480px}
+.pwa-device-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.pwa-device{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  border-radius:99px;padding:4px 12px;font-size:11px;font-weight:600;
+}
+.pwa-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn-pwa-install{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 26px;border-radius:var(--r);
+  background:var(--accent);color:#fff;border:none;
+  font-size:15px;font-weight:700;cursor:pointer;
+  transition:all var(--t);box-shadow:0 4px 18px rgba(244,164,53,.35);
+  letter-spacing:-.2px;
+}
+.btn-pwa-install:hover{background:var(--accent-d);transform:translateY(-2px);box-shadow:0 8px 28px rgba(244,164,53,.45)}
+.btn-pwa-install:active{transform:scale(.97)}
+.btn-pwa-install:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.pwa-installed-badge{
+  display:none;align-items:center;gap:9px;
+  background:rgba(16,185,129,.18);border:1.5px solid rgba(16,185,129,.4);
+  border-radius:var(--r);padding:12px 20px;
+  font-size:14px;font-weight:700;color:#6ee7b7;
+}
+.pwa-installed-badge.show{display:flex}
+.pwa-instruction-box{
+  display:none;margin-top:16px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--rs);padding:14px 16px;
+  font-size:13px;line-height:1.7;opacity:.85;
+}
+.pwa-instruction-box.show{display:block}
+.pwa-instruction-box strong{color:var(--accent)}
+.pwa-status-row{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;opacity:.65}
+.pwa-status-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 2s infinite}
+.pwa-status-dot.warn{background:var(--accent)}
+.pwa-icon-side{display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0}
+.pwa-app-icon{
+  width:90px;height:90px;border-radius:22px;
+  background:linear-gradient(135deg,#3a7d44,#52955c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;box-shadow:0 8px 24px rgba(0,0,0,.3);
+  border:3px solid rgba(255,255,255,.15);
+}
+.pwa-icon-label{font-size:11px;opacity:.6;text-align:center;font-weight:600}
+@media(max-width:640px){
+  .pwa-install-wrap{grid-template-columns:1fr;gap:20px}
+  .pwa-icon-side{flex-direction:row;justify-content:flex-start}
+  .pwa-title{font-size:22px}
+  .pwa-app-icon{width:68px;height:68px;font-size:32px;border-radius:16px}
+}
+
 </style>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#3a7d44"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Four Paws"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="msapplication-TileColor" content="#3a7d44"/>
+<meta name="msapplication-TileImage" content="/icons/fp-144.png"/>
+<link rel="apple-touch-icon" href="/icons/fp-180.png"/>
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/fp-152.png"/>
+<link rel="apple-touch-icon" sizes="144x144" href="/icons/fp-144.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/fp-192.png"/>
+<link rel="icon" type="image/png" sizes="96x96"   href="/icons/fp-96.png"/>
 </head>
 <body>
 
@@ -308,6 +389,63 @@ footer strong{color:var(--text)}
         <div class="dc-open-btn trainer-btn">Open Trainer OS <span class="btn-arr">→</span></div>
       </div>
     </a>
+  </div>
+</section>
+
+
+<!-- PWA INSTALL -->
+<section class="pwa-section" id="install">
+  <div class="pwa-install-wrap" id="pwa-wrap">
+
+    <!-- Icon side (desktop right, mobile top) -->
+    <div class="pwa-icon-side" id="pwa-icon-side" style="order:2">
+      <div class="pwa-app-icon">🐾</div>
+      <div class="pwa-icon-label">Four Paws<br>Academy</div>
+    </div>
+
+    <!-- Content -->
+    <div class="pwa-install-content" style="order:1">
+      <div class="pwa-eyebrow">📲 Install the Platform</div>
+      <h3 class="pwa-title">Add Four Paws to Your<br>Home Screen</h3>
+      <p class="pwa-desc">Install the full Four Paws Academy platform as a native app on any device. One tap access to the Trainer OS and Owner Portal — no browser needed.</p>
+
+      <div class="pwa-device-row">
+        <span class="pwa-device">📱 Android</span>
+        <span class="pwa-device">🍎 iPhone / iPad</span>
+        <span class="pwa-device">🪟 Windows</span>
+        <span class="pwa-device">🖥 Mac</span>
+        <span class="pwa-device">🌐 Chrome / Edge</span>
+      </div>
+
+      <div class="pwa-actions">
+        <button class="btn-pwa-install" id="pwa-install-btn" style="display:none" onclick="triggerInstall()">
+          ⬇ Install App
+        </button>
+        <div class="pwa-installed-badge" id="pwa-installed-badge">
+          <span>✅</span>
+          <div>
+            <div>App Installed</div>
+            <div style="font-size:11px;opacity:.7;font-weight:400;margin-top:1px">Tap the Four Paws icon on your home screen to open</div>
+          </div>
+        </div>
+        <a href="trainer-demo.html" class="cta-btn outline" style="color:#fff;border-color:rgba(255,255,255,.25);padding:12px 20px;font-size:14px">🎓 Open Trainer OS</a>
+      </div>
+
+      <!-- Safari / iOS manual instructions -->
+      <div class="pwa-instruction-box" id="pwa-ios-instructions">
+        On <strong>iPhone / iPad</strong>: tap the <strong>Share</strong> button (□↑) in Safari, then select <strong>"Add to Home Screen"</strong>. The Four Paws icon will appear on your home screen.
+      </div>
+      <div class="pwa-instruction-box" id="pwa-generic-instructions">
+        On <strong>Android</strong>: tap the browser menu (⋮) and select <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong>.<br>
+        On <strong>Desktop</strong>: look for the install icon (⊕) in your browser address bar.
+      </div>
+
+      <div class="pwa-status-row">
+        <div class="pwa-status-dot" id="pwa-status-dot"></div>
+        <span id="pwa-status-text">Checking install capability…</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -601,6 +739,148 @@ footer strong{color:var(--text)}
   <span style="opacity:.6">Trainer OS · Owner Portal · Behaviour Outcome Engine · Innovation Roadmap</span><br>
   <span style="opacity:.4">© 2026 Four Paws Academy · All rights reserved · Built for grant &amp; investor presentation</span>
 </footer>
+
+
+<script>
+/* ════════════════════════════════════════════
+   FOUR PAWS — PWA Install Logic
+════════════════════════════════════════════ */
+(function() {
+  var deferredPrompt = null;
+  var installed = localStorage.getItem('fp_pwa_installed') === 'true';
+
+  // ── Device detection ──────────────────────
+  var ua = navigator.userAgent;
+  var isIOS     = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  var isAndroid = /Android/.test(ua);
+  var isSafari  = /Safari/.test(ua) && !/Chrome/.test(ua);
+  var isChrome  = /Chrome/.test(ua) && /Google Inc/.test(navigator.vendor || '');
+  var isEdge    = /Edg\//.test(ua);
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true;
+
+  // ── Register service worker ───────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then(function(reg) {
+        console.log('[FP] SW registered, scope:', reg.scope);
+      })
+      .catch(function(err) {
+        console.warn('[FP] SW registration failed:', err);
+      });
+  }
+
+  // ── Install prompt capture ────────────────
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBtn();
+  });
+
+  // ── Already installed ─────────────────────
+  window.addEventListener('appinstalled', function() {
+    deferredPrompt = null;
+    localStorage.setItem('fp_pwa_installed', 'true');
+    showInstalledState();
+  });
+
+  // ── Trigger install ───────────────────────
+  window.triggerInstall = function() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r) {
+      if (r.outcome === 'accepted') {
+        localStorage.setItem('fp_pwa_installed', 'true');
+        showInstalledState();
+      }
+      deferredPrompt = null;
+    });
+  };
+
+  // ── UI state functions ────────────────────
+  function el(id) { return document.getElementById(id); }
+
+  function showInstallBtn() {
+    var btn = el('pwa-install-btn');
+    if (btn) { btn.style.display = 'inline-flex'; }
+    setStatus('dot', 'Install available for your browser');
+    hideInstructions();
+  }
+
+  function showInstalledState() {
+    var btn   = el('pwa-install-btn');
+    var badge = el('pwa-installed-badge');
+    if (btn)   btn.style.display = 'none';
+    if (badge) badge.classList.add('show');
+    el('pwa-status-dot').classList.add('warn');
+    setStatus('check', '✓ App installed on your device');
+    hideInstructions();
+  }
+
+  function showIOSInstructions() {
+    var box = el('pwa-ios-instructions');
+    if (box) box.classList.add('show');
+    setStatus('warn', 'Use Safari Share → "Add to Home Screen"');
+  }
+
+  function showGenericInstructions() {
+    var box = el('pwa-generic-instructions');
+    if (box) box.classList.add('show');
+    setStatus('warn', 'Use your browser menu to install');
+  }
+
+  function hideInstructions() {
+    var ios = el('pwa-ios-instructions');
+    var gen = el('pwa-generic-instructions');
+    if (ios) ios.classList.remove('show');
+    if (gen) gen.classList.remove('show');
+  }
+
+  function setStatus(type, msg) {
+    var dot  = el('pwa-status-dot');
+    var text = el('pwa-status-text');
+    if (text) text.textContent = msg;
+    if (dot) {
+      dot.style.background = type === 'warn' ? '#f4a435' : type === 'check' ? '#10b981' : '#10b981';
+    }
+  }
+
+  // ── Init on DOM ready ─────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    if (isStandalone) {
+      showInstalledState();
+      return;
+    }
+    if (installed) {
+      showInstalledState();
+      return;
+    }
+    if (isIOS && isSafari) {
+      // iOS Safari — no beforeinstallprompt, show manual instructions
+      showIOSInstructions();
+      return;
+    }
+    if (isIOS && !isSafari) {
+      // iOS Chrome/Firefox — limited support
+      setStatus('warn', 'Open in Safari for best install experience on iPhone');
+      return;
+    }
+    // Android/Desktop — wait for beforeinstallprompt
+    // If it hasn't fired by 2s, check if browser supports it
+    setTimeout(function() {
+      if (!deferredPrompt && !installed && !isStandalone) {
+        if (isAndroid || isChrome || isEdge) {
+          showGenericInstructions();
+        } else {
+          setStatus('warn', 'Installation not supported in this browser');
+        }
+      }
+    }, 2000);
+    setStatus('dot', 'Checking install capability…');
+  });
+
+})();
+</script>
 
 </body>
 </html>
