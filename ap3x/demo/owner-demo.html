@@ -646,8 +646,8 @@ function obNext(step){
     _obData['ob-owner-email'] = document.getElementById('ob-owner-email').value.trim();
   } else if(step === 2){
     var dname = document.getElementById('ob-dog-name').value.trim();
-    if(!dname){ showToast('⚠️ Please enter your dog's name'); return; }
-    if(!_obData['ob-age-choices']){ showToast('⚠️ Please select your dog's age'); return; }
+    if(!dname){ showToast('⚠️ Please enter your dog\'s name'); return; }
+    if(!_obData['ob-age-choices']){ showToast('⚠️ Please select your dog\'s age'); return; }
     _obData['ob-dog-name']  = dname;
     _obData['ob-dog-breed'] = document.getElementById('ob-dog-breed').value.trim() || 'Mixed';
   } else if(step === 3){
