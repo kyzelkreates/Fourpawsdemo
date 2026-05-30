@@ -627,11 +627,11 @@ function obBuildAIPreview(freq){
   var isNew   = exp.indexOf('First-time') !== -1;
   var isPup   = age.indexOf('12 weeks') !== -1 || age.indexOf('3–6') !== -1;
 
-  var msg = 'Hi ' + name + '! I've built a personalised plan for ' + dog + '. ';
-  if(isPup) msg += 'As a puppy, ' + dog + ' is in the perfect learning window — we'll make the most of it. ';
-  if(isNew) msg += 'I'll explain every concept clearly, with no jargon. ';
+  var msg = "Hi " + name + "! I've built a personalised plan for " + dog + ". ";
+  if(isPup) msg += "As a puppy, " + dog + " is in the perfect learning window — we'll make the most of it. ";
+  if(isNew) msg += "I'll explain every concept clearly, with no jargon. ";
   msg += 'Your focus on <strong>' + goal + '</strong> will shape every lesson recommendation. ';
-  if(chips.length) msg += 'I've noted your challenges with <strong>' + chips.slice(0,3).join(', ') + '</strong> — we'll address these directly. ';
+  if(chips.length) msg += "I've noted your challenges with <strong>" + chips.slice(0,3).join(', ') + "</strong> — we'll address these directly. ";
   msg += 'Based on your ' + freq.toLowerCase() + ' commitment, expect to see real results within 3–4 weeks.';
 
   var preview = document.getElementById('ob-ai-preview-text');
