@@ -174,7 +174,7 @@ input,select,textarea{font-family:inherit}
   <button class="nav-item" id="nav-certs" onclick="showView('certs')"><span class="ni-icon">🏅</span><span>Certifications</span></button>
   <button class="nav-item" id="nav-revenue" onclick="showView('revenue')"><span class="ni-icon">💰</span><span>Revenue Analytics</span></button>
   <div class="sb-section">Admin</div>
-  <button class="nav-item" id="nav-deploy" onclick="showView('deploy')"><span class="ni-icon">👤</span><span>Client Onboarding</span></button>
+  <button class="nav-item" id="nav-deploy" onclick="showView('deploy')"><span class="ni-icon">📲</span><span>Deploy PWA</span></button>
   <button class="nav-item" id="nav-reviews" onclick="showView('reviews')"><span class="ni-icon">⭐</span><span>Reviews</span></button>
   <button class="nav-item" id="nav-settings" onclick="showView('settings')"><span class="ni-icon">⚙️</span><span>Settings</span></button>
 </nav>
@@ -182,7 +182,7 @@ input,select,textarea{font-family:inherit}
 <div class="view" id="view-overview">
   <div class="view-header">
     <div><div class="view-title" id="overviewGreeting">Good morning, Alex 👋</div><div class="view-sub">Your academy intelligence overview — updated in real time</div></div>
-    <div class="view-actions"><button class="btn-sm primary" onclick="showView('deploy')">+ New Client</button><button class="btn-sm accent" onclick="showView('ai')">🤖 AI Insights</button></div>
+    <div class="view-actions"><button class="btn-sm primary" onclick="showView('deploy')">📲 Deploy PWA</button><button class="btn-sm accent" onclick="showView('ai')">🤖 AI Insights</button></div>
   </div>
   <div class="stats-row" id="statsRow"></div>
   <div class="two-col">
@@ -200,7 +200,7 @@ input,select,textarea{font-family:inherit}
   <div id="alertsContainer"></div>
 </div>
 <div class="view hidden" id="view-dogs">
-  <div class="view-header"><div><div class="view-title">🐕 All Dogs</div><div class="view-sub">All enrolled dogs and their training status</div></div><div class="view-actions"><button class="btn-sm primary" onclick="showView('deploy')">+ Enrol Dog</button></div></div>
+  <div class="view-header"><div><div class="view-title">🐕 All Dogs</div><div class="view-sub">All enrolled dogs and their training status</div></div><div class="view-actions"><button class="btn-sm primary" onclick="showView('deploy')">📲 Deploy to Owner</button></div></div>
   <div class="dog-grid" id="dogsGrid"></div>
 </div>
 <div class="view hidden" id="view-stalled">
@@ -265,20 +265,126 @@ input,select,textarea{font-family:inherit}
   </div>
 </div>
 <div class="view hidden" id="view-deploy">
-  <div class="view-header"><div><div class="view-title">👤 Client Onboarding</div><div class="view-sub">Enrol new owners and generate their Owner Portal access</div></div></div>
-  <div class="two-col">
-    <div class="card"><div class="card-header"><div class="card-title">📝 New Client Details</div></div>
+  <div class="view-header">
+    <div>
+      <div class="view-title">📲 Client PWA Deployment Hub</div>
+      <div class="view-sub">Enrol clients &amp; deliver the Owner AI Coach to any device — instantly</div>
+    </div>
+    <div class="view-actions">
+      <button class="btn-sm" onclick="deployHub_resetSync()">🔄 Sync Status</button>
+    </div>
+  </div>
+
+  <!-- SYNC STATUS BANNER -->
+  <div id="sync-banner" style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:20px;font-size:13px">
+    <span id="sync-icon" style="font-size:20px">💾</span>
+    <div>
+      <div id="sync-title" style="font-weight:700;color:var(--text)">Sync: LocalStorage Active</div>
+      <div id="sync-sub" style="color:var(--muted);margin-top:2px">Data persists locally. IndexedDB fallback ready. Supabase connection: <span id="sb-status" style="color:#e8a020;font-weight:600">Not configured</span></div>
+    </div>
+    <button class="btn-sm" style="margin-left:auto" onclick="deployHub_configSupabase()">⚙ Configure Supabase</button>
+  </div>
+
+  <!-- MAIN GRID: FORM + DELIVERY PANEL -->
+  <div class="two-col" style="align-items:start">
+
+    <!-- LEFT: Client Details Form -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">📝 New Client Details</div></div>
       <div class="card-body">
-        <div class="form-row"><div class="form-field"><label class="form-label">Owner Name</label><input class="form-input" id="dep-owner" placeholder="e.g. Sarah Mitchell"/></div><div class="form-field"><label class="form-label">Email</label><input class="form-input" id="dep-email" type="email" placeholder="sarah@example.com"/></div></div>
-        <div class="form-row three"><div class="form-field"><label class="form-label">Dog's Name</label><input class="form-input" id="dep-dog" placeholder="e.g. Luna"/></div><div class="form-field"><label class="form-label">Breed</label><input class="form-input" id="dep-breed" placeholder="e.g. Labrador"/></div><div class="form-field"><label class="form-label">Age</label><select class="form-input" id="dep-age"><option>8–16 weeks</option><option>4–6 months</option><option>6–12 months</option><option>1–2 years</option><option>2+ years</option></select></div></div>
-        <div class="form-field"><label class="form-label">Trainer Notes</label><input class="form-input" id="dep-notes" placeholder="Focus areas, concerns…"/></div>
-        <button class="btn-sm primary" style="width:100%;padding:10px;margin-top:4px" onclick="generateOnboarding()">⚡ Generate Portal Access</button>
+        <div class="form-row">
+          <div class="form-field"><label class="form-label">Owner Name</label><input class="form-input" id="dep-owner" placeholder="e.g. Sarah Mitchell"/></div>
+          <div class="form-field"><label class="form-label">Email</label><input class="form-input" id="dep-email" type="email" placeholder="sarah@example.com"/></div>
+        </div>
+        <div class="form-row" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="form-field"><label class="form-label">Dog's Name</label><input class="form-input" id="dep-dog" placeholder="e.g. Luna"/></div>
+          <div class="form-field"><label class="form-label">Breed</label><input class="form-input" id="dep-breed" placeholder="e.g. Labrador"/></div>
+          <div class="form-field"><label class="form-label">Age</label>
+            <select class="form-input" id="dep-age">
+              <option>Under 12 weeks</option><option>3–6 months</option><option>6–12 months</option><option>1–2 years</option><option>2+ years</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field"><label class="form-label">Trainer Notes</label><input class="form-input" id="dep-notes" placeholder="Focus areas, primary concerns…"/></div>
+        <div class="form-field"><label class="form-label">Phone (for WhatsApp)</label><input class="form-input" id="dep-phone" type="tel" placeholder="+44 7700 900000"/></div>
+        <button class="btn-sm primary" style="width:100%;padding:11px;margin-top:6px;font-size:14px" onclick="deployHub_generate()">⚡ Generate &amp; Preview Delivery Options</button>
       </div>
     </div>
-    <div class="card"><div class="card-header"><div class="card-title">🔗 Generated Access</div></div><div class="card-body" id="onboardResult"><div style="text-align:center;padding:20px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">👤</div><div style="font-size:13px">Fill in client details and click Generate</div></div></div></div>
+
+    <!-- RIGHT: Delivery Options Panel -->
+    <div id="deploy-delivery-panel">
+      <div class="card" style="opacity:.45;pointer-events:none" id="delivery-card">
+        <div class="card-header"><div class="card-title">📦 Delivery Options</div><div id="dep-client-badge" style="font-size:12px;color:var(--muted)">Fill in client details first</div></div>
+        <div class="card-body" id="delivery-methods">
+          <div style="text-align:center;padding:24px;color:var(--muted)"><div style="font-size:36px;margin-bottom:8px">📲</div><div style="font-size:13px">Generate client access to see delivery options</div></div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="card"><div class="card-header"><div class="card-title">📋 Recent Onboardings</div></div><div class="card-body" id="recentOnboardings"></div></div>
+
+  <!-- QR CODE DISPLAY -->
+  <div class="card" id="qr-card" style="display:none;margin-top:0">
+    <div class="card-header"><div class="card-title">🔲 QR Code — Scan to Install Owner AI Coach</div><div id="qr-client-label" style="font-size:12px;color:var(--muted)"></div></div>
+    <div class="card-body" style="display:flex;align-items:center;gap:32px;flex-wrap:wrap">
+      <div id="qr-container" style="background:#fff;padding:16px;border-radius:10px;border:2px solid var(--border);display:inline-block"></div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px">Client scans this QR with their phone camera</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px">Opens the Owner AI Coach onboarding flow directly. Browser prompts to install as a PWA — no App Store required.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-sm" onclick="deployHub_printQR()">🖨 Print QR</button>
+          <button class="btn-sm" onclick="deployHub_downloadQR()">⬇ Download PNG</button>
+          <button class="btn-sm" onclick="deployHub_copyLink()">🔗 Copy Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NFC PANEL -->
+  <div class="card" id="nfc-card" style="display:none;margin-top:0">
+    <div class="card-header"><div class="card-title">📡 NFC — Tap to Install</div><div style="font-size:12px;color:var(--muted)">Android &amp; modern iOS (17+)</div></div>
+    <div class="card-body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div id="nfc-status-circle" style="width:80px;height:80px;border-radius:50%;background:var(--surface);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0">📡</div>
+      <div style="flex:1">
+        <div id="nfc-status-text" style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">NFC Ready</div>
+        <div id="nfc-sub-text" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Hold your device near an NFC tag or the client's phone to write the install link. Requires NFC-capable device.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-sm primary" id="nfc-write-btn" onclick="deployHub_writeNFC()">📡 Write to NFC Tag</button>
+          <button class="btn-sm" id="nfc-beam-btn" onclick="deployHub_beamNFC()">📲 Beam to Phone</button>
+          <span id="nfc-support-badge" style="font-size:11px;padding:4px 10px;border-radius:99px;background:var(--surface);color:var(--muted);align-self:center;border:1px solid var(--border)">Checking NFC…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIFI DIRECT PANEL -->
+  <div class="card" id="wifi-card" style="display:none;margin-top:0">
+    <div class="card-header"><div class="card-title">🛜 WiFi Direct / Local Share</div><div style="font-size:12px;color:var(--muted)">Same network — no internet required</div></div>
+    <div class="card-body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div id="wifi-status-circle" style="width:80px;height:80px;border-radius:50%;background:var(--surface);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0">🛜</div>
+      <div style="flex:1">
+        <div id="wifi-status-text" style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">Local Network Share</div>
+        <div id="wifi-sub-text" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Shares a local install link when trainer and client are on the same WiFi. Ideal for in-person training sessions. Client installs without needing mobile data.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-sm primary" id="wifi-share-btn" onclick="deployHub_wifiShare()">🛜 Generate Local Link</button>
+          <button class="btn-sm" onclick="deployHub_copyLocalLink()">🔗 Copy Local URL</button>
+        </div>
+        <div id="wifi-local-url" style="margin-top:10px;font-size:12px;font-family:monospace;background:var(--surface);padding:8px 12px;border-radius:6px;border:1px solid var(--border);display:none;word-break:break-all;color:var(--primary)"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT DEPLOYMENTS -->
+  <div class="card" style="margin-top:0">
+    <div class="card-header">
+      <div class="card-title">📋 Recent Deployments</div>
+      <div style="font-size:12px;color:var(--muted)" id="deploy-count-badge">0 clients enrolled</div>
+    </div>
+    <div class="card-body" id="recentOnboardings">
+      <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No deployments yet — enrol your first client above</div>
+    </div>
+  </div>
 </div>
+
 <div class="view hidden" id="view-reviews">
   <div class="view-header"><div><div class="view-title">⭐ Reviews & Testimonials</div><div class="view-sub">Client feedback and academy reputation management</div></div></div>
   <div class="stats-row" id="reviewKpis"></div>
@@ -563,11 +669,11 @@ function renderCourses(){
 
 /* ══════════ ENRICHMENT ══════════ */
 function renderEnrichment(){
-  var icons={Scent:'👃',Puzzle:'🧩',Social:'🐾',Confidence:'🌟'};
+  var icons={Scent:'👃',Puzzle:'🧩',Social:'\uD83D\uDC3E',Confidence:'🌟'};
   document.getElementById('enrichWeek').innerHTML=ENRICHMENT_PLAN.map(function(e){return'<div class="enrich-card"><span class="enrich-icon">'+(icons[e.type]||'🎯')+'</span><div class="enrich-body"><div class="enrich-title">'+e.dog+' — '+e.activity+'</div><div class="enrich-meta">'+e.day+' · '+e.type+'</div></div><span style="font-size:18px">'+(e.done?'✅':'⬜')+'</span></div>';}).join('');
   var types=['Scent','Puzzle','Social','Confidence'];
   document.getElementById('enrichStats').innerHTML=types.map(function(t){var items=ENRICHMENT_PLAN.filter(function(e){return e.type===t;});var done=items.filter(function(e){return e.done;}).length;var pct=items.length?Math.round(done/items.length*100):0;return'<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:700">'+(icons[t]||'')+' '+t+'</span><span style="font-size:12px;color:var(--muted)">'+done+'/'+items.length+'</span></div><div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div></div>';}).join('');
-  var lib=[{icon:'👃',name:'Snuffle Mat Feeding',type:'Scent',desc:'5–10 mins calm foraging. Ideal pre-session.'},{icon:'🧩',name:'Kong Stuffing',type:'Puzzle',desc:'Freeze Kong with wet food. 20–30 mins engagement.'},{icon:'🌟',name:'Novel Surface Walk',type:'Confidence',desc:'Walk on 3+ new surfaces — reward calmness.'},{icon:'🐾',name:'Structured Tug',type:'Social',desc:'10 min tug with start/stop cues.'},{icon:'👃',name:'Garden Scatter Feed',type:'Scent',desc:'Scatter full meal in garden for sniff-foraging.'},{icon:'🧩',name:'Lick Mat',type:'Puzzle',desc:'Calming. Ideal pre-travel or high-arousal periods.'}];
+  var lib=[{icon:'👃',name:'Snuffle Mat Feeding',type:'Scent',desc:'5–10 mins calm foraging. Ideal pre-session.'},{icon:'🧩',name:'Kong Stuffing',type:'Puzzle',desc:'Freeze Kong with wet food. 20–30 mins engagement.'},{icon:'🌟',name:'Novel Surface Walk',type:'Confidence',desc:'Walk on 3+ new surfaces — reward calmness.'},{icon:'\uD83D\uDC3E',name:'Structured Tug',type:'Social',desc:'10 min tug with start/stop cues.'},{icon:'👃',name:'Garden Scatter Feed',type:'Scent',desc:'Scatter full meal in garden for sniff-foraging.'},{icon:'🧩',name:'Lick Mat',type:'Puzzle',desc:'Calming. Ideal pre-travel or high-arousal periods.'}];
   document.getElementById('enrichLibrary').innerHTML=lib.map(function(e){return'<div class="enrich-card"><span class="enrich-icon">'+e.icon+'</span><div class="enrich-body"><div class="enrich-title">'+e.name+'</div><div class="enrich-meta">'+e.type+' · '+e.desc+'</div></div><button class="btn-sm" onclick="showToast(\'Added to plan\')">+ Add</button></div>';}).join('');
 }
 
@@ -607,19 +713,209 @@ function renderDeploy(){
   if(!_onboardings.length){document.getElementById('recentOnboardings').innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No recent onboardings — generate your first access above.</div>';return;}
   document.getElementById('recentOnboardings').innerHTML=_onboardings.map(function(o){return'<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><span style="font-size:20px">🐕</span><div style="flex:1"><div style="font-size:13px;font-weight:700">'+o.dog+' — '+o.owner+'</div><div style="font-size:11px;color:var(--muted)">'+o.breed+' · Code: <strong>'+o.code+'</strong> · '+fmtDate(o.ts)+'</div></div><button class="btn-sm" onclick="showToast(\'Link copied!\')">Copy Link</button></div>';}).join('');
 }
-function generateOnboarding(){
-  var owner=document.getElementById('dep-owner').value.trim();
-  var dog=document.getElementById('dep-dog').value.trim();
-  var breed=document.getElementById('dep-breed').value.trim();
-  var email=document.getElementById('dep-email').value.trim();
-  if(!owner||!dog){showToast('⚠️ Please fill in owner and dog name');return;}
-  var code='FP-'+Math.random().toString(36).substr(2,6).toUpperCase();
-  var link=window.location.origin+'/owner';
-  _onboardings.unshift({owner:owner,dog:dog,breed:breed||'Unknown',code:code,ts:new Date().toISOString()});
-  document.getElementById('onboardResult').innerHTML='<div style="text-align:center;padding:10px 0"><div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-size:16px;font-weight:800;margin-bottom:4px">'+dog+' — '+owner+'</div><div style="font-size:12px;color:var(--muted);margin-bottom:14px">'+breed+'</div><div style="background:var(--surface2);border-radius:var(--rs);padding:12px;margin-bottom:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Access Code</div><div style="font-size:22px;font-weight:900;letter-spacing:.1em;color:var(--primary)">'+code+'</div></div><div style="font-size:12px;color:var(--muted);margin-bottom:10px;word-break:break-all;background:var(--surface2);padding:8px 10px;border-radius:var(--rs)">'+link+'</div><div style="display:flex;gap:8px"><button class="btn-sm primary" style="flex:1" onclick="showToast(\'Link copied!\')">📋 Copy Link</button><button class="btn-sm" style="flex:1" onclick="showToast(\'Email sent to '+email+'!\')">📧 Send Email</button></div></div>';
-  renderDeploy();
-  showToast('✅ Portal access generated for '+dog);
+
+/* ═══════════════════════════════════════════════════════════
+   FOUR PAWS — CLIENT PWA DEPLOYMENT HUB
+   Sync layer: localStorage → IndexedDB → Supabase (future)
+═══════════════════════════════════════════════════════════ */
+
+/* ── SYNC LAYER ──────────────────────────────────────────── */
+var FP_SYNC = {
+  _dbName: 'fourpaws_trainer',
+  _dbVer: 1,
+  _db: null,
+  _sbUrl: null,
+  _sbKey: null,
+
+  /* Open IndexedDB */
+  openDB: function() {
+    return new Promise(function(resolve, reject) {
+      if (FP_SYNC._db) { resolve(FP_SYNC._db); return; }
+      var req = indexedDB.open(FP_SYNC._dbName, FP_SYNC._dbVer);
+      req.onupgradeneeded = function(e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains('deployments')) {
+          db.createObjectStore('deployments', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('sync_queue')) {
+          db.createObjectStore('sync_queue', { keyPath: 'id', autoIncrement: true });
+        }
+      };
+      req.onsuccess = function(e) { FP_SYNC._db = e.target.result; resolve(FP_SYNC._db); };
+      req.onerror   = function(e) { reject(e); };
+    });
+  },
+
+  /* Save deployment to localStorage + IndexedDB */
+  saveDeployment: function(record) {
+    /* 1. localStorage (instant, always works) */
+    var all = FP_SYNC.getLocalDeployments();
+    all.unshift(record);
+    localStorage.setItem('fp_deployments', JSON.stringify(all));
+
+    /* 2. IndexedDB (async, more durable) */
+    FP_SYNC.openDB().then(function(db) {
+      var tx = db.transaction('deployments', 'readwrite');
+      tx.objectStore('deployments').put(record);
+    }).catch(function(e) { console.warn('[FP_SYNC] IndexedDB write failed:', e); });
+
+    /* 3. Supabase (if configured) */
+    FP_SYNC.pushToSupabase(record);
+
+    return record;
+  },
+
+  getLocalDeployments: function() {
+    try { return JSON.parse(localStorage.getItem('fp_deployments') || '[]'); } catch(e) { return []; }
+  },
+
+  /* Push to Supabase REST API */
+  pushToSupabase: function(record) {
+    var url = FP_SYNC._sbUrl || localStorage.getItem('fp_sb_url');
+    var key = FP_SYNC._sbKey || localStorage.getItem('fp_sb_key');
+    if (!url || !key) return Promise.resolve(null);
+    return fetch(url + '/rest/v1/deployments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': key,
+        'Authorization': 'Bearer ' + key,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(record)
+    }).then(function(r) {
+      if (r.ok) {
+        document.getElementById('sb-status').textContent = 'Connected ✓';
+        document.getElementById('sb-status').style.color = '#3a7d44';
+      }
+      return r;
+    }).catch(function(e) { console.warn('[FP_SYNC] Supabase push failed:', e); });
+  },
+
+  /* Configure Supabase */
+  configure: function(url, key) {
+    FP_SYNC._sbUrl = url;
+    FP_SYNC._sbKey = key;
+    localStorage.setItem('fp_sb_url', url);
+    localStorage.setItem('fp_sb_key', key);
+    document.getElementById('sb-status').textContent = 'Configured — testing…';
+    document.getElementById('sb-status').style.color = '#e8a020';
+    /* Test connection */
+    fetch(url + '/rest/v1/', { headers: { 'apikey': key } })
+      .then(function() {
+        document.getElementById('sb-status').textContent = 'Connected ✓';
+        document.getElementById('sb-status').style.color = '#3a7d44';
+        document.getElementById('sync-title').textContent = 'Sync: LocalStorage + IndexedDB + Supabase';
+        document.getElementById('sync-icon').textContent = '☁️';
+      })
+      .catch(function() {
+        document.getElementById('sb-status').textContent = 'Connection failed';
+        document.getElementById('sb-status').style.color = '#c0392b';
+      });
+  },
+
+  /* Sync pending localStorage records to Supabase */
+  syncPending: function() {
+    var pending = FP_SYNC.getLocalDeployments().filter(function(d) { return !d.synced; });
+    pending.forEach(function(d) { FP_SYNC.pushToSupabase(d); });
+    return pending.length;
+  }
+};
+
+/* Init: check Supabase config on load */
+(function() {
+  var sbUrl = localStorage.getItem('fp_sb_url');
+  var sbKey = localStorage.getItem('fp_sb_key');
+  if (sbUrl && sbKey) {
+    FP_SYNC._sbUrl = sbUrl;
+    FP_SYNC._sbKey = sbKey;
+    setTimeout(function() {
+      if (document.getElementById('sb-status')) {
+        document.getElementById('sb-status').textContent = 'Configured';
+        document.getElementById('sb-status').style.color = '#e8a020';
+      }
+    }, 500);
+  }
+})();
+
+/* ── DEPLOY HUB STATE ────────────────────────────────────── */
+var _depClient = null;
+var _depLink   = '';
+var _nfcActive = false;
+var _nfcController = null;
+
+function deployHub_generate() {
+  var owner = document.getElementById('dep-owner').value.trim();
+  var dog   = document.getElementById('dep-dog').value.trim();
+  var breed = document.getElementById('dep-breed').value.trim() || 'Mixed';
+  var age   = document.getElementById('dep-age').value;
+  var email = document.getElementById('dep-email').value.trim();
+  var phone = document.getElementById('dep-phone').value.trim();
+  var notes = document.getElementById('dep-notes').value.trim();
+
+  if (!owner) { showToast('⚠️ Please enter the owner name'); return; }
+  if (!dog)   { showToast('⚠️ Please enter the dog name'); return; }
+
+  var code = 'FP-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  var baseUrl = window.location.origin + '/owner';
+  var params  = '?code=' + code + '&owner=' + encodeURIComponent(owner) + '&dog=' + encodeURIComponent(dog) + '&breed=' + encodeURIComponent(breed) + '&age=' + encodeURIComponent(age);
+  _depLink = baseUrl + params;
+
+  _depClient = {
+    id: code,
+    owner: owner,
+    dog: dog,
+    breed: breed,
+    age: age,
+    email: email,
+    phone: phone,
+    notes: notes,
+    link: _depLink,
+    ts: Date.now(),
+    synced: false
+  };
+
+  /* Save to sync layer */
+  FP_SYNC.saveDeployment(_depClient);
+
+  /* Unlock the delivery card */
+  var card = document.getElementById('delivery-card');
+  card.style.opacity = '1';
+  card.style.pointerEvents = 'auto';
+
+  document.getElementById('dep-client-badge').textContent = dog + ' · ' + owner;
+
+  /* Render delivery methods */
+  var m = document.getElementById('delivery-methods');
+  var wa = phone
+    ? 'https://wa.me/' + phone.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent('Hi ' + owner + '! Your Four Paws AI Coach is ready for ' + dog + '.\n\nInstall here (no App Store needed):\n' + _depLink + '\n\nYour access code: ' + code)
+    : null;
+  var mailto = 'mailto:' + email + '?subject=' + encodeURIComponent('Your Four Paws AI Coach - ' + dog + ' is ready!') + '&body=' + encodeURIComponent('Hi ' + owner + ',\n\nYour Four Paws AI Coach for ' + dog + ' is ready!\n\nInstall on your phone:\n' + _depLink + '\n\nAccess code: ' + code + '\n\nSee you at training!\nYour Trainer');
+  showToast('⚙ Supabase configured — testing connection…');
 }
+
+/* ── SYNC STATUS REFRESH ─────────────────────────────────── */
+function deployHub_resetSync() {
+  var count = FP_SYNC.syncPending();
+  showToast('🔄 Sync attempted — ' + count + ' record(s) pushed');
+  deployHub_renderRecent();
+}
+
+/* Init recent deployments list on view open */
+var _origShowView = typeof showView === 'function' ? showView : null;
+document.addEventListener('DOMContentLoaded', function() {
+  /* patch showView to init deploy hub */
+  if (typeof showView === 'function') {
+    var orig = showView;
+    showView = function(v) {
+      orig(v);
+      if (v === 'deploy') { setTimeout(deployHub_renderRecent, 50); }
+    };
+  }
+  /* Also init if deploy is default view */
+  if (!document.querySelector('.view:not(.hidden)')) { deployHub_renderRecent(); }
+});
+
 
 /* ══════════ REVIEWS ══════════ */
 function renderReviews(){
